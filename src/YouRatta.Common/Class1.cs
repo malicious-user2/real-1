@@ -4,7 +4,7 @@ namespace YouRatta.Common
     {
         void x()
         {
-            var x = new YouRatta.Proto.InstalledClientSecrets();
+            var x = new YouRatta.Common.Proto.InstalledClientSecrets();
         }
     }
 }

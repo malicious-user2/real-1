@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+import "Proto/ClientSecrets.proto";
+
+option csharp_namespace = "YouRatta.Common.Proto";
+
+package conflict_monitor_message;
+
+service ActionIntelligenceService
+{
+    rpc SendActionIntelligence (ClientSecrets) returns (EchoReply);
+}
+
+message EchoReply
+{
+    string message = 1;
+}

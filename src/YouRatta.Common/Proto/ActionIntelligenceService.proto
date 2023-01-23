@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "Proto/ClientSecrets.proto";
+import "Proto/ActionIntelligence.proto";
 
 option csharp_namespace = "YouRatta.Common.Proto";
 
@@ -8,7 +8,7 @@ package conflict_monitor_message;
 
 service ActionIntelligenceService
 {
-    rpc SendActionIntelligence (ClientSecrets) returns (EchoReply);
+    rpc SendActionIntelligence (ActionIntelligence) returns (EchoReply);
 }
 
 message EchoReply

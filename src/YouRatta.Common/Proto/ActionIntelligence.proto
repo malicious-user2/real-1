@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "Proto/ClientSecrets.proto";
+
+option csharp_namespace = "YouRatta.Common.Proto";
+
+package conflict_monitor_message;
+
+message ActionIntelligence
+{
+    ClientSecrets client_secrets = 1;
+}

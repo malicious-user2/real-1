@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "YouRatta.Common.Proto";
+
+package conflict_monitor_message;
+
+message MilestoneActionIntelligence
+{
+    enum MilestoneCondition
+    {
+        MILESTONE_NOT_STARTED = 0;
+        MILESTONE_STARTED = 1;
+        MILESTONE_FAILED = 2;
+    }
+    message InitialSetupActionIntelligence
+    {
+        MilestoneCondition condition = 1;
+        string access_token = 2;
+    }
+    message GetVideoActionIntelligence
+    {
+        MilestoneCondition condition = 1;
+        string access_token = 2;
+    }
+    reserved 1;
+    optional InitialSetupActionIntelligence initial_setup = 2;
+    optional GetVideoActionIntelligence get_video = 3;
+}

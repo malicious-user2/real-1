@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "Proto/ClientSecrets.proto";
+import "Proto/MilestoneActionIntelligence.proto";
 
 option csharp_namespace = "YouRatta.Common.Proto";
 
@@ -8,5 +9,6 @@ package conflict_monitor_message;
 
 message ActionIntelligence
 {
-    ClientSecrets client_secrets = 1;
+    MilestoneActionIntelligence milestones = 1;
+    ClientSecrets client_secrets = 2;
 }

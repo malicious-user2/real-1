@@ -8,9 +8,11 @@ message MilestoneActionIntelligence
 {
     enum MilestoneCondition
     {
-        MILESTONE_NOT_STARTED = 0;
-        MILESTONE_STARTED = 1;
-        MILESTONE_FAILED = 2;
+        MILESTONE_PENDING = 0;
+        MILESTONE_BLOCKED = 1;
+        MILESTONE_RUNNING = 2;
+        MILESTONE_FAILED = 3;
+        MILESTONE_COMPLETED = 4;
     }
     message InitialSetupActionIntelligence
     {

@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option csharp_namespace = "YouRatta.Common.Proto";
+
+package conflict_monitor_message;
+
+message GitHubEnvironment
+{
+    int32 rate_limit_core_limit = 1;
+    int32 rate_limit_core_remaining = 2;
+    int64 rate_limit_core_reset = 3;
+}

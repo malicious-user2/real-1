@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "Proto/ClientSecrets.proto";
 import "Proto/MilestoneActionIntelligence.proto";
+import "Proto/GitHubEnvironment.proto";
 
 option csharp_namespace = "YouRatta.Common.Proto";
 
@@ -11,4 +12,5 @@ message ActionIntelligence
 {
     MilestoneActionIntelligence milestones = 1;
     ClientSecrets client_secrets = 2;
+    GitHubEnvironment github_environment = 3;
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -6,7 +7,7 @@ using YouRatta.Common.Proto;
 
 namespace YouRatta.ConflictMonitor.MilestoneCall.Messages;
 
-public class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntelligenceServiceBase
+internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntelligenceServiceBase
 {
     private readonly ILogger<ActionIntelligenceMessage> _logger;
     private readonly CallManager _callManager;
@@ -19,15 +20,19 @@ public class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntelli
 
     public override Task<ActionIntelligence> GetActionIntelligence(Empty request, ServerCallContext context)
     {
-        _logger.LogInformation("GetActionIntelligence" + context.ToString());
         TaskCompletionSource<ActionIntelligence> actionIntelligenceResult = new TaskCompletionSource<ActionIntelligence>();
-        _callManager.ActionCallbacks.Enqueue((CallHandler handler) =>
+        _callManager.ActionCallbacks.Enqueue((CallHandler callHandler) =>
         {
             ActionIntelligence actionIntelligence = new ActionIntelligence();
-            //handler.doSomething
-
-
-
+            try
+            {
+                callHandler.GetLogs();
+                //do something
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error on GetActionIntelligence: {e.Message}");
+            }
             actionIntelligenceResult.SetResult(actionIntelligence);
         });
         _callManager.ActionReady.Set();

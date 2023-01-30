@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using YouRatta.ConflictMonitor.MilestoneCall;
 using YouRatta.ConflictMonitor.MilestoneCall.Messages;
 using static YouRatta.ConflictMonitor.MilestoneCall.CallManager;
@@ -14,11 +15,13 @@ internal class WebAppServer
 {
     private readonly CallHandler _callHandler;
     private readonly CallManager _callManager;
+    private readonly InServiceLoggerProvider _loggerProvider;
 
-    public WebAppServer(CallHandler callHandler)
+    public WebAppServer(CallHandler callHandler, InServiceLoggerProvider logger)
     {
         _callHandler = callHandler;
         _callManager = new CallManager();
+        _loggerProvider = logger;
     }
 
     private WebApplication BuildApp()
@@ -35,7 +38,9 @@ internal class WebAppServer
             {
                 File.Delete(GrpcConstants.UnixSocketPath);
             }
+            opt.ListenUnixSocket(GrpcConstants.UnixSocketPath);
         });
+        builder.Logging.Services.AddSingleton<ILoggerProvider, InServiceLoggerProvider>(service => _loggerProvider);
         builder.Services.AddSingleton<CallManager>(service => _callManager);
         WebApplication app = builder.Build();
         return app;

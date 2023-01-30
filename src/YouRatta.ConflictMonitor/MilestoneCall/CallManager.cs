@@ -3,9 +3,9 @@ using System.Threading;
 
 namespace YouRatta.ConflictMonitor.MilestoneCall;
 
-public class CallManager
+internal class CallManager
 {
-    public delegate void ConflictMonitorCall(CallHandler handler);
+    internal delegate void ConflictMonitorCall(CallHandler handler);
     private readonly AutoResetEvent _actionReady;
     private readonly ManualResetEvent _actionStop;
     private readonly ConcurrentQueue<ConflictMonitorCall> _actionCallbacks;

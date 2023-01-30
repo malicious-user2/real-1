@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "Proto/ActionIntelligence.proto";
+import "google/protobuf/empty.proto";
 
 option csharp_namespace = "YouRatta.Common.Proto";
 
@@ -8,7 +9,7 @@ package conflict_monitor_message;
 
 service ActionIntelligenceService
 {
-    rpc SendActionIntelligence (ActionIntelligence) returns (EchoReply);
+    rpc GetActionIntelligence (google.protobuf.Empty) returns (ActionIntelligence);
 }
 
 message EchoReply

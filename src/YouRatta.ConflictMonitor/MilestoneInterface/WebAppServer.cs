@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using YouRatta.ConflictMonitor.MilestoneCall;
 using YouRatta.ConflictMonitor.MilestoneCall.Messages;
+using YouRatta.ConflictMonitor.MilestoneInterface.Services;
+using YouRatta.ConflictMonitor.MilestoneInterface.WebHost;
 using static YouRatta.ConflictMonitor.MilestoneCall.CallManager;
 
 namespace YouRatta.ConflictMonitor.MilestoneInterface;
@@ -32,15 +34,13 @@ internal class WebAppServer
             opt.EnableDetailedErrors = true;
             opt.ResponseCompressionLevel = GrpcConstants.ResponseCompressionLevel;
         });
-        builder.WebHost.ConfigureKestrel(opt =>
-        {
-            if (File.Exists(GrpcConstants.UnixSocketPath))
-            {
-                File.Delete(GrpcConstants.UnixSocketPath);
-            }
-            opt.ListenUnixSocket(GrpcConstants.UnixSocketPath);
-        });
+        builder.WebHost.AddUnixSocket();
         builder.Logging.Services.AddSingleton<ILoggerProvider, InServiceLoggerProvider>(service => _loggerProvider);
+        builder.Services.AddAppConfigurations()
+
+
+
+
         builder.Services.AddSingleton<CallManager>(service => _callManager);
         WebApplication app = builder.Build();
         return app;

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace YouRatta.Common;
+namespace YouRatta.Common.Configurations;
 
 public static class ConfigurationConstants
 {

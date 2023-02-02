@@ -18,6 +18,12 @@ public class ConfigurationWriter : IConfigurationWriter
         _path = path;
     }
 
+    public void WriteBlank()
+    {
+        YouRattaConfiguration blankConfiguration = new YouRattaConfiguration();
+        File.WriteAllText(_path, JsonConvert.SerializeObject(blankConfiguration, Formatting.Indented));
+    }
+
     public void WriteSection(string name, object value)
     {
         JToken jRoot = JObject.Parse(File.ReadAllText(_path));

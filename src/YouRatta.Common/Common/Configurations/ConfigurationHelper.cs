@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 
 namespace YouRatta.Common.Configurations;
@@ -14,11 +15,25 @@ public sealed class ConfigurationHelper
 
     public IConfiguration Build()
     {
+        if (!Path.Exists(ConfigurationConstants.YouRattaSettingsPath))
+        {
+            CreateBlankConfig();
+        }
         return new ConfigurationBuilder()
-            .SetBasePath(Path.GetDirectoryName(ConfigurationConstants.YouRattaSettingsPath) ?? Directory.GetCurrentDirectory())
+            .SetBasePath(Path.GetDirectoryName(ConfigurationConstants.YouRattaSettingsPath))
             .AddJsonFile(ConfigurationConstants.YouRattaSettingsFileName, false, true)
             .AddEnvironmentVariables()
             .AddCommandLine(_args)
             .Build();
+    }
+
+    public void CreateBlankConfig()
+    {
+        if (Path.Exists(ConfigurationConstants.YouRattaSettingsPath))
+        {
+            throw new IOException($"Configuration file {ConfigurationConstants.YouRattaSettingsPath} already exists");
+        }
+        ConfigurationWriter writer = new ConfigurationWriter(ConfigurationConstants.YouRattaSettingsPath);
+        writer.WriteBlank();
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace YouRatta.Common.Configurations;
 
-public class ActionCutOutConfiguration : BaseValidatableConfiguration
+public class YouRattaConfiguration : BaseValidatableConfiguration
 {
     [Required]
     public bool ActionEnabled;

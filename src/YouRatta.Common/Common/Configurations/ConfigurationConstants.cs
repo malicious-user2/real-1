@@ -11,7 +11,7 @@ public static class ConfigurationConstants
         .Combine(Directory.GetCurrentDirectory(), _settingsFile));
     private static readonly string _settingsPathInVS = Path
         .GetFullPath(Path
-        .Combine(Directory.GetCurrentDirectory(), $"..\\..\\..\\..\\..\\{_settingsFile}"));
+        .Combine(Directory.GetCurrentDirectory(), $"..\\..\\{_settingsFile}"));
 
 #if DEBUG
     public static string YouRattaSettingsPath => Path.Exists(_settingsPathInGitLab) ? _settingsPathInGitLab : _settingsPathInVS;

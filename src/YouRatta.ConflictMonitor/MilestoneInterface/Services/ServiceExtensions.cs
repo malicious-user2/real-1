@@ -8,13 +8,13 @@ namespace YouRatta.ConflictMonitor.MilestoneInterface.Services;
 
 public static class ServiceExtensions
 {
-    public static void AddAppConfigurations(this IServiceCollection services, IConfiguration configuration)
+    public static void AddAppConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOptions();
 
-        services.Configure<ActionCutOutConfiguration>(configuration.GetSection("ActionCutOutConfiguration"));
+        services.Configure<YouRattaConfiguration>(configuration.GetSection("YouRattaConfiguration"));
 
-        services.AddSingleton<IValidatableConfiguration>(resolver => resolver.GetRequiredService<IOptions<ActionCutOutConfiguration>>().Value);
+        services.AddSingleton<IValidatableConfiguration>(resolver => resolver.GetRequiredService<IOptions<YouRattaConfiguration>>().Value);
     }
 
     public static void AddConfigurationWriter(this IServiceCollection services)

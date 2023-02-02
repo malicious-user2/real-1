@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using YouRatta.Common.Configurations;
 
 namespace YouRatta.ConflictMonitor.MilestoneInterface.Services;
 
@@ -9,7 +10,7 @@ public static class ServiceExtensions
     {
         services.AddOptions();
 
-        services.Configure<PrometheusExporterConfiguration>(configuration.GetSection("PrometheusExporterConfiguration"));
+        services.Configure<ActionCutOutConfiguration>(configuration.GetSection("PrometheusExporterConfiguration"));
         services.Configure<LivenessConfiguration>(configuration.GetSection("LivenessConfiguration"));
     }
 }

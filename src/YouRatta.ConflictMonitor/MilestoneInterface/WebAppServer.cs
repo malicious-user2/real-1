@@ -3,8 +3,10 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using YouRatta.Common.Configurations;
 using YouRatta.ConflictMonitor.MilestoneCall;
 using YouRatta.ConflictMonitor.MilestoneCall.Messages;
 using YouRatta.ConflictMonitor.MilestoneInterface.Services;
@@ -18,16 +20,19 @@ internal class WebAppServer
     private readonly CallHandler _callHandler;
     private readonly CallManager _callManager;
     private readonly InServiceLoggerProvider _loggerProvider;
+    private readonly ConfigurationHelper _configurationHelper;
 
-    public WebAppServer(CallHandler callHandler, InServiceLoggerProvider logger)
+    public WebAppServer(CallHandler callHandler, InServiceLoggerProvider loggerProvider, ConfigurationHelper configurationHelper)
     {
         _callHandler = callHandler;
         _callManager = new CallManager();
-        _loggerProvider = logger;
+        _loggerProvider = loggerProvider;
+        _configurationHelper = configurationHelper;
     }
 
     private WebApplication BuildApp()
     {
+        IConfiguration config = _configurationHelper.Build();
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Services.AddGrpc(opt =>
         {
@@ -36,7 +41,8 @@ internal class WebAppServer
         });
         builder.WebHost.AddUnixSocket();
         builder.Logging.Services.AddSingleton<ILoggerProvider, InServiceLoggerProvider>(service => _loggerProvider);
-        builder.Services.AddAppConfigurations()
+        builder.Services.AddAppConfigurations(config);
+        builder.Services.AddConfigurationWriter();
 
 
 

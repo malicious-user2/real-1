@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using YouRatta.Common.Configurations;
+using YouRatta.Common.GitHub;
 using YouRatta.ConflictMonitor.MilestoneCall;
 using YouRatta.ConflictMonitor.MilestoneCall.Messages;
 using YouRatta.ConflictMonitor.MilestoneInterface.Services;
@@ -21,18 +22,21 @@ internal class WebAppServer
     private readonly CallManager _callManager;
     private readonly InServiceLoggerProvider _loggerProvider;
     private readonly ConfigurationHelper _configurationHelper;
+    private readonly GitHubEnvironmentHelper _environmentHelper;
 
-    public WebAppServer(CallHandler callHandler, InServiceLoggerProvider loggerProvider, ConfigurationHelper configurationHelper)
+    public WebAppServer(CallHandler callHandler, InServiceLoggerProvider loggerProvider, ConfigurationHelper configurationHelper, GitHubEnvironmentHelper environmentHelper)
     {
         _callHandler = callHandler;
         _callManager = new CallManager();
         _loggerProvider = loggerProvider;
         _configurationHelper = configurationHelper;
+        _environmentHelper = environmentHelper;
     }
 
     private WebApplication BuildApp()
     {
-        IConfiguration config = _configurationHelper.Build();
+        IConfiguration appConfig = _configurationHelper.Build();
+        IConfiguration environmentConfig = _environmentHelper.Build();
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Services.AddGrpc(opt =>
         {
@@ -41,7 +45,8 @@ internal class WebAppServer
         });
         builder.WebHost.AddUnixSocket();
         builder.Logging.Services.AddSingleton<ILoggerProvider, InServiceLoggerProvider>(service => _loggerProvider);
-        builder.Services.AddAppConfiguration(config);
+        builder.Services.AddAppConfiguration(appConfig);
+        builder.Services.AddGitHubEnvironment(environmentConfig);
         builder.Services.AddConfigurationWriter(_configurationHelper.SettingsFilePath);
 
 

@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 
 namespace YouRatta.Common.Configurations;
@@ -45,7 +44,6 @@ public sealed class ConfigurationHelper
         return new ConfigurationBuilder()
             .SetBasePath(Path.GetDirectoryName(_settingsPath))
             .AddJsonFile(_settingsFileName, false, true)
-            .AddEnvironmentVariables()
             .AddCommandLine(_args)
             .Build();
     }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using YouRatta.Common.Configurations;
+using YouRatta.Common.GitHub;
 
 namespace YouRatta.ConflictMonitor.MilestoneInterface.Services;
 
@@ -22,5 +23,10 @@ public static class ServiceExtensions
     {
         ConfigurationWriter writer = new ConfigurationWriter(settingsFilePath);
         services.TryAddSingleton<IConfigurationWriter>(writer);
+    }
+
+    public static void AddGitHubEnvironment(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<GitHubEnvironment>(configuration);
     }
 }

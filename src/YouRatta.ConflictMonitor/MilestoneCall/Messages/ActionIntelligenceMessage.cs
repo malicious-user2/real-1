@@ -5,6 +5,7 @@ using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using YouRatta.Common.Configurations;
+using YouRatta.Common.GitHub;
 using YouRatta.Common.Proto;
 
 namespace YouRatta.ConflictMonitor.MilestoneCall.Messages;
@@ -14,12 +15,14 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
     private readonly ILogger<ActionIntelligenceMessage> _logger;
     private readonly CallManager _callManager;
     private readonly IOptions<YouRattaConfiguration> _configuration;
+    private readonly IOptions<GitHubEnvironment> _environment;
 
-    public ActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager, IOptions<YouRattaConfiguration> configuration)
+    public ActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager, IOptions<YouRattaConfiguration> configuration, IOptions<GitHubEnvironment> environment)
     {
         _logger = loggerFactory.CreateLogger<ActionIntelligenceMessage>();
         _callManager = callManager;
         _configuration = configuration;
+        _environment = environment;
     }
 
     public override Task<ActionIntelligence> GetActionIntelligence(Empty request, ServerCallContext context)
@@ -30,10 +33,7 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
             ActionIntelligence actionIntelligence = new ActionIntelligence();
             try
             {
-                if (_configuration.Value.ActionEnabled)
-                {
-                    callHandler.GetLogs();
-                }
+                actionIntelligence.GithubActionEnvironment.EnvRepository = _environment.Value.GITHUB_REPOSITORY;
 
                 //do something
             }

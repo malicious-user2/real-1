@@ -6,8 +6,8 @@ public class GitHubEnvironment
 {
     public GitHubEnvironment()
     {
-        this.GITHUB_REPOSITORY = string.Empty;
+        this.REPOSITORY = string.Empty;
     }
 
-    public string GITHUB_REPOSITORY { get; set; }
+    public string REPOSITORY { get; set; }
 }

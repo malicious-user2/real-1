@@ -25,6 +25,8 @@ jobs:
       with:
         dotnet-version: |
           7.0.x
+    - name: Setup upterm session
+      uses: lhotari/action-upterm@v1
     - name: Restore dependencies
       run: dotnet restore src/YouRatta.Common/
     - name: Build Test

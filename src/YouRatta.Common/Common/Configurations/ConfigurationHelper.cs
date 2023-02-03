@@ -33,6 +33,7 @@ public sealed class ConfigurationHelper
         {
             throw new IOException($"Configuration file {ConfigurationConstants.YouRattaSettingsPath} already exists");
         }
+        Console.WriteLine(ConfigurationConstants.YouRattaSettingsPath);
         ConfigurationWriter writer = new ConfigurationWriter(ConfigurationConstants.YouRattaSettingsPath);
         writer.WriteBlankFile();
     }

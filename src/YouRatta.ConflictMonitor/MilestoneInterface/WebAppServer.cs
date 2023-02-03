@@ -42,7 +42,7 @@ internal class WebAppServer
         builder.WebHost.AddUnixSocket();
         builder.Logging.Services.AddSingleton<ILoggerProvider, InServiceLoggerProvider>(service => _loggerProvider);
         builder.Services.AddAppConfiguration(config);
-        builder.Services.AddConfigurationWriter();
+        builder.Services.AddConfigurationWriter(_configurationHelper.SettingsFilePath);
 
 
 

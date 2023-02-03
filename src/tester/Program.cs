@@ -21,7 +21,7 @@ using var channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOp
 
 ActionIntelligenceServiceClient client = new ActionIntelligenceServiceClient(channel);
 
-System.Threading.Thread.Sleep(5000);
+System.Threading.Thread.Sleep(7000);
 var reply = await client.GetActionIntelligenceAsync(new Google.Protobuf.WellKnownTypes.Empty());
 Console.WriteLine(reply.ToString());
 

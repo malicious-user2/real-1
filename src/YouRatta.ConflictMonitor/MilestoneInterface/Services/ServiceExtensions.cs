@@ -18,9 +18,9 @@ public static class ServiceExtensions
         services.AddSingleton<IValidatableConfiguration>(resolver => resolver.GetRequiredService<IOptions<YouRattaConfiguration>>().Value);
     }
 
-    public static void AddConfigurationWriter(this IServiceCollection services)
+    public static void AddConfigurationWriter(this IServiceCollection services, string settingsFilePath)
     {
-        var writer = new ConfigurationWriter(ConfigurationConstants.YouRattaSettingsPath);
+        ConfigurationWriter writer = new ConfigurationWriter(settingsFilePath);
         services.TryAddSingleton<IConfigurationWriter>(writer);
     }
 }

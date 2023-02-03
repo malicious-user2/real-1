@@ -18,7 +18,7 @@ public class ConfigurationWriter : IConfigurationWriter
         _path = path;
     }
 
-    public void WriteBlank()
+    public void WriteBlankFile()
     {
         YouRattaConfiguration blankConfiguration = new YouRattaConfiguration();
         File.WriteAllText(_path, JsonConvert.SerializeObject(blankConfiguration, Formatting.Indented));

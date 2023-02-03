@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using YouRatta.Common.Configurations;
 using YouRatta.Common.Proto;
 
 namespace YouRatta.ConflictMonitor.MilestoneCall.Messages;
@@ -11,11 +13,13 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
 {
     private readonly ILogger<ActionIntelligenceMessage> _logger;
     private readonly CallManager _callManager;
+    private readonly IOptions<YouRattaConfiguration> _configuration;
 
-    public ActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager)
+    public ActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager, IOptions<YouRattaConfiguration> configuration)
     {
         _logger = loggerFactory.CreateLogger<ActionIntelligenceMessage>();
         _callManager = callManager;
+        _configuration = configuration;
     }
 
     public override Task<ActionIntelligence> GetActionIntelligence(Empty request, ServerCallContext context)
@@ -26,7 +30,11 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
             ActionIntelligence actionIntelligence = new ActionIntelligence();
             try
             {
-                callHandler.GetLogs();
+                if (_configuration.Value.ActionEnabled)
+                {
+                    callHandler.GetLogs();
+                }
+
                 //do something
             }
             catch (Exception e)

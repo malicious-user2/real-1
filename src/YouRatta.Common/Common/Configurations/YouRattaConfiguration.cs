@@ -6,5 +6,5 @@ namespace YouRatta.Common.Configurations;
 public class YouRattaConfiguration : BaseValidatableConfiguration
 {
     [Required]
-    public bool ActionEnabled;
+    public bool ActionEnabled { get; set; }
 }

@@ -10,9 +10,10 @@ public static class ServiceExtensions
 {
     public static void AddAppConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddTransient<IValidator, ConfigurationsValidator>();
         services.AddOptions();
 
-        services.Configure<YouRattaConfiguration>(configuration.GetSection("YouRattaConfiguration"));
+        services.Configure<YouRattaConfiguration>(configuration);
 
         services.AddSingleton<IValidatableConfiguration>(resolver => resolver.GetRequiredService<IOptions<YouRattaConfiguration>>().Value);
     }

@@ -47,23 +47,24 @@ public class GitHubEnvironment
     {
         GitHubActionEnvironment actionEnvironment = new GitHubActionEnvironment();
         Type actionEnvironmentType = actionEnvironment.GetType();
-        PropertyInfo[] actionEnvironmentPropertyInfos = actionEnvironmentType.GetProperties();
-        foreach (PropertyInfo property in actionEnvironmentPropertyInfos)
+        Type environmentType = this.GetType();
+        PropertyInfo[] environmentProps = environmentType.GetProperties();
+        foreach (PropertyInfo environmentInfo in environmentProps)
         {
-            if (!property.CanRead)
+            if (!environmentInfo.CanRead)
             {
                 continue;
             }
-            PropertyInfo targetProperty = this.GetType().GetProperty(property.Name);
-            if (targetProperty == null || !targetProperty.CanWrite)
+            PropertyInfo targetProperty = actionEnvironmentType.GetProperty($"EnvGithub{environmentInfo.Name}");
+            if (targetProperty == null)
             {
                 continue;
             }
-            if (!targetProperty.PropertyType.IsAssignableFrom(property.PropertyType))
+            if (!targetProperty.PropertyType.IsAssignableFrom(environmentInfo.PropertyType))
             {
                 continue;
             }
-            targetProperty.SetValue(actionEnvironment, property.GetValue(this, null), null);
+            targetProperty.SetValue(actionEnvironment, environmentInfo.GetValue(this));
         }
         return actionEnvironment;
     }

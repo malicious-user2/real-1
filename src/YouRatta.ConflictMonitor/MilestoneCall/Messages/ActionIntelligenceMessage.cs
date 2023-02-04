@@ -33,8 +33,7 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
             ActionIntelligence actionIntelligence = new ActionIntelligence();
             try
             {
-                actionIntelligence.GithubActionEnvironment = new GitHubActionEnvironment();
-                actionIntelligence.GithubActionEnvironment.EnvRepository = _environment.Value.REPOSITORY;
+                actionIntelligence.GithubActionEnvironment = _environment.Value.GetActionEnvironment();
 
                 //do something
             }

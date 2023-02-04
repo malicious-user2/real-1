@@ -6,8 +6,41 @@ package conflict_monitor_message;
 
 message GitHubActionEnvironment
 {
-    int32 rate_limit_core_limit = 1;
-    int32 rate_limit_core_remaining = 2;
-    int64 rate_limit_core_reset = 3;
-    string env_repository = 4;
+    string env_github_action = 1;
+    string env_github_action_path = 2;
+    string env_github_action_repository = 3;
+    bool env_github_actions = 4;
+    string env_github_actor = 5;
+    string env_github_actor_id = 6;
+    string env_github_api_url = 7;
+    string env_github_base_ref = 8;
+    string env_github_env = 9;
+    string env_github_event_name = 10;
+    string env_github_event_path = 11;
+    string env_github_graphql_url = 12;
+    string env_github_head_ref = 13;
+    string env_github_job = 14;
+    string env_github_path = 15;
+    string env_github_ref = 16;
+    string env_github_ref_name = 17;
+    string env_github_ref_protected = 18;
+    string env_github_ref_type = 19;
+    string env_github_repository = 20;
+    int64 env_github_repository_id = 21;
+    string env_github_repository_owner = 22;
+    int64 env_github_repository_owner_id = 23;
+    int32 env_github_retention_days = 24;
+    int32 env_github_run_attempt = 25;
+    int64 env_github_run_id = 26;
+    int32 env_github_run_number = 27;
+    string env_github_server_url = 28;
+    string env_github_sha = 29;
+    string env_github_step_summary = 30;
+    string env_github_workflow = 31;
+    string env_github_workflow_ref = 32;
+    string env_github_workflow_sha = 33;
+    string env_github_workspace = 34;
+    int32 rate_limit_core_limit = 35;
+    int32 rate_limit_core_remaining = 36;
+    int64 rate_limit_core_reset = 37;
 }

@@ -8,6 +8,7 @@ using Octokit;
 using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
 using YouRatta.Common.Proto;
+using YouRatta.ConflictMonitor.Workflow;
 
 namespace YouRatta.ConflictMonitor.MilestoneCall.Messages;
 
@@ -17,13 +18,15 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
     private readonly CallManager _callManager;
     private readonly IOptions<YouRattaConfiguration> _configuration;
     private readonly IOptions<GitHubEnvironment> _environment;
+    private readonly ConflictMonitorWorkflow _conflictMonitorWorkflow;
 
-    public ActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager, IOptions<YouRattaConfiguration> configuration, IOptions<GitHubEnvironment> environment)
+    public ActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager, IOptions<YouRattaConfiguration> configuration, IOptions<GitHubEnvironment> environment, ConflictMonitorWorkflow conflictMonitorWorkflow)
     {
         _logger = loggerFactory.CreateLogger<ActionIntelligenceMessage>();
         _callManager = callManager;
         _configuration = configuration;
         _environment = environment;
+        _conflictMonitorWorkflow = conflictMonitorWorkflow;
     }
 
     public override Task<ActionIntelligence> GetActionIntelligence(Empty request, ServerCallContext context)
@@ -36,6 +39,9 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
             {
                 actionIntelligence.GithubActionEnvironment = _environment.Value.GetActionEnvironment();
                 GitHubClient ghClient = new GitHubClient(new Octokit.ProductHeaderValue("TestApp"));
+                ghClient.Credentials = new Credentials(_conflictMonitorWorkflow.GithubToken, AuthenticationType.Bearer);
+
+
                 actionIntelligence.GithubActionEnvironment.RateLimitCoreRemaining = ghClient.RateLimit.GetRateLimits().Result.Resources.Core.Remaining;
 
 

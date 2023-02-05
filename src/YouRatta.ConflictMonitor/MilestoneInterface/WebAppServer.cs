@@ -12,6 +12,7 @@ using YouRatta.ConflictMonitor.MilestoneCall;
 using YouRatta.ConflictMonitor.MilestoneCall.Messages;
 using YouRatta.ConflictMonitor.MilestoneInterface.Services;
 using YouRatta.ConflictMonitor.MilestoneInterface.WebHost;
+using YouRatta.ConflictMonitor.Workflow;
 using static YouRatta.ConflictMonitor.MilestoneCall.CallManager;
 
 namespace YouRatta.ConflictMonitor.MilestoneInterface;
@@ -23,14 +24,16 @@ internal class WebAppServer
     private readonly InServiceLoggerProvider _loggerProvider;
     private readonly ConfigurationHelper _configurationHelper;
     private readonly GitHubEnvironmentHelper _environmentHelper;
+    private readonly ConflictMonitorWorkflow _conflictMonitorWorkflow;
 
-    public WebAppServer(CallHandler callHandler, InServiceLoggerProvider loggerProvider, ConfigurationHelper configurationHelper, GitHubEnvironmentHelper environmentHelper)
+    public WebAppServer(CallHandler callHandler, InServiceLoggerProvider loggerProvider, ConfigurationHelper configurationHelper, GitHubEnvironmentHelper environmentHelper, ConflictMonitorWorkflow conflictMonitorWorkflow)
     {
         _callHandler = callHandler;
         _callManager = new CallManager();
         _loggerProvider = loggerProvider;
         _configurationHelper = configurationHelper;
         _environmentHelper = environmentHelper;
+        _conflictMonitorWorkflow = conflictMonitorWorkflow;
     }
 
     private WebApplication BuildApp()
@@ -51,7 +54,7 @@ internal class WebAppServer
 
 
 
-
+        builder.Services.AddSingleton<ConflictMonitorWorkflow>(service => _conflictMonitorWorkflow);
         builder.Services.AddSingleton<CallManager>(service => _callManager);
         WebApplication app = builder.Build();
         return app;

@@ -4,6 +4,7 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Octokit;
 using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
 using YouRatta.Common.Proto;
@@ -34,6 +35,11 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
             try
             {
                 actionIntelligence.GithubActionEnvironment = _environment.Value.GetActionEnvironment();
+                GitHubClient ghClient = new GitHubClient(new Octokit.ProductHeaderValue("TestApp"));
+                actionIntelligence.GithubActionEnvironment.RateLimitCoreRemaining = ghClient.RateLimit.GetRateLimits().Result.Resources.Core.Remaining;
+
+
+
 
                 //do something
             }

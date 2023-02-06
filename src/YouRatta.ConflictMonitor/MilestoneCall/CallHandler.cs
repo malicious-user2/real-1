@@ -8,7 +8,9 @@ using Octokit;
 using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
 using YouRatta.Common.Proto;
+using YouRatta.ConflictMonitor.MilestoneData;
 using YouRatta.ConflictMonitor.Workflow;
+using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRatta.ConflictMonitor.MilestoneCall;
 
@@ -49,6 +51,15 @@ internal class CallHandler
             secrets.InstalledClientSecrets = new InstalledClientSecrets();
         }
         return secrets;
+    }
+
+    internal MilestoneActionIntelligence GetMilestoneActionIntelligence(YouRattaConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence)
+    {
+        MilestoneActionIntelligence actionIntelligence = new MilestoneActionIntelligence();
+        actionIntelligence.InitialSetup = new InitialSetupActionIntelligence();
+        actionIntelligence.InitialSetup.Condition = milestoneIntelligence.InitialSetup.Condition;
+
+        return actionIntelligence;
     }
 
     internal void AppendLog(string message)

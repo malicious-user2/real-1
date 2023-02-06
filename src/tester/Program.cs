@@ -23,7 +23,7 @@ ActionIntelligenceServiceClient client = new ActionIntelligenceServiceClient(cha
 
 System.Threading.Thread.Sleep(7000);
 var reply = await client.GetActionIntelligenceAsync(new Google.Protobuf.WellKnownTypes.Empty());
-Console.WriteLine(JsonFormatter.Default.Format(reply.ClientSecrets));
+Console.WriteLine(reply.MilestoneIntelligence.InitialSetup.Condition);
 
 static SocketsHttpHandler CreateHttpHandler(string socketPath)
 {

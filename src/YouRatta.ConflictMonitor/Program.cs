@@ -1,5 +1,6 @@
 using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
+using YouRatta.ConflictMonitor.MilestoneData;
 using YouRatta.ConflictMonitor.MilestoneCall;
 using YouRatta.ConflictMonitor.MilestoneInterface;
 using YouRatta.ConflictMonitor.Workflow;
@@ -9,5 +10,6 @@ InServiceLoggerProvider logProvider = new InServiceLoggerProvider(callHandler);
 ConfigurationHelper configurationHelper = new ConfigurationHelper(args);
 GitHubEnvironmentHelper environmentHelper = new GitHubEnvironmentHelper();
 ConflictMonitorWorkflow conflictMonitorWorkflow = new ConflictMonitorWorkflow();
-WebAppServer appServer = new WebAppServer(callHandler, logProvider, configurationHelper, environmentHelper, conflictMonitorWorkflow);
+MilestoneIntelligenceRegistry milestoneIntelligence = new MilestoneIntelligenceRegistry();
+WebAppServer appServer = new WebAppServer(callHandler, logProvider, configurationHelper, environmentHelper, conflictMonitorWorkflow, milestoneIntelligence);
 appServer.RunAsync().Wait();

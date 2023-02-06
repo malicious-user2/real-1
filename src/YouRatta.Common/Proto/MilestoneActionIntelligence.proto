@@ -17,7 +17,7 @@ message MilestoneActionIntelligence
     message InitialSetupActionIntelligence
     {
         MilestoneCondition condition = 1;
-        string access_token = 2;
+        int32 process_id = 2;
     }
     message GetVideoActionIntelligence
     {

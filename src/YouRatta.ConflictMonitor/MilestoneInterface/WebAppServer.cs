@@ -68,6 +68,7 @@ internal class WebAppServer
     {
         WebApplication webApp = BuildApp();
         webApp.MapGrpcService<ActionIntelligenceMessage>();
+        webApp.MapGrpcService<MilestoneActionIntelligenceMessage>();
 
         await webApp.StartAsync().ConfigureAwait(false);
 

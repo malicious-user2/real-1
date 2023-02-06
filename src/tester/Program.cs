@@ -3,7 +3,9 @@ using Google.Protobuf;
 using Grpc.Net.Client;
 using System.Net;
 using System.Net.Sockets;
+using YouRatta.Common.Proto;
 using static YouRatta.Common.Proto.ActionIntelligenceService;
+using static YouRatta.Common.Proto.MilestoneActionIntelligenceService;
 
 Console.WriteLine("Hello, World!");
 
@@ -20,10 +22,16 @@ using var channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOp
 });
 
 ActionIntelligenceServiceClient client = new ActionIntelligenceServiceClient(channel);
+MilestoneActionIntelligenceServiceClient client2 = new MilestoneActionIntelligenceServiceClient(channel);
 
 System.Threading.Thread.Sleep(7000);
 var reply = await client.GetActionIntelligenceAsync(new Google.Protobuf.WellKnownTypes.Empty());
 Console.WriteLine(reply.MilestoneIntelligence.InitialSetup.Condition);
+var initialSetup = new MilestoneActionIntelligence.Types.InitialSetupActionIntelligence();
+initialSetup.Condition = MilestoneActionIntelligence.Types.MilestoneCondition.MilestoneRunning;
+client2.UpdateInitialSetupActionIntelligence(initialSetup);
+var reply2 = await client.GetActionIntelligenceAsync(new Google.Protobuf.WellKnownTypes.Empty());
+Console.WriteLine(reply2.MilestoneIntelligence.InitialSetup.Condition);
 
 static SocketsHttpHandler CreateHttpHandler(string socketPath)
 {

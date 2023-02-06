@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+import "Proto/MilestoneActionIntelligence.proto";
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "YouRatta.Common.Proto";
+
+package conflict_monitor_message;
+
+service MilestoneActionIntelligenceService
+{
+    rpc UpdateInitialSetupActionIntelligence (MilestoneActionIntelligence.InitialSetupActionIntelligence) returns (google.protobuf.Empty);
+}

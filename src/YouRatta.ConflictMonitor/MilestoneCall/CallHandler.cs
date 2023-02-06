@@ -62,6 +62,12 @@ internal class CallHandler
         return actionIntelligence;
     }
 
+    internal void UpdateInitialSetupMilestoneIntelligence(YouRattaConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, InitialSetupActionIntelligence actionIntelligence)
+    {
+        milestoneIntelligence.InitialSetup.Condition = actionIntelligence.Condition;
+        milestoneIntelligence.InitialSetup.ProcessId = actionIntelligence.ProcessId;
+    }
+
     internal void AppendLog(string message)
     {
         lock (_logBuilder)

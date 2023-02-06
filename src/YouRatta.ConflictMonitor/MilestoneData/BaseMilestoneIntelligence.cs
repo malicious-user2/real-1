@@ -10,4 +10,6 @@ internal abstract class BaseMilestoneIntelligence
     }
 
     internal MilestoneCondition Condition { get; set; }
+
+    internal int ProcessId { get; set; }
 }

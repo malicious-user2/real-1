@@ -16,6 +16,7 @@ using YouRatta.ConflictMonitor.MilestoneInterface.WebHost;
 using YouRatta.ConflictMonitor.Workflow;
 using static YouRatta.ConflictMonitor.MilestoneCall.CallManager;
 using YouRatta.ConflictMonitor.MilestoneProcess;
+using YouRatta.ConflictMonitor.MilestoneInterface.ConfigurationValidation;
 
 namespace YouRatta.ConflictMonitor.MilestoneInterface;
 
@@ -70,6 +71,8 @@ internal class WebAppServer
         WebApplication webApp = BuildApp();
         webApp.MapGrpcService<ActionIntelligenceMessage>();
         webApp.MapGrpcService<MilestoneActionIntelligenceMessage>();
+
+        await webApp.ValidateConfigurationAsync().ConfigureAwait(false);
 
         await webApp.StartAsync().ConfigureAwait(false);
 

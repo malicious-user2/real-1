@@ -11,6 +11,12 @@ public class YouRattaConfiguration : BaseValidatableConfiguration
         MilestoneLifetime = new MilestoneLifetimeConfiguration();
     }
 
+    public void ValidateConfigurationMembers()
+    {
+        ActionCutOuts.Validate();
+        MilestoneLifetime.Validate();
+    }
+
     [Required]
     public ActionCutOutConfiguration ActionCutOuts { get; set; }
 

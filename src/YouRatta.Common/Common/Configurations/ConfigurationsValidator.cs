@@ -23,6 +23,13 @@ public class ConfigurationsValidator : IValidator
         foreach (IValidatableConfiguration validatableObject in _validatableObjects)
         {
             await Task.Run(() => validatableObject.Validate()).ConfigureAwait(false);
+            if (validatableObject is YouRattaConfiguration)
+            {
+                await Task.Run(() =>
+                {
+                    ((YouRattaConfiguration)validatableObject).ValidateConfigurationMembers();
+                }).ConfigureAwait(false);
+            }
         }
     }
 }

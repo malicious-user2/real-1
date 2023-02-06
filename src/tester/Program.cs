@@ -1,6 +1,7 @@
 // See https://aka.ms/new-console-template for more information
 using Google.Protobuf;
 using Grpc.Net.Client;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using YouRatta.Common.Proto;
@@ -29,9 +30,14 @@ var reply = await client.GetActionIntelligenceAsync(new Google.Protobuf.WellKnow
 Console.WriteLine(reply.MilestoneIntelligence.InitialSetup.Condition);
 var initialSetup = new MilestoneActionIntelligence.Types.InitialSetupActionIntelligence();
 initialSetup.Condition = MilestoneActionIntelligence.Types.MilestoneCondition.MilestoneRunning;
+initialSetup.StartTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+initialSetup.ProcessId = Process.GetCurrentProcess().Id;
+client2.UpdateInitialSetupActionIntelligence(initialSetup);
+System.Threading.Thread.Sleep(8000);
 client2.UpdateInitialSetupActionIntelligence(initialSetup);
 var reply2 = await client.GetActionIntelligenceAsync(new Google.Protobuf.WellKnownTypes.Empty());
 Console.WriteLine(reply2.MilestoneIntelligence.InitialSetup.Condition);
+Console.ReadLine();
 
 static SocketsHttpHandler CreateHttpHandler(string socketPath)
 {

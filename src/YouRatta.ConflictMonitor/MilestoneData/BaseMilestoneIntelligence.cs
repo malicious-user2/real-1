@@ -12,4 +12,8 @@ internal abstract class BaseMilestoneIntelligence
     internal MilestoneCondition Condition { get; set; }
 
     internal int ProcessId { get; set; }
+
+    internal long StartTime { get; set; }
+
+    internal long LastUpdate { get; set; }
 }

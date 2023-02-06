@@ -18,6 +18,7 @@ message MilestoneActionIntelligence
     {
         MilestoneCondition condition = 1;
         int32 process_id = 2;
+        int64 start_time = 3;
     }
     message GetVideoActionIntelligence
     {

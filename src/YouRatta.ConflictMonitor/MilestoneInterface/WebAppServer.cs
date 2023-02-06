@@ -15,6 +15,7 @@ using YouRatta.ConflictMonitor.MilestoneInterface.Services;
 using YouRatta.ConflictMonitor.MilestoneInterface.WebHost;
 using YouRatta.ConflictMonitor.Workflow;
 using static YouRatta.ConflictMonitor.MilestoneCall.CallManager;
+using YouRatta.ConflictMonitor.MilestoneProcess;
 
 namespace YouRatta.ConflictMonitor.MilestoneInterface;
 
@@ -72,17 +73,25 @@ internal class WebAppServer
 
         await webApp.StartAsync().ConfigureAwait(false);
 
-        while (true)
+        MilestoneLifetimeConfiguration? lifetimeConfig = webApp.Configuration.Get<MilestoneLifetimeConfiguration>();
+        if (lifetimeConfig == null) return;
+
+        using (MilestoneLifetimeManager lifetimeManager = new MilestoneLifetimeManager(lifetimeConfig, _milestoneIntelligence))
         {
-            _callManager.ActionReady.WaitOne();
-            while (!_callManager.ActionCallbacks.IsEmpty)
+            lifetimeManager.Start();
+            while (true)
             {
-                _callManager.ActionCallbacks.TryDequeue(out ConflictMonitorCall? call);
-                if (call != null)
+                _callManager.ActionReady.WaitOne();
+                while (!_callManager.ActionCallbacks.IsEmpty)
                 {
-                    call(_callHandler);
+                    _callManager.ActionCallbacks.TryDequeue(out ConflictMonitorCall? call);
+                    if (call != null)
+                    {
+                        call(_callHandler);
+                    }
                 }
             }
         }
+
     }
 }

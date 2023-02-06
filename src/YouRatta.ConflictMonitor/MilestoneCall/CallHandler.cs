@@ -66,6 +66,8 @@ internal class CallHandler
     {
         milestoneIntelligence.InitialSetup.Condition = actionIntelligence.Condition;
         milestoneIntelligence.InitialSetup.ProcessId = actionIntelligence.ProcessId;
+        milestoneIntelligence.InitialSetup.StartTime = actionIntelligence.StartTime;
+        milestoneIntelligence.InitialSetup.LastUpdate = DateTimeOffset.Now.ToUnixTimeSeconds();
     }
 
     internal void AppendLog(string message)

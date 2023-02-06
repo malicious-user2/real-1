@@ -5,6 +5,11 @@ namespace YouRatta.Common.Configurations;
 
 public class YouRattaConfiguration : BaseValidatableConfiguration
 {
+    public YouRattaConfiguration()
+    {
+        ActionCutOuts = new ActionCutOutConfiguration();
+    }
+
     [Required]
-    public bool ActionEnabled { get; set; }
+    public ActionCutOutConfiguration ActionCutOuts { get; set; }
 }

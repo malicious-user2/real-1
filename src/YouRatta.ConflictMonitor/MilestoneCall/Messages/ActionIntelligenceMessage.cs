@@ -4,7 +4,6 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Octokit;
 using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
 using YouRatta.Common.Proto;
@@ -37,15 +36,8 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
             ActionIntelligence actionIntelligence = new ActionIntelligence();
             try
             {
-                actionIntelligence.GithubActionEnvironment = _environment.Value.GetActionEnvironment();
-                GitHubClient ghClient = new GitHubClient(new Octokit.ProductHeaderValue("TestApp"));
-                ghClient.Credentials = new Credentials(_conflictMonitorWorkflow.GithubToken, AuthenticationType.Bearer);
-
-
-                actionIntelligence.GithubActionEnvironment.RateLimitCoreRemaining = ghClient.RateLimit.GetRateLimits().Result.Resources.Core.Remaining;
-
-
-
+                actionIntelligence.GithubActionEnvironment = callHandler.GetGithubActionEnvironment(_configuration.Value, _environment.Value, _conflictMonitorWorkflow);
+                actionIntelligence.ClientSecrets = callHandler.GetClientSecrets(_configuration.Value, _conflictMonitorWorkflow);
 
                 //do something
             }

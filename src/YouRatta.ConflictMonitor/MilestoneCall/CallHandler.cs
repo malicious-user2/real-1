@@ -1,18 +1,57 @@
+using System;
 using System.Globalization;
 using System.Text;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Configuration;
+using Octokit;
+using YouRatta.Common.Configurations;
+using YouRatta.Common.GitHub;
+using YouRatta.Common.Proto;
+using YouRatta.ConflictMonitor.Workflow;
 
 namespace YouRatta.ConflictMonitor.MilestoneCall;
 
-public class CallHandler
+internal class CallHandler
 {
     private readonly StringBuilder _logBuilder = new StringBuilder();
 
-    public CallHandler()
+    internal CallHandler()
     {
         _logBuilder = new StringBuilder();
     }
 
-    public void AppendLog(string message)
+    internal GitHubActionEnvironment GetGithubActionEnvironment(YouRattaConfiguration appConfig, GitHubEnvironment environment, ConflictMonitorWorkflow workflow)
+    {
+        GitHubActionEnvironment actionEnvironment = environment.GetActionEnvironment();
+        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations)
+        {
+            GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader);
+            ghClient.Credentials = new Credentials(workflow.GithubToken, AuthenticationType.Bearer);
+            ResourceRateLimit ghRateLimit = ghClient.RateLimit.GetRateLimits().Result.Resources;
+
+            actionEnvironment.RateLimitCoreRemaining = ghRateLimit.Core.Remaining;
+            actionEnvironment.RateLimitCoreLimit = ghRateLimit.Core.Limit;
+            actionEnvironment.RateLimitCoreReset = ghRateLimit.Core.Reset.ToUnixTimeSeconds();
+        }
+        return actionEnvironment;
+    }
+
+    internal ClientSecrets GetClientSecrets(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow)
+    {
+        ClientSecrets secrets = new ClientSecrets();
+        if (!appConfig.ActionCutOuts.DisableYouTubeClientSecretsDiscovery)
+        {
+            secrets = JsonParser.Default.Parse<ClientSecrets>(workflow.YouTubeClientSecrets);
+        }
+        else
+        {
+            secrets.InstalledClientSecrets = new InstalledClientSecrets();
+        }
+        return secrets;
+    }
+
+    internal void AppendLog(string message)
     {
         lock (_logBuilder)
         {
@@ -20,12 +59,12 @@ public class CallHandler
         }
     }
 
-    public string GetLogs()
+    internal string GetLogs()
     {
         return _logBuilder.ToString();
     }
 
-    public void ClearLogs()
+    internal void ClearLogs()
     {
         _logBuilder.Clear();
     }

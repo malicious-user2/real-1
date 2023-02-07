@@ -76,10 +76,7 @@ internal class WebAppServer
 
         await webApp.StartAsync().ConfigureAwait(false);
 
-        MilestoneLifetimeConfiguration? lifetimeConfig = webApp.Configuration.Get<MilestoneLifetimeConfiguration>();
-        if (lifetimeConfig == null) return;
-
-        using (MilestoneLifetimeManager lifetimeManager = new MilestoneLifetimeManager(lifetimeConfig, _milestoneIntelligence))
+        using (MilestoneLifetimeManager lifetimeManager = new MilestoneLifetimeManager(webApp, _milestoneIntelligence))
         {
             lifetimeManager.Start();
             while (true)

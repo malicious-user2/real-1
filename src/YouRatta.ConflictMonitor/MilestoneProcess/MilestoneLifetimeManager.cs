@@ -1,8 +1,13 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using YouRatta.Common.Configurations;
 using YouRatta.ConflictMonitor.MilestoneData;
 using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
@@ -11,15 +16,15 @@ namespace YouRatta.ConflictMonitor.MilestoneProcess;
 
 internal class MilestoneLifetimeManager : IDisposable
 {
-    private readonly MilestoneLifetimeConfiguration _configuration;
+    private readonly WebApplication _webApp;
     private readonly MilestoneIntelligenceRegistry _milestoneIntelligence;
     private readonly object _lock = new object();
     private bool _disposed;
     private readonly CancellationTokenSource _cancelTokenSource;
 
-    internal MilestoneLifetimeManager(MilestoneLifetimeConfiguration configuration, MilestoneIntelligenceRegistry milestoneIntelligence)
+    internal MilestoneLifetimeManager(WebApplication webApp, MilestoneIntelligenceRegistry milestoneIntelligence)
     {
-        _configuration = configuration;
+        _webApp = webApp;
         _milestoneIntelligence = milestoneIntelligence;
         _cancelTokenSource = new CancellationTokenSource();
     }
@@ -61,21 +66,27 @@ internal class MilestoneLifetimeManager : IDisposable
         {
             if (!_disposed)
             {
-                if (_milestoneIntelligence.InitialSetup.Condition == MilestoneCondition.MilestoneRunning &&
-                    _milestoneIntelligence.InitialSetup.LastUpdate != 0 &&
-                    _milestoneIntelligence.InitialSetup.StartTime != 0 &&
-                    _milestoneIntelligence.InitialSetup.ProcessId !=0)
+                IOptions<YouRattaConfiguration>? options = _webApp.Services.GetService<IOptions<YouRattaConfiguration>>();
+                MilestoneLifetimeConfiguration config = options.Value.MilestoneLifetime;
+                foreach (BaseMilestoneIntelligence milestoneIntelligence in _milestoneIntelligence.Milestones)
                 {
-                    long dwellTime = DateTimeOffset.Now.ToUnixTimeSeconds() - _milestoneIntelligence.InitialSetup.LastUpdate;
-                    long runTime = DateTimeOffset.Now.ToUnixTimeSeconds() - _milestoneIntelligence.InitialSetup.StartTime;
-                    if (dwellTime > _configuration.MaxUpdateDwellTime ||
-                        runTime > _configuration.MaxRunTime)
+                    if (milestoneIntelligence.Condition == MilestoneCondition.MilestoneRunning &&
+                    milestoneIntelligence.LastUpdate != 0 &&
+                    milestoneIntelligence.StartTime != 0 &&
+                    milestoneIntelligence.ProcessId != 0)
                     {
-                        Process milestoneProcess = Process.GetProcessById(_milestoneIntelligence.InitialSetup.ProcessId);
-                        if (milestoneProcess != null)
+
+                        long dwellTime = DateTimeOffset.Now.ToUnixTimeSeconds() - milestoneIntelligence.LastUpdate;
+                        long runTime = DateTimeOffset.Now.ToUnixTimeSeconds() - milestoneIntelligence.StartTime;
+                        if (dwellTime > config.MaxUpdateDwellTime ||
+                            runTime > config.MaxRunTime)
                         {
-                            milestoneProcess.Kill();
-                            _milestoneIntelligence.InitialSetup.Condition = MilestoneCondition.MilestoneFailed;
+                            Process milestoneProcess = Process.GetProcessById(milestoneIntelligence.ProcessId);
+                            if (milestoneProcess != null)
+                            {
+                                milestoneProcess.Kill();
+                                milestoneIntelligence.Condition = MilestoneCondition.MilestoneFailed;
+                            }
                         }
                     }
                 }

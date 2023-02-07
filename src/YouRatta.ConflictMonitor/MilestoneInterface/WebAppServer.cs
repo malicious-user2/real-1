@@ -78,20 +78,26 @@ internal class WebAppServer
 
         using (MilestoneLifetimeManager lifetimeManager = new MilestoneLifetimeManager(webApp, _milestoneIntelligence))
         {
-            lifetimeManager.Start();
             while (true)
             {
                 _callManager.ActionReady.WaitOne();
-                while (!_callManager.ActionCallbacks.IsEmpty)
+                if (_callManager.ActionStop.WaitOne(0))
                 {
-                    _callManager.ActionCallbacks.TryDequeue(out ConflictMonitorCall? call);
-                    if (call != null)
+                    await webApp.StopAsync().ConfigureAwait(false);
+                    break;
+                }
+                else
+                {
+                    while (!_callManager.ActionCallbacks.IsEmpty)
                     {
-                        call(_callHandler);
+                        _callManager.ActionCallbacks.TryDequeue(out ConflictMonitorCall? call);
+                        if (call != null)
+                        {
+                            call(_callHandler);
+                        }
                     }
                 }
             }
         }
-
     }
 }

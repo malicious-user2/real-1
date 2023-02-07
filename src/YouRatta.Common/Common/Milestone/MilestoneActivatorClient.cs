@@ -57,7 +57,9 @@ public abstract class MilestoneActivatorClient : IDisposable
         List<MethodInfo> clientMethods = milestoneClient
             .GetType()
             .GetMethods()
-            .Where(method => method.Name == $"Update{milestoneIntelligenceName}ActionIntelligence")
+            .Where(method => method
+            .GetParameters().Length == 4 && method
+            .Name == $"Update{milestoneIntelligenceName}ActionIntelligence")
             .ToList();
         foreach (MethodInfo clientMethod in clientMethods)
         {
@@ -75,7 +77,7 @@ public abstract class MilestoneActivatorClient : IDisposable
                 {
                     intelligenceClass.GetType().GetProperty("Condition")?.SetValue(intelligenceClass, status);
 
-                    clientMethod.Invoke(milestoneClient, new object[] { intelligenceClass });
+                    clientMethod.Invoke(milestoneClient, new object?[] { intelligenceClass, null, null, default(CancellationToken)});
 
                 }
             }

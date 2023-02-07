@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -16,10 +15,7 @@ public class ConfigurationsValidator : IValidator
 
     public async Task ValidateAsync()
     {
-        if (_validatableObjects == null)
-        {
-            return;
-        }
+        if (_validatableObjects == null) return;
         foreach (IValidatableConfiguration validatableObject in _validatableObjects)
         {
             await Task.Run(() => validatableObject.Validate()).ConfigureAwait(false);

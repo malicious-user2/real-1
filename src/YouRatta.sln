@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YouRatta.Common", "YouRatta
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tester", "tester\tester.csproj", "{601AFE9B-8F8B-4D5B-B7AE-0DA783D527BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouRatta.ConflictMonitor", "YouRatta.ConflictMonitor\YouRatta.ConflictMonitor.csproj", "{6BA65881-CC70-4113-B0A6-4CB6BC345C79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YouRatta.ConflictMonitor", "YouRatta.ConflictMonitor\YouRatta.ConflictMonitor.csproj", "{6BA65881-CC70-4113-B0A6-4CB6BC345C79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouRatta.InitialSetup", "YouRatta.InitialSetup\YouRatta.InitialSetup.csproj", "{55A8DC68-9D40-40FD-BAAC-EF1848D728D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,10 @@ Global
 		{6BA65881-CC70-4113-B0A6-4CB6BC345C79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BA65881-CC70-4113-B0A6-4CB6BC345C79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BA65881-CC70-4113-B0A6-4CB6BC345C79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55A8DC68-9D40-40FD-BAAC-EF1848D728D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55A8DC68-9D40-40FD-BAAC-EF1848D728D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55A8DC68-9D40-40FD-BAAC-EF1848D728D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55A8DC68-9D40-40FD-BAAC-EF1848D728D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -70,7 +70,6 @@ public class UnixDomainSocketConnectionFactory
         try
         {
             await socket.ConnectAsync(_endPoint, cancellationToken).ConfigureAwait(false);
-            test = "";
             return new NetworkStream(socket, true);
         }
         catch (Exception ex)

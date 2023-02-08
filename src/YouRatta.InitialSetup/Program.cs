@@ -9,6 +9,7 @@ using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 
 using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
 {
+    System.Threading.Thread.Sleep(1000);
     Console.Write(client.GetActionIntelligence());
     if (client.GetMilestoneActionIntelligence().Condition == MilestoneCondition.MilestoneBlocked) return;
     if (client.GetYouRattaConfiguration().ActionCutOuts.DisableInitialSetupMilestone) return;

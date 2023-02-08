@@ -43,7 +43,7 @@ internal class CallHandler
     internal ClientSecrets GetClientSecrets(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow)
     {
         ClientSecrets secrets = new ClientSecrets();
-        if (!appConfig.ActionCutOuts.DisableYouTubeClientSecretsDiscovery)
+        if (!appConfig.ActionCutOuts.DisableYouTubeClientSecretsDiscovery && workflow.YouTubeClientSecrets != null)
         {
             secrets = JsonParser.Default.Parse<ClientSecrets>(workflow.YouTubeClientSecrets);
         }
@@ -82,7 +82,7 @@ internal class CallHandler
 
     internal string GetGithubToken(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow)
     {
-        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations)
+        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GithubToken != null)
         {
             return workflow.GithubToken;
         }

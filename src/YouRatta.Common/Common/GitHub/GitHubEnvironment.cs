@@ -60,7 +60,7 @@ public class GitHubEnvironment
                 continue;
             }
             string propertyName = $"EnvGithub{environmentProp.Name.Replace("_", "")}";
-            PropertyInfo? targetProperty = actionEnvironmentType.GetProperty($"EnvGithub{propertyName}");
+            PropertyInfo? targetProperty = actionEnvironmentType.GetProperty(propertyName);
             if (targetProperty == null)
             {
                 continue;

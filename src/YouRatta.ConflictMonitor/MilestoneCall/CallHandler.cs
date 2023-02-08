@@ -4,6 +4,7 @@ using System.Text;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Octokit;
 using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
@@ -72,6 +73,20 @@ internal class CallHandler
             milestoneIntelligence.InitialSetup.StartTime = updateTime;
         }
         milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
+    }
+
+    internal string GetJsonConfig(YouRattaConfiguration appConfig)
+    {
+        return JsonConvert.SerializeObject(appConfig, Formatting.None);
+    }
+
+    internal string GetGithubToken(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow)
+    {
+        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations)
+        {
+            return workflow.GithubToken;
+        }
+        return string.Empty;
     }
 
     internal void AppendLog(string message)

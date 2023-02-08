@@ -1,24 +1,25 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using System.Threading;
-using Grpc.Net.Client;
-using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
-using Microsoft.AspNetCore.Http;
-using static System.Net.Mime.MediaTypeNames;
 using System.Net.Sockets;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Net.Client;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using YouRatta.Common.Configurations;
+using YouRatta.Common.Proto;
 using YouRatta.ConflictMonitor;
 using static YouRatta.Common.Proto.ActionIntelligenceService;
-using Google.Protobuf.WellKnownTypes;
-using YouRatta.Common.Proto;
-using System.Linq;
-using System.Collections.Generic;
-using System.Reflection;
-using Google.Protobuf;
+using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 using static YouRatta.Common.Proto.MilestoneActionIntelligenceService;
-using Grpc.Core;
 
 namespace YouRatta.Common.Milestone;
 
@@ -74,18 +75,18 @@ public abstract class MilestoneActivatorClient : IDisposable
     public virtual void SetMilestoneActionIntelligence(object milestoneActionIntelligence, System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
     {
         if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;
-        MilestoneActionIntelligenceServiceClient milestoneClient = new MilestoneActionIntelligenceServiceClient(_conflictMonitorChannel);
-        List<MethodInfo> clientMethods = milestoneClient
+        MilestoneActionIntelligenceServiceClient milestoneActionIntelligenceServiceClient = new MilestoneActionIntelligenceServiceClient(_conflictMonitorChannel);
+        List<MethodInfo> clientMethods = milestoneActionIntelligenceServiceClient
             .GetType()
             .GetMethods()
             .Where(method => method
-            .GetParameters().Length == 4 && method
-            .Name == $"Update{milestoneIntelligenceName}ActionIntelligence")
+                .GetParameters().Length == 4 && method
+                .Name == $"Update{milestoneIntelligenceName}ActionIntelligence")
             .ToList();
-        foreach (MethodInfo clientMethod in clientMethods)
+        if (clientMethods != null && clientMethods.Count > 0)
         {
-            clientMethod.Invoke(milestoneClient, new object?[] { milestoneActionIntelligence, null, null, default(CancellationToken) });
-            break;
+            MethodInfo clientMethod = clientMethods.First();
+            clientMethod.Invoke(milestoneActionIntelligenceServiceClient, new object?[] { milestoneActionIntelligence, null, null, default(CancellationToken) });
         }
     }
 
@@ -93,23 +94,43 @@ public abstract class MilestoneActivatorClient : IDisposable
     {
         object? milestoneActionIntelligence = null;
         if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return milestoneActionIntelligence;
-        ActionIntelligenceServiceClient client = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
-        ActionIntelligence initialIntelligence = client.GetActionIntelligence(new Empty());
-        List<PropertyInfo> initialIntelligenceProperties = initialIntelligence.MilestoneIntelligence
+        ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
+        ActionIntelligence actionIntelligence = actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
+        List<PropertyInfo> milestoneIntelligenceProperties = actionIntelligence.MilestoneIntelligence
             .GetType()
             .GetProperties()
             .Where(prop => prop.PropertyType == milestoneIntelligenceType)
             .ToList();
-        foreach (PropertyInfo initialIntelligenceProperty in initialIntelligenceProperties)
+        if (milestoneIntelligenceProperties != null && milestoneIntelligenceProperties.Count > 0)
         {
-            object? intelligenceClass = initialIntelligenceProperty.GetValue(initialIntelligence.MilestoneIntelligence);
-            if (intelligenceClass != null)
+            PropertyInfo milestoneIntelligenceProperty = milestoneIntelligenceProperties.First();
+            object? milestoneIntelligenceObject = milestoneIntelligenceProperty.GetValue(actionIntelligence.MilestoneIntelligence);
+            if (milestoneIntelligenceObject != null)
             {
-                milestoneActionIntelligence = intelligenceClass;
+                milestoneActionIntelligence = milestoneIntelligenceObject;
             }
-            break;
         }
         return milestoneActionIntelligence;
+    }
+
+    public ActionIntelligence GetActionIntelligence()
+    {
+        ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
+        return actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
+    }
+
+    public YouRattaConfiguration GetYouRattaConfiguration()
+    {
+        YouRattaConfiguration appConfig = new YouRattaConfiguration();
+        ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
+        string jsonConfig = actionIntelligenceServiceClient.GetActionIntelligence(new Empty()).JsonConfig;
+        using (MemoryStream jsonMemoryStream = new MemoryStream(Encoding.ASCII.GetBytes(jsonConfig)))
+        {
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
+                .AddJsonStream(jsonMemoryStream);
+            configurationBuilder.Build().Bind(appConfig);
+        }
+        return appConfig;
     }
 
     private static SocketsHttpHandler CreateHttpHandler(string socketPath)

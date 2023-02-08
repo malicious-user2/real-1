@@ -42,6 +42,8 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
                 actionIntelligence.GithubActionEnvironment = callHandler.GetGithubActionEnvironment(_configuration.Value, _environment.Value, _conflictMonitorWorkflow);
                 actionIntelligence.ClientSecrets = callHandler.GetClientSecrets(_configuration.Value, _conflictMonitorWorkflow);
                 actionIntelligence.MilestoneIntelligence = callHandler.GetMilestoneActionIntelligence(_configuration.Value, _milestoneIntelligence);
+                actionIntelligence.JsonConfig = callHandler.GetJsonConfig(_configuration.Value);
+                actionIntelligence.GithubToken = callHandler.GetGithubToken(_configuration.Value, _conflictMonitorWorkflow);
             }
             catch (Exception e)
             {

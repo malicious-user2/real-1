@@ -1,0 +1,11 @@
+{
+  "ActionCutOuts": {
+    "DisableConflictMonitorGitHubOperations": false,
+    "DisableYouTubeClientSecretsDiscovery": false,
+    "DisableInitialSetupMilestone": false
+  },
+  "MilestoneLifetime": {
+    "MaxUpdateDwellTime": 500,
+    "MaxRunTime": 500
+  }
+}

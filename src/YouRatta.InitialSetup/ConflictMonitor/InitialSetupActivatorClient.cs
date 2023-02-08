@@ -23,6 +23,11 @@ internal class InitialSetupActivatorClient : MilestoneActivatorClient
         return base.GetStatus(_milestoneType);
     }
 
+    public void SetMilestoneActionIntelligence(InitialSetupActionIntelligence initialSetupActionIntelligence)
+    {
+        base.SetMilestoneActionIntelligence(initialSetupActionIntelligence, _milestoneType, _milestoneName);
+    }
+
     public InitialSetupActionIntelligence GetMilestoneActionIntelligence()
     {
         InitialSetupActionIntelligence initialSetupActionIntelligence = new InitialSetupActionIntelligence();
@@ -32,10 +37,5 @@ internal class InitialSetupActivatorClient : MilestoneActivatorClient
             initialSetupActionIntelligence = (InitialSetupActionIntelligence)milestoneActionIntelligence;
         }
         return initialSetupActionIntelligence;
-    }
-
-    public void SetMilestoneActionIntelligence(InitialSetupActionIntelligence initialSetupActionIntelligence)
-    {
-        base.SetMilestoneActionIntelligence(initialSetupActionIntelligence, _milestoneType, _milestoneName);
     }
 }

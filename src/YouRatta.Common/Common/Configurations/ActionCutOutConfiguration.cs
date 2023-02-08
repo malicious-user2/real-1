@@ -10,4 +10,7 @@ public class ActionCutOutConfiguration : BaseValidatableConfiguration
 
     [Required]
     public bool DisableYouTubeClientSecretsDiscovery { get; set; }
+
+    [Required]
+    public bool DisableInitialSetupMilestone { get; set; }
 }

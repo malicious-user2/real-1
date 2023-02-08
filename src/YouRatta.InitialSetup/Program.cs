@@ -7,5 +7,7 @@ System.Console.WriteLine("Hello, World!");
 using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
 {
     client.SetStatus(YouRatta.Common.Proto.MilestoneActionIntelligence.Types.MilestoneCondition.MilestoneRunning);
-    client.GetStatus(typeof(InitialSetupActionIntelligence));
+    System.Console.WriteLine(client.GetStatus(typeof(InitialSetupActionIntelligence)));
+    System.Console.WriteLine(client.GetInitialSetupActionIntelligence());
 }
+System.Console.ReadLine();

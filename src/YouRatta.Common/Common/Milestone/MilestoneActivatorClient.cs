@@ -63,31 +63,21 @@ public abstract class MilestoneActivatorClient : IDisposable
             .ToList();
         foreach (MethodInfo clientMethod in clientMethods)
         {
-            ActionIntelligenceServiceClient actionClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
-            ActionIntelligence initialIntelligence = actionClient.GetActionIntelligence(new Empty());
-            List<PropertyInfo> initialIntelligenceProperties = initialIntelligence.MilestoneIntelligence
-                .GetType()
-                .GetProperties()
-                .Where(prop => prop.PropertyType == milestoneIntelligence)
-                .ToList();
-            foreach (PropertyInfo initialIntelligenceProperty in initialIntelligenceProperties)
+            object? intelligenceClass = GetMilestoneActionIntelligence(milestoneIntelligence);
+            if (intelligenceClass != null)
             {
-                object? intelligenceClass = initialIntelligenceProperty.GetValue(initialIntelligence.MilestoneIntelligence);
-                if (intelligenceClass != null)
-                {
-                    intelligenceClass.GetType().GetProperty("Condition")?.SetValue(intelligenceClass, status);
+                intelligenceClass.GetType().GetProperty("Condition")?.SetValue(intelligenceClass, status);
 
-                    clientMethod.Invoke(milestoneClient, new object?[] { intelligenceClass, null, null, default(CancellationToken)});
+                clientMethod.Invoke(milestoneClient, new object?[] { intelligenceClass, null, null, default(CancellationToken)});
 
-                }
             }
         }
     }
 
-    public MilestoneCondition GetStatus(System.Type milestoneIntelligence)
+    public object? GetMilestoneActionIntelligence(System.Type milestoneIntelligence)
     {
-        MilestoneCondition status = new MilestoneCondition();
-        if (!CheckValidMilestoneType(milestoneIntelligence)) return status;
+        object? milestoneActionIntelligence = null;
+        if (!CheckValidMilestoneType(milestoneIntelligence)) return milestoneActionIntelligence;
         ActionIntelligenceServiceClient client = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
         ActionIntelligence initialIntelligence = client.GetActionIntelligence(new Empty());
         List<PropertyInfo> initialIntelligenceProperties = initialIntelligence.MilestoneIntelligence
@@ -100,11 +90,27 @@ public abstract class MilestoneActivatorClient : IDisposable
             object? intelligenceClass = initialIntelligenceProperty.GetValue(initialIntelligence.MilestoneIntelligence);
             if (intelligenceClass != null)
             {
-                status = (MilestoneCondition)intelligenceClass.GetType().GetProperty("Condition").GetValue(intelligenceClass, null);
+                milestoneActionIntelligence = intelligenceClass;
             }
         }
-        return status;
+        return milestoneActionIntelligence;
+    }
 
+    public MilestoneCondition GetStatus(System.Type milestoneIntelligence)
+    {
+        object? milestoneActionIntelligence = GetMilestoneActionIntelligence(milestoneIntelligence);
+        MilestoneCondition status = new MilestoneCondition();
+        if (milestoneActionIntelligence != null)
+        {
+            PropertyInfo? conditionProperty = milestoneActionIntelligence.GetType().GetProperty("Condition");
+            object? conditionValue = conditionProperty?.GetValue(milestoneActionIntelligence, null);
+            if (conditionValue != null)
+            {
+                status = (MilestoneCondition)conditionValue;
+            }
+            
+        }
+        return status;
     }
 
     private static SocketsHttpHandler CreateHttpHandler(string socketPath)

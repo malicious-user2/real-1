@@ -17,4 +17,15 @@ internal class InitialSetupActivatorClient : MilestoneActivatorClient
     {
         base.SetStatus(status, _milestoneType, _milestoneName);
     }
+
+    public InitialSetupActionIntelligence GetInitialSetupActionIntelligence()
+    {
+        InitialSetupActionIntelligence initialSetupActionIntelligence = new InitialSetupActionIntelligence();
+        object? milestoneActionIntelligence = base.GetMilestoneActionIntelligence(_milestoneType);
+        if (milestoneActionIntelligence != null)
+        {
+            initialSetupActionIntelligence = (InitialSetupActionIntelligence)milestoneActionIntelligence;
+        }
+        return initialSetupActionIntelligence;
+    }
 }

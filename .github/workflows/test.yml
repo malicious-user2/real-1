@@ -43,5 +43,5 @@ jobs:
         ACTION_TOKEN : ${{ secrets.GITHUB_TOKEN }}
     - name: Test2 (I:Debug T:Debug R:false)
       run: dotnet run --verbosity normal --project src/YouRatta.InitialSetup/YouRatta.InitialSetup.csproj --no-build src/YouRatta.InitialSetup/Debug/net7.0/YouRatta.InitialSetup.dll
-    - name: ls
-      run: ls
+    - name: env
+      run: env

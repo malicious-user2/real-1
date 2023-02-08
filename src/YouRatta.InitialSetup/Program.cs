@@ -10,7 +10,6 @@ using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
 {
     System.Threading.Thread.Sleep(1000);
-    Console.Write(client.GetActionIntelligence());
     if (client.GetMilestoneActionIntelligence().Condition == MilestoneCondition.MilestoneBlocked) return;
     if (client.GetYouRattaConfiguration().ActionCutOuts.DisableInitialSetupMilestone) return;
 
@@ -26,9 +25,9 @@ using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
     ApiConnection conn3 = new ApiConnection(conn2);
     RepositorySecretsClient cli = new RepositorySecretsClient(conn3);
 
-    Console.WriteLine(intel.GithubActionEnvironment.EnvGithubRepositoryOwner);
+    Console.WriteLine(intel.GithubActionEnvironment.EnvGithubActor);
     Console.WriteLine(intel.GithubActionEnvironment.EnvGithubRepository);
-    cli.Delete(intel.GithubActionEnvironment.EnvGithubRepositoryOwner, intel.GithubActionEnvironment.EnvGithubRepository, "DELETEME");
+    cli.Delete(intel.GithubActionEnvironment.EnvGithubActor, intel.GithubActionEnvironment.EnvGithubRepository, "DELETEME");
     System.Console.WriteLine(client.GetYouRattaConfiguration().MilestoneLifetime.MaxRunTime);
     InitialSetupActionIntelligence milestoneActionIntelligence = new InitialSetupActionIntelligence();
     milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;

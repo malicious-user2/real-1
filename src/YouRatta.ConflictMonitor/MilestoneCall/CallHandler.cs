@@ -4,6 +4,7 @@ using System.Text;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Octokit;
 using YouRatta.Common.Configurations;
@@ -40,12 +41,19 @@ internal class CallHandler
         return actionEnvironment;
     }
 
-    internal ClientSecrets GetClientSecrets(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow)
+    internal ClientSecrets GetClientSecrets(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow, ILogger logger)
     {
         ClientSecrets secrets = new ClientSecrets();
         if (!appConfig.ActionCutOuts.DisableYouTubeClientSecretsDiscovery && workflow.YouTubeClientSecrets != null)
         {
-            secrets = JsonParser.Default.Parse<ClientSecrets>(workflow.YouTubeClientSecrets);
+            try
+            {
+                secrets = JsonParser.Default.Parse<ClientSecrets>(workflow.YouTubeClientSecrets);
+            }
+            catch (InvalidJsonException e)
+            {
+                logger.LogError($"InvalidJson on GetClientSecrets: {e.Message}");
+            }
         }
         else
         {

@@ -30,7 +30,6 @@ var reply = await client.GetActionIntelligenceAsync(new Google.Protobuf.WellKnow
 Console.WriteLine(reply.MilestoneIntelligence.InitialSetup.Condition);
 var initialSetup = new MilestoneActionIntelligence.Types.InitialSetupActionIntelligence();
 initialSetup.Condition = MilestoneActionIntelligence.Types.MilestoneCondition.MilestoneRunning;
-initialSetup.StartTime = DateTimeOffset.Now.ToUnixTimeSeconds();
 initialSetup.ProcessId = Process.GetCurrentProcess().Id;
 client2.UpdateInitialSetupActionIntelligence(initialSetup);
 System.Threading.Thread.Sleep(8000);

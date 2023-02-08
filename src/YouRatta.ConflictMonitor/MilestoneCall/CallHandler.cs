@@ -64,10 +64,14 @@ internal class CallHandler
 
     internal void UpdateInitialSetupMilestoneIntelligence(YouRattaConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, InitialSetupActionIntelligence actionIntelligence)
     {
+        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
         milestoneIntelligence.InitialSetup.Condition = actionIntelligence.Condition;
         milestoneIntelligence.InitialSetup.ProcessId = actionIntelligence.ProcessId;
-        milestoneIntelligence.InitialSetup.StartTime = actionIntelligence.StartTime;
-        milestoneIntelligence.InitialSetup.LastUpdate = DateTimeOffset.Now.ToUnixTimeSeconds();
+        if (milestoneIntelligence.InitialSetup.StartTime == 0)
+        {
+            milestoneIntelligence.InitialSetup.StartTime = updateTime;
+        }
+        milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
     }
 
     internal void AppendLog(string message)

@@ -34,9 +34,9 @@ jobs:
     - name: Build Test2
       run: dotnet build src/YouRatta.ConflictMonitor/ --no-restore
     - name: Restore dependencies3
-      run: dotnet restore src/tester/
+      run: dotnet restore src/YouRatta.InitialSetup/
     - name: Build Test3
-      run: dotnet build src/tester/ --no-restore
+      run: dotnet build src/YouRatta.InitialSetup/ --no-restore
     - name: Test (I:Debug T:Debug R:false)
       run: dotnet run --verbosity normal --project src/YouRatta.ConflictMonitor/YouRatta.ConflictMonitor.csproj --no-build src/YouRatta.ConflictMonitor/Debug/net7.0/YouRatta.ConflictMonitor.dll &
       env:

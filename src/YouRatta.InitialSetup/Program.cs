@@ -27,7 +27,7 @@ using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
 
     Console.WriteLine(intel.GithubActionEnvironment.EnvGithubActor);
     Console.WriteLine(intel.GithubActionEnvironment.EnvGithubRepository);
-    cli.Delete(intel.GithubActionEnvironment.EnvGithubActor, intel.GithubActionEnvironment.EnvGithubRepository, "DELETEME");
+    cli.Delete(intel.GithubActionEnvironment.EnvGithubActor, intel.GithubActionEnvironment.EnvGithubRepository, "DELETEME2");
     System.Console.WriteLine(client.GetYouRattaConfiguration().MilestoneLifetime.MaxRunTime);
     InitialSetupActionIntelligence milestoneActionIntelligence = new InitialSetupActionIntelligence();
     milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;

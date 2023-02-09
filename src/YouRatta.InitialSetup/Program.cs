@@ -23,7 +23,7 @@ using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
     ghClient.Credentials = new Credentials(intel.GitHubActionEnvironment.GitHubToken, AuthenticationType.Bearer);
 
     Connection conn2 = new Connection(GitHubConstants.ProductHeader);
-    conn2.Credentials = new Credentials(intel.GitHubActionEnvironment.GitHubToken, AuthenticationType.Bearer);
+    conn2.Credentials = new Credentials(intel.GitHubActionEnvironment.ApiToken, AuthenticationType.Bearer);
 
     ApiConnection conn3 = new ApiConnection(conn2);
     RepositorySecretsClient cli = new RepositorySecretsClient(conn3);

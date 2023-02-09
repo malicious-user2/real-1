@@ -28,7 +28,7 @@ using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
 
     Console.WriteLine(intel.GithubActionEnvironment.EnvGithubRepositoryOwner);
     Console.WriteLine(intel.GithubActionEnvironment.EnvGithubRepository);
-    cli.Delete(intel.GithubActionEnvironment.EnvGithubRepositoryOwner, intel.GithubActionEnvironment.EnvGithubRepository, "DELETEME").Wait();
+    cli.Delete(intel.GithubActionEnvironment.EnvGithubRepositoryOwner, intel.GithubActionEnvironment.EnvGithubRepository.Split("/")[1], "DELETEME").Wait();
 
 
     System.Console.WriteLine(client.GetYouRattaConfiguration().MilestoneLifetime.MaxRunTime);

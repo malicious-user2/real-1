@@ -28,7 +28,7 @@ internal class CallHandler
     internal GitHubActionEnvironment GetGithubActionEnvironment(YouRattaConfiguration appConfig, GitHubEnvironment environment, ConflictMonitorWorkflow workflow)
     {
         GitHubActionEnvironment actionEnvironment = environment.GetActionEnvironment();
-        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations)
+        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GithubToken != null)
         {
             GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader);
             ghClient.Credentials = new Credentials(workflow.GithubToken, AuthenticationType.Bearer);
@@ -37,6 +37,7 @@ internal class CallHandler
             actionEnvironment.RateLimitCoreRemaining = ghRateLimit.Core.Remaining;
             actionEnvironment.RateLimitCoreLimit = ghRateLimit.Core.Limit;
             actionEnvironment.RateLimitCoreReset = ghRateLimit.Core.Reset.ToUnixTimeSeconds();
+            actionEnvironment.GithubToken = workflow.GithubToken;
         }
         return actionEnvironment;
     }
@@ -86,15 +87,6 @@ internal class CallHandler
     internal string GetJsonConfig(YouRattaConfiguration appConfig)
     {
         return JsonConvert.SerializeObject(appConfig, Formatting.None);
-    }
-
-    internal string GetGithubToken(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow)
-    {
-        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GithubToken != null)
-        {
-            return workflow.GithubToken;
-        }
-        return string.Empty;
     }
 
     internal void AppendLog(string message)

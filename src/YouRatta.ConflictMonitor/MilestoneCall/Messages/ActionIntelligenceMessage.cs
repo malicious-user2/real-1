@@ -43,7 +43,6 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
                 actionIntelligence.ClientSecrets = callHandler.GetClientSecrets(_configuration.Value, _conflictMonitorWorkflow, _logger);
                 actionIntelligence.MilestoneIntelligence = callHandler.GetMilestoneActionIntelligence(_configuration.Value, _milestoneIntelligence);
                 actionIntelligence.JsonConfig = callHandler.GetJsonConfig(_configuration.Value);
-                actionIntelligence.GithubToken = callHandler.GetGithubToken(_configuration.Value, _conflictMonitorWorkflow);
             }
             catch (Exception e)
             {

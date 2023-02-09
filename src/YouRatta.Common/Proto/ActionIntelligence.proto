@@ -14,5 +14,4 @@ message ActionIntelligence
     ClientSecrets client_secrets = 2;
     GitHubActionEnvironment github_action_environment = 3;
     string json_config = 4;
-    string github_token = 5;
 }

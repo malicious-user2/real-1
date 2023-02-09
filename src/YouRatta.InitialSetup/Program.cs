@@ -14,6 +14,8 @@ using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
     if (client.GetYouRattaConfiguration().ActionCutOuts.DisableInitialSetupMilestone) return;
 
 
+    Console.WriteLine(client.GetActionIntelligence());
+
     ActionIntelligence intel = client.GetActionIntelligence();
 
 

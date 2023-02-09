@@ -26,6 +26,8 @@ using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
     ApiConnection conn3 = new ApiConnection(conn2);
     RepositorySecretsClient cli = new RepositorySecretsClient(conn3);
 
+    Console.WriteLine(intel.GithubActionEnvironment.EnvGithubRepositoryOwner);
+    Console.WriteLine(intel.GithubActionEnvironment.EnvGithubRepository);
     cli.Delete(intel.GithubActionEnvironment.EnvGithubRepositoryOwner, intel.GithubActionEnvironment.EnvGithubRepository, "DELETEME").Wait();
 
 

@@ -41,7 +41,8 @@ message GitHubActionEnvironment
     string Env_GitHub_Workflow_Sha = 33;
     string Env_GitHub_Workspace = 34;
     string GitHub_Token = 35;
-    int32 Rate_Limit_Core_Limit = 36;
-    int32 Rate_Limit_Core_Remaining = 37;
-    int64 Rate_Limit_Core_Reset = 38;
+    string Api_Token = 36;
+    int32 Rate_Limit_Core_Limit = 37;
+    int32 Rate_Limit_Core_Remaining = 38;
+    int64 Rate_Limit_Core_Reset = 39;
 }

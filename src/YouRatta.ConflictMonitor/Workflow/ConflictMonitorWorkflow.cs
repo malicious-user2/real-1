@@ -6,6 +6,7 @@ namespace YouRatta.ConflictMonitor.Workflow;
 internal class ConflictMonitorWorkflow
 {
     private readonly string _actionToken;
+    private readonly string _apiToken;
     private readonly string _clientSecrets;
 
 #pragma warning disable CS8601
@@ -14,6 +15,8 @@ internal class ConflictMonitorWorkflow
     {
         _actionToken = Environment
             .GetEnvironmentVariable(GitHubConstants.ActionTokenVariable);
+        _apiToken = Environment
+            .GetEnvironmentVariable(GitHubConstants.ApiTokenVariable);
         _clientSecrets = Environment
             .GetEnvironmentVariable(GitHubConstants.ClientSecretsVariable);
     }
@@ -21,6 +24,8 @@ internal class ConflictMonitorWorkflow
 #pragma warning restore CS8618
 
     public string GitHubToken => _actionToken;
+
+    public string ApiToken => _apiToken;
 
     public string YouTubeClientSecrets => _clientSecrets;
 }

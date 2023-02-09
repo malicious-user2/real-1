@@ -12,4 +12,6 @@ public static class GitHubConstants
     public static string ClientSecretsVariable = "CLIENT_SECRETS";
 
     public static string ActionTokenVariable = "ACTION_TOKEN";
+
+    public static string ApiTokenVariable = "API_TOKEN";
 }

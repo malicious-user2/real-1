@@ -28,7 +28,7 @@ internal class CallHandler
     internal GitHubActionEnvironment GetGithubActionEnvironment(YouRattaConfiguration appConfig, GitHubEnvironment environment, ConflictMonitorWorkflow workflow)
     {
         GitHubActionEnvironment actionEnvironment = environment.GetActionEnvironment();
-        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GitHubToken != null)
+        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GitHubToken != null && workflow.ApiToken != null)
         {
             GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader);
             ghClient.Credentials = new Credentials(workflow.GitHubToken, AuthenticationType.Bearer);
@@ -38,6 +38,7 @@ internal class CallHandler
             actionEnvironment.RateLimitCoreLimit = ghRateLimit.Core.Limit;
             actionEnvironment.RateLimitCoreReset = ghRateLimit.Core.Reset.ToUnixTimeSeconds();
             actionEnvironment.GitHubToken = workflow.GitHubToken;
+            actionEnvironment.ApiToken = workflow.ApiToken;
         }
         return actionEnvironment;
     }

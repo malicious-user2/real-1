@@ -7,6 +7,8 @@ public static class GitHubConstants
 {
     public static readonly string ProductHeaderName = "YouRatta";
 
+    public static TimeSpan RequestTimeout = TimeSpan.FromMilliseconds(1000 * 30);
+
     public static ProductHeaderValue ProductHeader => new ProductHeaderValue(ProductHeaderName);
 
     public static string ClientSecretsVariable = "CLIENT_SECRETS";

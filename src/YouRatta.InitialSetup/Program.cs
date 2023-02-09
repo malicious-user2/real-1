@@ -19,18 +19,7 @@ using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
     ActionIntelligence intel = client.GetActionIntelligence();
 
 
-    GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader);
-    ghClient.Credentials = new Credentials(intel.GitHubActionEnvironment.GitHubToken, AuthenticationType.Bearer);
-
-    Connection conn2 = new Connection(GitHubConstants.ProductHeader);
-    conn2.Credentials = new Credentials(intel.GitHubActionEnvironment.ApiToken, AuthenticationType.Bearer);
-
-    ApiConnection conn3 = new ApiConnection(conn2);
-    RepositorySecretsClient cli = new RepositorySecretsClient(conn3);
-
-    Console.WriteLine(intel.GitHubActionEnvironment.EnvGitHubRepositoryOwner);
-    Console.WriteLine(intel.GitHubActionEnvironment.EnvGitHubRepository);
-    cli.Delete(intel.GitHubActionEnvironment.EnvGitHubRepositoryOwner, intel.GitHubActionEnvironment.EnvGitHubRepository.Split("/")[1], "DELETEME").Wait();
+    GitHubAPIClient.DeleteSecret(intel.GitHubActionEnvironment);
 
 
     System.Console.WriteLine(client.GetYouRattaConfiguration().MilestoneLifetime.MaxRunTime);

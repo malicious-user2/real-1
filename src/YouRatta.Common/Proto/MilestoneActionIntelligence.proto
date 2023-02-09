@@ -16,15 +16,15 @@ message MilestoneActionIntelligence
     }
     message InitialSetupActionIntelligence
     {
-        MilestoneCondition condition = 1;
-        int32 process_id = 2;
+        MilestoneCondition Condition = 1;
+        int32 Process_Id = 2;
     }
     message GetVideoActionIntelligence
     {
-        MilestoneCondition condition = 1;
-        string access_token = 2;
+        MilestoneCondition Condition = 1;
+        string Access_Token = 2;
     }
     reserved 1;
-    optional InitialSetupActionIntelligence initial_setup = 2;
-    optional GetVideoActionIntelligence get_video = 3;
+    optional InitialSetupActionIntelligence Initial_Setup = 2;
+    optional GetVideoActionIntelligence Get_Video = 3;
 }

@@ -28,16 +28,16 @@ internal class CallHandler
     internal GitHubActionEnvironment GetGithubActionEnvironment(YouRattaConfiguration appConfig, GitHubEnvironment environment, ConflictMonitorWorkflow workflow)
     {
         GitHubActionEnvironment actionEnvironment = environment.GetActionEnvironment();
-        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GithubToken != null)
+        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GitHubToken != null)
         {
             GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader);
-            ghClient.Credentials = new Credentials(workflow.GithubToken, AuthenticationType.Bearer);
+            ghClient.Credentials = new Credentials(workflow.GitHubToken, AuthenticationType.Bearer);
             ResourceRateLimit ghRateLimit = ghClient.RateLimit.GetRateLimits().Result.Resources;
 
             actionEnvironment.RateLimitCoreRemaining = ghRateLimit.Core.Remaining;
             actionEnvironment.RateLimitCoreLimit = ghRateLimit.Core.Limit;
             actionEnvironment.RateLimitCoreReset = ghRateLimit.Core.Reset.ToUnixTimeSeconds();
-            actionEnvironment.GithubToken = workflow.GithubToken;
+            actionEnvironment.GitHubToken = workflow.GitHubToken;
         }
         return actionEnvironment;
     }
@@ -84,7 +84,7 @@ internal class CallHandler
         milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
     }
 
-    internal string GetJsonConfig(YouRattaConfiguration appConfig)
+    internal string GetConfigJson(YouRattaConfiguration appConfig)
     {
         return JsonConvert.SerializeObject(appConfig, Formatting.None);
     }

@@ -39,10 +39,10 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
             ActionIntelligence actionIntelligence = new ActionIntelligence();
             try
             {
-                actionIntelligence.GithubActionEnvironment = callHandler.GetGithubActionEnvironment(_configuration.Value, _environment.Value, _conflictMonitorWorkflow);
+                actionIntelligence.GitHubActionEnvironment = callHandler.GetGithubActionEnvironment(_configuration.Value, _environment.Value, _conflictMonitorWorkflow);
                 actionIntelligence.ClientSecrets = callHandler.GetClientSecrets(_configuration.Value, _conflictMonitorWorkflow, _logger);
                 actionIntelligence.MilestoneIntelligence = callHandler.GetMilestoneActionIntelligence(_configuration.Value, _milestoneIntelligence);
-                actionIntelligence.JsonConfig = callHandler.GetJsonConfig(_configuration.Value);
+                actionIntelligence.ConfigJson = callHandler.GetConfigJson(_configuration.Value);
             }
             catch (Exception e)
             {

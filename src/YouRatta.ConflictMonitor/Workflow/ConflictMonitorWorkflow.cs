@@ -20,7 +20,7 @@ internal class ConflictMonitorWorkflow
 #pragma warning restore CS8601
 #pragma warning restore CS8618
 
-    public string GithubToken => _actionToken;
+    public string GitHubToken => _actionToken;
 
     public string YouTubeClientSecrets => _clientSecrets;
 }

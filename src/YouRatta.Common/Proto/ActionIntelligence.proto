@@ -10,8 +10,8 @@ package conflict_monitor_message;
 
 message ActionIntelligence
 {
-    MilestoneActionIntelligence milestone_intelligence = 1;
-    ClientSecrets client_secrets = 2;
-    GitHubActionEnvironment github_action_environment = 3;
-    string json_config = 4;
+    MilestoneActionIntelligence Milestone_Intelligence = 1;
+    ClientSecrets Client_Secrets = 2;
+    GitHubActionEnvironment GitHub_Action_Environment = 3;
+    string Config_Json = 4;
 }

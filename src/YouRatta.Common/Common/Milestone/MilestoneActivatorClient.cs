@@ -123,8 +123,8 @@ public abstract class MilestoneActivatorClient : IDisposable
     {
         YouRattaConfiguration appConfig = new YouRattaConfiguration();
         ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
-        string jsonConfig = actionIntelligenceServiceClient.GetActionIntelligence(new Empty()).JsonConfig;
-        using (MemoryStream jsonMemoryStream = new MemoryStream(Encoding.ASCII.GetBytes(jsonConfig)))
+        string configJson = actionIntelligenceServiceClient.GetActionIntelligence(new Empty()).ConfigJson;
+        using (MemoryStream jsonMemoryStream = new MemoryStream(Encoding.ASCII.GetBytes(configJson)))
         {
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder()
                 .AddJsonStream(jsonMemoryStream);

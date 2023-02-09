@@ -18,17 +18,17 @@ using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
 
 
     GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader);
-    ghClient.Credentials = new Credentials(intel.GithubActionEnvironment.GithubToken, AuthenticationType.Bearer);
+    ghClient.Credentials = new Credentials(intel.GitHubActionEnvironment.GitHubToken, AuthenticationType.Bearer);
 
     Connection conn2 = new Connection(GitHubConstants.ProductHeader);
-    conn2.Credentials = new Credentials(intel.GithubActionEnvironment.GithubToken, AuthenticationType.Bearer);
+    conn2.Credentials = new Credentials(intel.GitHubActionEnvironment.GitHubToken, AuthenticationType.Bearer);
 
     ApiConnection conn3 = new ApiConnection(conn2);
     RepositorySecretsClient cli = new RepositorySecretsClient(conn3);
 
-    Console.WriteLine(intel.GithubActionEnvironment.EnvGithubRepositoryOwner);
-    Console.WriteLine(intel.GithubActionEnvironment.EnvGithubRepository);
-    cli.Delete(intel.GithubActionEnvironment.EnvGithubRepositoryOwner, intel.GithubActionEnvironment.EnvGithubRepository.Split("/")[1], "DELETEME").Wait();
+    Console.WriteLine(intel.GitHubActionEnvironment.EnvGitHubRepositoryOwner);
+    Console.WriteLine(intel.GitHubActionEnvironment.EnvGitHubRepository);
+    cli.Delete(intel.GitHubActionEnvironment.EnvGitHubRepositoryOwner, intel.GitHubActionEnvironment.EnvGitHubRepository.Split("/")[1], "DELETEME").Wait();
 
 
     System.Console.WriteLine(client.GetYouRattaConfiguration().MilestoneLifetime.MaxRunTime);

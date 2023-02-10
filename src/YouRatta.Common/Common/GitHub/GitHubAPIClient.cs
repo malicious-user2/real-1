@@ -24,7 +24,7 @@ public static class GitHubAPIClient
                 {
                     Credentials = new Credentials(environment.ApiToken, AuthenticationType.Bearer)
                 };
-                ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
+                ghClient.SetRequestTimeout(TimeSpan.FromMilliseconds(1));
                 IApiConnection apiCon = new ApiConnection(ghClient.Connection);
 
                 var sec = new RepositorySecretsClient(apiCon);

@@ -25,6 +25,11 @@ public static class GitHubAPIClient
                     Credentials = new Credentials(environment.ApiToken, AuthenticationType.Bearer)
                 };
                 ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
+                IApiConnection apiCon = new ApiConnection(ghClient.Connection);
+
+                var sec = new RepositorySecretsClient(apiCon);
+                sec.Delete("cantest-nospam", "real", "DELETE").Wait();
+                break;
             }
             catch (Exception ex) when (retryCount < 2)
             {

@@ -34,7 +34,6 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
         _callManager.ActionCallbacks.Enqueue((CallHandler callHandler) =>
         {
-            ActionIntelligence actionIntelligence = new ActionIntelligence();
             try
             {
                 callHandler.UpdateInitialSetupMilestoneIntelligence(_configuration.Value, _milestoneIntelligence, request);

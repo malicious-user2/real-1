@@ -20,6 +20,7 @@ using YouRatta.ConflictMonitor;
 using static YouRatta.Common.Proto.ActionIntelligenceService;
 using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 using static YouRatta.Common.Proto.MilestoneActionIntelligenceService;
+using static YouRatta.Common.Proto.MilestoneLogService;
 
 namespace YouRatta.Common.Milestone;
 
@@ -45,11 +46,11 @@ public abstract class MilestoneActivatorClient : IDisposable
 
     public virtual void LogMessage(string message, string milestone)
     {
-        ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
-        LogMessage logMessage = new LogMessage();
-        logMessage.Message = message;
-        logMessage.Milestone = milestone;
-        actionIntelligenceServiceClient.WriteLogMessage(logMessage);
+        MilestoneLogServiceClient milestoneLogServiceClient = new MilestoneLogServiceClient(_conflictMonitorChannel);
+        MilestoneLog milestoneLog = new MilestoneLog();
+        milestoneLog.Message = message;
+        milestoneLog.Milestone = milestone;
+        milestoneLogServiceClient.WriteLogMessage(milestoneLog);
     }
 
     public virtual void SetStatus(MilestoneCondition milestoneCondition, System.Type milestoneIntelligenceType, string milestoneIntelligenceName)

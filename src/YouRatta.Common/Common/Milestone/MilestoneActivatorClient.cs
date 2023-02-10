@@ -43,6 +43,15 @@ public abstract class MilestoneActivatorClient : IDisposable
         return true;
     }
 
+    public virtual void LogMessage(string message, string milestone)
+    {
+        ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
+        LogMessage logMessage = new LogMessage();
+        logMessage.Message = message;
+        logMessage.Milestone = milestone;
+        actionIntelligenceServiceClient.WriteLogMessage(logMessage);
+    }
+
     public virtual void SetStatus(MilestoneCondition milestoneCondition, System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
     {
         if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;

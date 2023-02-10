@@ -13,7 +13,7 @@ namespace YouRatta.Common.GitHub;
 public static class GitHubAPIClient
 {
 
-    public static void DeleteSecret(GitHubActionEnvironment environment)
+    public static void DeleteSecret(GitHubActionEnvironment environment, Action<string> logger)
     {
         int retryCount = 0;
         while (retryCount < 3)
@@ -24,21 +24,24 @@ public static class GitHubAPIClient
                 {
                     Credentials = new Credentials(environment.ApiToken, AuthenticationType.Bearer)
                 };
-                ghClient.SetRequestTimeout(TimeSpan.FromMilliseconds(1));
+                ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
                 IApiConnection apiCon = new ApiConnection(ghClient.Connection);
 
                 var sec = new RepositorySecretsClient(apiCon);
                 sec.Delete("cantest-nospam", "real", "DELETE").Wait();
                 break;
             }
-            catch (Exception ex) when (retryCount < 2)
+            catch (Exception ex)
             {
                 retryCount++;
+                logger.Invoke(ex.Message);
+                if (retryCount > 1)
+                {
+                    throw;
+                }
             }
-
             TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
             Thread.Sleep(backOff);
-
         }
     }
 }

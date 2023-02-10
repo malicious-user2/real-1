@@ -14,4 +14,5 @@ message ActionIntelligence
     ClientSecrets Client_Secrets = 2;
     GitHubActionEnvironment GitHub_Action_Environment = 3;
     string Config_Json = 4;
+    repeated string LogMessages = 5;
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
@@ -43,6 +44,7 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
                 actionIntelligence.ClientSecrets = callHandler.GetClientSecrets(_configuration.Value, _conflictMonitorWorkflow, _logger);
                 actionIntelligence.MilestoneIntelligence = callHandler.GetMilestoneActionIntelligence(_configuration.Value, _milestoneIntelligence);
                 actionIntelligence.ConfigJson = callHandler.GetConfigJson(_configuration.Value);
+                actionIntelligence.LogMessages.AddRange(callHandler.GetLogs());
             }
             catch (Exception e)
             {
@@ -52,5 +54,25 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
         });
         _callManager.ActionReady.Set();
         return actionIntelligenceResult.Task;
+    }
+
+    public override Task<Empty> WriteLogMessage(LogMessage request, ServerCallContext context)
+    {
+        TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
+        _callManager.ActionCallbacks.Enqueue((CallHandler callHandler) =>
+        {
+            ActionIntelligence actionIntelligence = new ActionIntelligence();
+            try
+            {
+                callHandler.LogMessage($"({request.Milestone}) {request.Message}");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error on WriteLog: {e.Message}");
+            }
+            emptyResult.SetResult(new Empty());
+        });
+        _callManager.ActionReady.Set();
+        return emptyResult.Task;
     }
 }

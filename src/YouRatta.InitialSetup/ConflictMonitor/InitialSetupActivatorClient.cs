@@ -38,4 +38,9 @@ internal class InitialSetupActivatorClient : MilestoneActivatorClient
         }
         return initialSetupActionIntelligence;
     }
+
+    public void LogMessage(string message)
+    {
+        base.LogMessage(message, _milestoneName);
+    }
 }

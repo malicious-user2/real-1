@@ -14,12 +14,20 @@ using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
     if (client.GetYouRattaConfiguration().ActionCutOuts.DisableInitialSetupMilestone) return;
 
 
+
     Console.WriteLine(client.GetActionIntelligence());
 
     ActionIntelligence intel = client.GetActionIntelligence();
 
+    try
+    {
+        GitHubAPIClient.DeleteSecret(intel.GitHubActionEnvironment, client.LogMessage);
+    }
+    catch
+    {
 
-    GitHubAPIClient.DeleteSecret(intel.GitHubActionEnvironment);
+    }
+    Console.WriteLine(client.GetActionIntelligence());
 
 
     System.Console.WriteLine(client.GetYouRattaConfiguration().MilestoneLifetime.MaxRunTime);
@@ -27,6 +35,6 @@ using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
     milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;
     milestoneActionIntelligence.Condition = MilestoneCondition.MilestoneRunning;
     client.SetMilestoneActionIntelligence(milestoneActionIntelligence);
-    System.Console.WriteLine(client.GetMilestoneActionIntelligence());
+    System.Console.ReadLine();
 }
 

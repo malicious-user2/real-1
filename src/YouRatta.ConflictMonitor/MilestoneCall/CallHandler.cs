@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Octokit;
+using YouRatta.Common;
 using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
 using YouRatta.Common.Proto;
@@ -18,11 +21,11 @@ namespace YouRatta.ConflictMonitor.MilestoneCall;
 
 internal class CallHandler
 {
-    private readonly StringBuilder _logBuilder = new StringBuilder();
+    private readonly List<string> _logBuilder;
 
     internal CallHandler()
     {
-        _logBuilder = new StringBuilder();
+        _logBuilder = new List<string>();
     }
 
     internal GitHubActionEnvironment GetGithubActionEnvironment(YouRattaConfiguration appConfig, GitHubEnvironment environment, ConflictMonitorWorkflow workflow)
@@ -90,17 +93,28 @@ internal class CallHandler
         return JsonConvert.SerializeObject(appConfig, Formatting.None);
     }
 
+    internal void LogMessage(string message)
+    {
+        StringBuilder lineBuilder = new StringBuilder();
+        lineBuilder.Append("[");
+        lineBuilder.Append(DateTime.Now.ToString(TimeConstants.ZuluTimeFormat, CultureInfo.InvariantCulture));
+        lineBuilder.Append("] ");
+        lineBuilder.Append("[Message] ");
+        lineBuilder.Append(message);
+        AppendLog(lineBuilder.ToString());
+    }
+
     internal void AppendLog(string message)
     {
         lock (_logBuilder)
         {
-            _logBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0}", message));
+            _logBuilder.Add(message);
         }
     }
 
-    internal string GetLogs()
+    internal List<string> GetLogs()
     {
-        return _logBuilder.ToString();
+        return _logBuilder;
     }
 
     internal void ClearLogs()

@@ -7,7 +7,7 @@ using YouRatta.Common.Proto;
 using YouRatta.InitialSetup.ConflictMonitor;
 using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 
-using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
+using (InitialSetupCommunicationClient client = new InitialSetupCommunicationClient())
 {
     System.Threading.Thread.Sleep(2000);
     if (client.GetMilestoneActionIntelligence().Condition == MilestoneCondition.MilestoneBlocked) return;
@@ -19,14 +19,8 @@ using (InitialSetupActivatorClient client = new InitialSetupActivatorClient())
 
     ActionIntelligence intel = client.GetActionIntelligence();
 
-    try
-    {
-        GitHubAPIClient.DeleteSecret(intel.GitHubActionEnvironment, client.LogMessage);
-    }
-    catch
-    {
 
-    }
+    GitHubAPIClient.DeleteSecret(intel.GitHubActionEnvironment, "DEL", client.LogMessage);
     Console.WriteLine(client.GetActionIntelligence());
 
 

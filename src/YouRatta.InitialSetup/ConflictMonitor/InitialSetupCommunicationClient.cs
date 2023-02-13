@@ -4,12 +4,12 @@ using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRatta.InitialSetup.ConflictMonitor;
 
-internal class InitialSetupActivatorClient : MilestoneActivatorClient
+internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
 {
     private static readonly string _milestoneName = "InitialSetup";
     private readonly Type _milestoneType = typeof(InitialSetupActionIntelligence);
 
-    public InitialSetupActivatorClient() : base()
+    public InitialSetupCommunicationClient() : base()
     {
     }
 

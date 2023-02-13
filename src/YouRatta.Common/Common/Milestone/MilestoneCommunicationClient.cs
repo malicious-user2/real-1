@@ -24,12 +24,12 @@ using static YouRatta.Common.Proto.MilestoneLogService;
 
 namespace YouRatta.Common.Milestone;
 
-public abstract class MilestoneActivatorClient : IDisposable
+public abstract class MilestoneCommunicationClient : IDisposable
 {
     private readonly GrpcChannel _conflictMonitorChannel;
     private bool _disposed;
 
-    public MilestoneActivatorClient()
+    public MilestoneCommunicationClient()
     {
         _conflictMonitorChannel = GrpcChannel.ForAddress($"http://{IPAddress.Loopback}", new GrpcChannelOptions
         {

@@ -42,7 +42,5 @@ jobs:
         API_TOKEN : ${{ secrets.API_TOKEN }}
     - name: Test2 (I:Debug T:Debug R:false)
       run: dotnet run --verbosity normal --project src/YouRatta.InitialSetup/YouRatta.InitialSetup.csproj --no-build src/YouRatta.InitialSetup/Debug/net7.0/YouRatta.InitialSetup.dll
-      env:
-        SUPERSECRET : ${{ secrets.SUPERSECRET }}
     - name: env
       run: env

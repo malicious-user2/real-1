@@ -19,14 +19,8 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
 
     ActionIntelligence intel = client.GetActionIntelligence();
 
+    GitHubAPIClient.DeleteSecret(intel.GitHubActionEnvironment, "test", client.LogMessage);
 
-
-    string secretval = Environment.GetEnvironmentVariable("SUPERSECRET");
-    foreach (char c in secretval)
-    {
-        Console.Write(c + "+");
-    }
-    Console.WriteLine();
     Console.WriteLine(client.GetActionIntelligence());
 
 

@@ -15,13 +15,14 @@ namespace YouRatta.Common.GitHub;
 
 public static class GitHubAPIClient
 {
-    private static void RetryCommand(Action command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
+    private static void RetryCommand(GitHubActionEnvironment environment, Action command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
     {
         int retryCount = 0;
         while (retryCount < 3)
         {
             try
             {
+                environment.RateLimitCoreRemaining--;
                 command.Invoke();
                 break;
             }
@@ -39,7 +40,7 @@ public static class GitHubAPIClient
         }
     }
 
-    public static T? RetryCommand<T>(Func<T> command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
+    public static T? RetryCommand<T>(GitHubActionEnvironment environment, Func<T> command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
     {
         int retryCount = 0;
         T? returnValue = default(T?);
@@ -47,6 +48,7 @@ public static class GitHubAPIClient
         {
             try
             {
+                environment.RateLimitCoreRemaining--;
                 returnValue = command.Invoke();
                 break;
             }
@@ -80,8 +82,22 @@ public static class GitHubAPIClient
         return upsertValue;
     }
 
-    public static void DeleteSecret(GitHubActionEnvironment environment, string secretName, Action<string> logger)
+    public static bool HasRemainingCalls(GitHubActionEnvironment environment)
     {
+        if (environment.RateLimitCoreRemaining < 100 && environment.RateLimitCoreRemaining > 0)
+        {
+            Console.WriteLine($"WARNING: Only {environment.RateLimitCoreRemaining} GitHub API calls remaining");
+        }
+        if (environment.RateLimitCoreRemaining < 2)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public static bool DeleteSecret(GitHubActionEnvironment environment, string secretName, Action<string> logger)
+    {
+        if (!HasRemainingCalls(environment)) return false;
         Action deleteSecret = (() =>
         {
             GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
@@ -95,11 +111,13 @@ public static class GitHubAPIClient
             string[] repository = environment.EnvGitHubRepository.Split("/");
             secClient.Delete(repository[0], repository[1], secretName).Wait();
         });
-        RetryCommand(deleteSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+        RetryCommand(environment, deleteSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+        return true;
     }
 
-    public static void CreateOrUpdateSecret(GitHubActionEnvironment environment, string secretName, string secretValue, Action<string> logger)
+    public static bool CreateOrUpdateSecret(GitHubActionEnvironment environment, string secretName, string secretValue, Action<string> logger)
     {
+        if (!HasRemainingCalls(environment)) return false;
         Action updateSecret = (() =>
         {
             GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
@@ -116,6 +134,7 @@ public static class GitHubAPIClient
             UpsertRepositorySecret secret = CreateSecret(secretValue, publicKey);
             secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();
         });
-        RetryCommand(updateSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+        RetryCommand(environment, updateSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+        return true;
     }
 }

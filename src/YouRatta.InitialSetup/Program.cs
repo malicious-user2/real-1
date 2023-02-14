@@ -11,6 +11,7 @@ using YouRatta.Common.GitHub;
 using YouRatta.Common.Milestone;
 using YouRatta.Common.Proto;
 using YouRatta.InitialSetup.ConflictMonitor;
+using YouRatta.InitialSetup.Workflow;
 using static Google.Apis.Auth.OAuth2.Web.AuthorizationCodeWebApp;
 using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 
@@ -26,6 +27,8 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
 
     ActionIntelligence intel = client.GetActionIntelligence();
 
+    InitialSetupWorkflow workflow = new InitialSetupWorkflow();
+
 
 
     GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
@@ -33,8 +36,8 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets()
         {
             //Dummy values
-            ClientId = "573861238622-2qjkd0bq0n8d4ii3gpj1ipun3sk2s2ra.apps.googleusercontent.com",
-            ClientSecret = "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"
+            ClientId = workflow.ClientId,
+            ClientSecret = workflow.ClientSecret
         },
         Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
     });

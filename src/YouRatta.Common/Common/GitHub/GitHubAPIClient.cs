@@ -130,7 +130,20 @@ public static class GitHubAPIClient
             RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
             string[] repository = environment.EnvGitHubRepository.Split("/");
 
+
+            Console.WriteLine(ghClient.RateLimit.GetRateLimits().Result.Resources.Core.Remaining);
+
+
+
             SecretsPublicKey publicKey = secClient.GetPublicKey(repository[0], repository[1]).Result;
+
+
+
+
+            Console.WriteLine(ghClient.RateLimit.GetRateLimits().Result.Resources.Core.Remaining);
+
+
+
             UpsertRepositorySecret secret = CreateSecret(secretValue, publicKey);
             secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();
         });

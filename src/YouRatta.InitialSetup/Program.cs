@@ -5,6 +5,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Util.Store;
 using Google.Apis.YouTube.v3;
+using Microsoft.Extensions.Hosting;
 using Octokit;
 using YouRatta.Common.GitHub;
 using YouRatta.Common.Milestone;
@@ -24,6 +25,8 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
     Console.WriteLine(client.GetActionIntelligence());
 
     ActionIntelligence intel = client.GetActionIntelligence();
+
+
 
     GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
     {

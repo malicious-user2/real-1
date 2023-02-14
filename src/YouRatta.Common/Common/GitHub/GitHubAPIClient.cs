@@ -22,8 +22,10 @@ public static class GitHubAPIClient
         {
             try
             {
-                environment.RateLimitCoreRemaining--;
-                command.Invoke();
+                {
+                    environment.RateLimitCoreRemaining--;
+                    command.Invoke();
+                }
                 break;
             }
             catch (Exception ex)
@@ -48,8 +50,10 @@ public static class GitHubAPIClient
         {
             try
             {
-                environment.RateLimitCoreRemaining--;
-                returnValue = command.Invoke();
+                {
+                    environment.RateLimitCoreRemaining--;
+                    returnValue = command.Invoke();
+                }
                 break;
             }
             catch (Exception ex)
@@ -130,20 +134,14 @@ public static class GitHubAPIClient
             RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
             string[] repository = environment.EnvGitHubRepository.Split("/");
 
+            SecretsPublicKey? publicKey = default;
 
-            Console.WriteLine(ghClient.RateLimit.GetRateLimits().Result.Resources.Core.Remaining);
-
-
-
-            SecretsPublicKey publicKey = secClient.GetPublicKey(repository[0], repository[1]).Result;
-
-
-
-
-            Console.WriteLine(ghClient.RateLimit.GetRateLimits().Result.Resources.Core.Remaining);
-
-
-
+            Func<SecretsPublicKey> getPublicKey = (() =>
+            {
+                return secClient.GetPublicKey(repository[0], repository[1]).Result;
+            });
+            publicKey = RetryCommand(environment, getPublicKey, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+            if (publicKey == null) throw new InvalidOperationException("Could not get repository public key to create secret");
             UpsertRepositorySecret secret = CreateSecret(secretValue, publicKey);
             secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();
         });

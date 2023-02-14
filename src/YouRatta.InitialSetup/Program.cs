@@ -45,6 +45,8 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
     Console.WriteLine(flow.CreateAuthorizationCodeRequest("https://localhost").Build());
 
 
+    UnsupportedGitHubAPIClient.CreateVariable(intel.GitHubActionEnvironment, "TESTVAR", "testval", client.LogMessage);
+
 
 
     System.Console.WriteLine(client.GetYouRattaConfiguration().MilestoneLifetime.MaxRunTime);

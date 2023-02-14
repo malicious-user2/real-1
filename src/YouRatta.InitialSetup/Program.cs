@@ -1,12 +1,16 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Util.Store;
+using Google.Apis.YouTube.v3;
 using Octokit;
 using YouRatta.Common.GitHub;
 using YouRatta.Common.Milestone;
 using YouRatta.Common.Proto;
 using YouRatta.InitialSetup.ConflictMonitor;
+using static Google.Apis.Auth.OAuth2.Web.AuthorizationCodeWebApp;
 using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 
 using (InitialSetupCommunicationClient client = new InitialSetupCommunicationClient())
@@ -21,20 +25,23 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
 
     ActionIntelligence intel = client.GetActionIntelligence();
 
-    IAuthorizationCodeFlow flow =
-        new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+    GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+    {
+        ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets()
         {
-            ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets
-            {
-                ClientId = "PUT_CLIENT_ID_HERE",
-                ClientSecret = "PUT_CLIENT_SECRET_HERE"
-            },
-            
-            DataStore = new FileDataStore("Drive.Api.Auth.Store")
-        });
-    Google.Apis.Auth.OAuth2.Web.AuthorizationCodeWebApp webapp = new Google.Apis.Auth.OAuth2.Web.AuthorizationCodeWebApp()
+            //Dummy values
+            ClientId = "573861238622-2qjkd0bq0n8d4ii3gpj1ipun3sk2s2ra.apps.googleusercontent.com",
+            ClientSecret = "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"
+        },
+        Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
+    });
 
-System.Console.WriteLine(client.GetYouRattaConfiguration().MilestoneLifetime.MaxRunTime);
+    Console.WriteLine(flow.CreateAuthorizationCodeRequest("https://localhost").RedirectUri);
+
+
+
+
+    System.Console.WriteLine(client.GetYouRattaConfiguration().MilestoneLifetime.MaxRunTime);
     InitialSetupActionIntelligence milestoneActionIntelligence = new InitialSetupActionIntelligence();
     milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;
     milestoneActionIntelligence.Condition = MilestoneCondition.MilestoneRunning;

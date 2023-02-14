@@ -36,7 +36,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
     });
 
-    Console.WriteLine(flow.CreateAuthorizationCodeRequest("https://localhost").RedirectUri);
+    Console.WriteLine(flow.CreateAuthorizationCodeRequest("https://localhost").Build());
 
 
 

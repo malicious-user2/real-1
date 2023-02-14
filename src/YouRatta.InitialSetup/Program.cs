@@ -19,7 +19,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
 
     ActionIntelligence intel = client.GetActionIntelligence();
 
-    GitHubAPIClient.DeleteSecret(intel.GitHubActionEnvironment, "test", client.LogMessage);
+    GitHubAPIClient.CreateOrUpdateSecret(intel.GitHubActionEnvironment, "TER", "TER2", client.LogMessage);
 
     Console.WriteLine(client.GetActionIntelligence());
 

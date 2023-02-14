@@ -92,7 +92,7 @@ public static class GitHubAPIClient
         {
             Console.WriteLine($"WARNING: Only {environment.RateLimitCoreRemaining} GitHub API calls remaining");
         }
-        if (environment.RateLimitCoreRemaining < 2)
+        if (environment.RateLimitCoreRemaining < 3)
         {
             return false;
         }

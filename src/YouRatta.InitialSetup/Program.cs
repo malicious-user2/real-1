@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Util.Store;
 using Octokit;
 using YouRatta.Common.GitHub;
 using YouRatta.Common.Milestone;
@@ -19,12 +21,20 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
 
     ActionIntelligence intel = client.GetActionIntelligence();
 
-    GitHubAPIClient.CreateOrUpdateSecret(intel.GitHubActionEnvironment, "TESR", "TER2", client.LogMessage);
+    IAuthorizationCodeFlow flow =
+        new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+        {
+            ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets
+            {
+                ClientId = "PUT_CLIENT_ID_HERE",
+                ClientSecret = "PUT_CLIENT_SECRET_HERE"
+            },
+            
+            DataStore = new FileDataStore("Drive.Api.Auth.Store")
+        });
+    Google.Apis.Auth.OAuth2.Web.AuthorizationCodeWebApp webapp = new Google.Apis.Auth.OAuth2.Web.AuthorizationCodeWebApp()
 
-    Console.WriteLine(client.GetActionIntelligence());
-
-
-    System.Console.WriteLine(client.GetYouRattaConfiguration().MilestoneLifetime.MaxRunTime);
+System.Console.WriteLine(client.GetYouRattaConfiguration().MilestoneLifetime.MaxRunTime);
     InitialSetupActionIntelligence milestoneActionIntelligence = new InitialSetupActionIntelligence();
     milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;
     milestoneActionIntelligence.Condition = MilestoneCondition.MilestoneRunning;

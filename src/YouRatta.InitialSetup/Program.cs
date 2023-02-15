@@ -31,8 +31,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         if (string.IsNullOrEmpty(actionEnvironment.ApiToken))
         {
             Console.WriteLine("Entering actions secrets section");
-            GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, GitHubConstants.ApiTokenVariable, "empty", client.LogMessage);
-            Console.WriteLine("Fill repository secrets and run action again");
+            Console.WriteLine($"Create an action secret {GitHubConstants.ApiTokenVariable} to store GitHub personal access token");
             canContinue = false;
         }
         if (canContinue && (string.IsNullOrEmpty(workflow.ClientSecret) || string.IsNullOrEmpty(workflow.ClientId)))

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using YouRatta.Common.Milestone;
 using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 
@@ -11,6 +12,14 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
 
     public InitialSetupCommunicationClient() : base()
     {
+    }
+
+    public void Activate()
+    {
+        InitialSetupActionIntelligence milestoneActionIntelligence = new InitialSetupActionIntelligence();
+        milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;
+        milestoneActionIntelligence.Condition = MilestoneCondition.MilestoneRunning;
+        SetMilestoneActionIntelligence(milestoneActionIntelligence);
     }
 
     public void SetStatus(MilestoneCondition status)
@@ -43,4 +52,6 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
     {
         base.LogMessage(message, _milestoneName);
     }
+
+    public string MilestoneName => _milestoneName;
 }

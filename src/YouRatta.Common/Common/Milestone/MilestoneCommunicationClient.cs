@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using YouRatta.Common.Configurations;
 using YouRatta.Common.Proto;

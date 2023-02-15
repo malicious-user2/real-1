@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Configuration;
@@ -28,18 +29,51 @@ internal class CallHandler
         _logBuilder = new List<string>();
     }
 
+    public static T? RetryCommand<T>(Func<T> command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
+    {
+        int retryCount = 0;
+        T? returnValue = default(T?);
+        while (retryCount < 10)
+        {
+            try
+            {
+                returnValue = command.Invoke();
+                break;
+            }
+            catch (Exception ex)
+            {
+                retryCount++;
+                logger.Invoke(ex.Message);
+                if (retryCount > 9)
+                {
+                    throw;
+                }
+            }
+            TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(minRetry, maxRetry);
+            Thread.Sleep(backOff);
+        }
+        return returnValue;
+    }
+
     internal GitHubActionEnvironment GetGithubActionEnvironment(YouRattaConfiguration appConfig, GitHubEnvironment environment, ConflictMonitorWorkflow workflow)
     {
         GitHubActionEnvironment actionEnvironment = environment.GetActionEnvironment();
         if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GitHubToken != null && workflow.ApiToken != null)
         {
-            GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader);
-            ghClient.Credentials = new Credentials(workflow.GitHubToken, AuthenticationType.Bearer);
-            ResourceRateLimit ghRateLimit = ghClient.RateLimit.GetRateLimits().Result.Resources;
-
-            actionEnvironment.RateLimitCoreRemaining = ghRateLimit.Core.Remaining;
-            actionEnvironment.RateLimitCoreLimit = ghRateLimit.Core.Limit;
-            actionEnvironment.RateLimitCoreReset = ghRateLimit.Core.Reset.ToUnixTimeSeconds();
+            ResourceRateLimit? ghRateLimit = default;
+            Func<ResourceRateLimit> getResourceRateLimit = (() =>
+            {
+                GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader);
+                ghClient.Credentials = new Credentials(workflow.GitHubToken, AuthenticationType.Bearer);
+                return ghClient.RateLimit.GetRateLimits().Result.Resources;
+            });
+            ghRateLimit = RetryCommand<ResourceRateLimit>(getResourceRateLimit, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), AppendLog);
+            if (ghRateLimit != null)
+            {
+                actionEnvironment.RateLimitCoreRemaining = ghRateLimit.Core.Remaining;
+                actionEnvironment.RateLimitCoreLimit = ghRateLimit.Core.Limit;
+                actionEnvironment.RateLimitCoreReset = ghRateLimit.Core.Reset.ToUnixTimeSeconds();
+            }
             actionEnvironment.GitHubToken = workflow.GitHubToken;
             actionEnvironment.ApiToken = workflow.ApiToken;
         }

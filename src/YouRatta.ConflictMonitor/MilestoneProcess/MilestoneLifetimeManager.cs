@@ -74,7 +74,8 @@ internal class MilestoneLifetimeManager : IDisposable
                 if (logger == null) return;
                 foreach (BaseMilestoneIntelligence milestoneIntelligence in _milestoneIntelligence.Milestones)
                 {
-                    if (milestoneIntelligence.Condition == MilestoneCondition.MilestoneRunning &&
+                    if ((milestoneIntelligence.Condition == MilestoneCondition.MilestoneRunning ||
+                        milestoneIntelligence.Condition == MilestoneCondition.MilestoneCompleted) &&
                     milestoneIntelligence.LastUpdate != 0 &&
                     milestoneIntelligence.StartTime != 0 &&
                     milestoneIntelligence.ProcessId != 0)

@@ -54,21 +54,25 @@ public static class UnsupportedGitHubAPIClient
     public static bool CreateVariable(GitHubActionEnvironment environment, string variableName, string variableValue, Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) return false;
+        if (environment.EnvGitHubRepository == null) return false;
+        if (environment.EnvGitHubRepository.Split("/").Length != 2) return false;
         HttpResponseMessage? response = null;
         Action createVariable = (() =>
         {
-            HttpClient client = new HttpClient();
-            client.Timeout = GitHubConstants.RequestTimeout;
-            client.BaseAddress = new Uri($"{environment.EnvGitHubApiUrl}/");
-            client.DefaultRequestHeaders.Add("User-Agent", GitHubConstants.ProductHeaderName);
-            client.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", environment.ApiToken);
-            RepositoryVariable variable = new RepositoryVariable();
-            variable.Name = variableName;
-            variable.Value = variableValue;
-            string contentData = JsonConvert.SerializeObject(variable);
-            HttpContent content = new StringContent(contentData);
-            response = client.PostAsync($"repos/{environment.EnvGitHubRepository}/actions/variables", content).Result;
+            using (HttpClient client = new HttpClient())
+            {
+                client.Timeout = GitHubConstants.RequestTimeout;
+                client.BaseAddress = new Uri($"{environment.EnvGitHubApiUrl}/");
+                client.DefaultRequestHeaders.Add("User-Agent", GitHubConstants.ProductHeaderName);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", environment.ApiToken);
+                RepositoryVariable variable = new RepositoryVariable();
+                variable.Name = variableName;
+                variable.Value = variableValue;
+                string contentData = JsonConvert.SerializeObject(variable);
+                HttpContent content = new StringContent(contentData);
+                response = client.PostAsync($"repos/{environment.EnvGitHubRepository}/actions/variables", content).Result;
+            }
         });
         RetryCommand(environment, createVariable, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
         if (response != null && response.IsSuccessStatusCode) return true;

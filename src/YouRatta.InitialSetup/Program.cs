@@ -45,7 +45,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
     Console.WriteLine(flow.CreateAuthorizationCodeRequest("https://localhost").Build());
 
 
-    UnsupportedGitHubAPIClient.CreateVariable(intel.GitHubActionEnvironment, "TESTVAR", "testval", client.LogMessage);
+    UnsupportedGitHubAPIClient.CreateVariable(intel.GitHubActionEnvironment, "OTHERCREATE", "testval", client.LogMessage);
 
 
 

@@ -55,7 +55,7 @@ public static class UnsupportedGitHubAPIClient
     {
         if (!HasRemainingCalls(environment)) return false;
         HttpResponseMessage? response = null;
-        Action createVariable = (async () =>
+        Action createVariable = (() =>
         {
             HttpClient client = new HttpClient();
             client.Timeout = GitHubConstants.RequestTimeout;
@@ -68,7 +68,7 @@ public static class UnsupportedGitHubAPIClient
             variable.Value = variableValue;
             string contentData = JsonConvert.SerializeObject(variable);
             HttpContent content = new StringContent(contentData);
-            response = await client.PostAsync($"repos/{environment.EnvGitHubRepository}/actions/variables", content).ConfigureAwait(false);
+            response = client.PostAsync($"repos/{environment.EnvGitHubRepository}/actions/variables", content).Result;
             Console.WriteLine(response.StatusCode.ToString());
         });
         RetryCommand(environment, createVariable, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);

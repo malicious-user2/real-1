@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.YouTube.v3;
+using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
 using YouRatta.Common.Proto;
 using YouRatta.Common.YouTube;
@@ -21,17 +22,34 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
 
     ActionIntelligence intelligence = client.GetActionIntelligence();
     GitHubActionEnvironment actionEnvironment = intelligence.GitHubActionEnvironment;
+    YouRattaConfiguration config = client.GetYouRattaConfiguration();
     client.Activate();
     Console.WriteLine($"Entering {client.MilestoneName}");
     try
     {
         bool canContinue = true;
-        if (string.IsNullOrEmpty(workflow.ClientSecret) || string.IsNullOrEmpty(workflow.ClientId))
+        if (string.IsNullOrEmpty(actionEnvironment.ApiToken))
         {
-            Console.WriteLine("Entering actions secrets and variables section");
-            UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ClientIdVariable, "empty", client.LogMessage);
-            UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ClientSecretsVariable, "empty", client.LogMessage);
-            
+            Console.WriteLine("Entering actions secrets section");
+            GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, GitHubConstants.ApiTokenVariable, "empty", client.LogMessage);
+            Console.WriteLine("Fill repository secrets and run action again");
+            canContinue = false;
+        }
+        if (canContinue && (string.IsNullOrEmpty(workflow.ClientSecret) || string.IsNullOrEmpty(workflow.ClientId)))
+        {
+            Console.WriteLine("Entering actions variables section");
+            if (!config.ActionCutOuts.DisableUnsupportedGitHubAPI)
+            {
+                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ClientIdVariable, "empty", client.LogMessage);
+                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ClientSecretsVariable, "empty", client.LogMessage);
+                Console.WriteLine("Fill repository variables and run action again");
+            }
+            else
+            {
+                Console.WriteLine($"Create an action variable {YouTubeConstants.ClientIdVariable} to store Google API client ID");
+                Console.WriteLine($"Create an action variable {YouTubeConstants.ClientSecretsVariable} to store Google API client secrets");
+            }
+            canContinue = false;
         }
 
 

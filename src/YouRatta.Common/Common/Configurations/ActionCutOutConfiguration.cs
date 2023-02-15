@@ -13,4 +13,7 @@ public class ActionCutOutConfiguration : BaseValidatableConfiguration
 
     [Required]
     public bool DisableInitialSetupMilestone { get; set; }
+
+    [Required]
+    public bool DisableUnsupportedGitHubAPI { get; set; }
 }

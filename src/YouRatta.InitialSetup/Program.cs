@@ -26,7 +26,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
     try
     {
         bool canContinue = true;
-        if (workflow.ClientSecret == null || workflow.ClientId == null)
+        if (string.IsNullOrEmpty(workflow.ClientSecret) || string.IsNullOrEmpty(workflow.ClientId))
         {
             Console.WriteLine("Entering actions secrets and variables section");
             UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ClientIdVariable, "empty", client.LogMessage);

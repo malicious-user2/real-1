@@ -69,6 +69,7 @@ public static class UnsupportedGitHubAPIClient
             string contentData = JsonConvert.SerializeObject(variable);
             HttpContent content = new StringContent(contentData);
             response = await client.PostAsync($"repos/{environment.EnvGitHubRepository}/actions/variables", content).ConfigureAwait(false);
+            Console.WriteLine(response.StatusCode.ToString());
         });
         RetryCommand(environment, createVariable, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
         if (response != null && response.IsSuccessStatusCode) return true;

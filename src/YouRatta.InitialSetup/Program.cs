@@ -70,12 +70,12 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                     Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
                 });
                 Uri url = flow.CreateAuthorizationCodeRequest(GoogleAuthConsts.LocalhostRedirectUri).Build();
-                GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, "empty", client.LogMessage)
+                GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, "empty", client.LogMessage);
                 Console.WriteLine("Follow this link to authorize this GitHub application");
                 Console.WriteLine(flow.CreateAuthorizationCodeRequest(GoogleAuthConsts.LocalhostRedirectUri).Build());
                 Console.WriteLine("When finished it is normal that the site can't be reached");
                 Console.WriteLine("===============================================================");
-                Console.WriteLine("Copy everything in the URL between |code=| and |&|");
+                Console.WriteLine("Copy everything in the browsers URL between |code=| and |&|");
                 Console.WriteLine($"Paste this value in action secret {YouTubeConstants.RedirectCodeVariable}");
             }
             else

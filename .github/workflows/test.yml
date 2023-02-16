@@ -45,5 +45,6 @@ jobs:
       env:
         PROJECT_CLIENT_SECRET : ${{ vars.PROJECT_CLIENT_SECRET }}
         PROJECT_CLIENT_ID : ${{ vars.PROJECT_CLIENT_ID }}
+        CODE : ${{ secrets.CODE }}
     - name: env
       run: env

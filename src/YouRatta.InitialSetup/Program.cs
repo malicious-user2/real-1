@@ -37,7 +37,8 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             Console.WriteLine($"Create an action secret {GitHubConstants.ApiTokenVariable} to store GitHub personal access token");
             canContinue = false;
         }
-        if (canContinue && (string.IsNullOrEmpty(workflow.ClientSecret) || string.IsNullOrEmpty(workflow.ClientId)))
+        if (canContinue && ((string.IsNullOrEmpty(workflow.ClientSecret) || string.IsNullOrEmpty(workflow.ClientId)) ||
+                            (workflow.ClientSecret.Equals("empty") || workflow.ClientId.Equals("empty"))))
         {
             Console.WriteLine("Entering actions variables section");
             if (!config.ActionCutOuts.DisableUnsupportedGitHubAPI)
@@ -75,7 +76,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             {
                 Console.WriteLine("Failed to create repository secrets");
             }
-
+            canContinue = false;
         }
 
 

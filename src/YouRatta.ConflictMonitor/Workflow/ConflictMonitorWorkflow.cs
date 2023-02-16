@@ -1,4 +1,5 @@
 using System;
+using YouRatta.Common;
 using YouRatta.Common.GitHub;
 
 namespace YouRatta.ConflictMonitor.Workflow;
@@ -18,7 +19,7 @@ internal class ConflictMonitorWorkflow
         _apiToken = Environment
             .GetEnvironmentVariable(GitHubConstants.ApiTokenVariable);
         _clientSecrets = Environment
-            .GetEnvironmentVariable(GitHubConstants.ClientSecretsVariable);
+            .GetEnvironmentVariable(YouRattaConstants.StoredClientSecretsVariable);
     }
 #pragma warning restore CS8601
 #pragma warning restore CS8618

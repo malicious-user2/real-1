@@ -1,8 +1,12 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Requests;
 using Google.Apis.YouTube.v3;
+using Google.Protobuf;
+using YouRatta.Common;
 using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
 using YouRatta.Common.Proto;
@@ -23,10 +27,9 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
     ActionIntelligence intelligence = client.GetActionIntelligence();
     GitHubActionEnvironment actionEnvironment = intelligence.GitHubActionEnvironment;
     YouRattaConfiguration config = client.GetYouRattaConfiguration();
-    client.Activate();
-    Console.WriteLine($"Entering {client.MilestoneName}");
     try
     {
+        client.Activate();
         bool canContinue = true;
         if (string.IsNullOrEmpty(actionEnvironment.ApiToken))
         {
@@ -50,6 +53,30 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             }
             canContinue = false;
         }
+        InstalledClientSecrets blankClientsecrets = new InstalledClientSecrets();
+        if (canContinue && (intelligence.ClientSecrets.InstalledClientSecrets.Equals(blankClientsecrets)))
+        {
+            Console.WriteLine("Entering Google API stored client secrets section");
+            if (GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredClientSecretsVariable, "empty", client.LogMessage))
+            {
+                GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+                {
+                    ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets()
+                    {
+                        ClientId = workflow.ClientId,
+                        ClientSecret = workflow.ClientSecret
+                    },
+                    Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
+                });
+                Uri url = flow.CreateAuthorizationCodeRequest(GoogleAuthConsts.LocalhostRedirectUri).Build();
+                Console.WriteLine(flow.CreateAuthorizationCodeRequest(GoogleAuthConsts.LocalhostRedirectUri).Build());
+            }
+            else
+            {
+                Console.WriteLine("Failed to create repository secrets");
+            }
+
+        }
 
 
 
@@ -57,18 +84,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
 
 
 
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
-        {
-            ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets()
-            {
-                //Dummy values
-                ClientId = workflow.ClientId,
-                ClientSecret = workflow.ClientSecret
-            },
-            Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
-        });
 
-        Console.WriteLine(flow.CreateAuthorizationCodeRequest("https://localhost").Build());
 
 
     }

@@ -20,6 +20,7 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
         milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;
         milestoneActionIntelligence.Condition = MilestoneCondition.MilestoneRunning;
         SetMilestoneActionIntelligence(milestoneActionIntelligence);
+        Console.WriteLine($"Entering {_milestoneName}");
     }
 
     public void SetStatus(MilestoneCondition status)
@@ -52,6 +53,4 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
     {
         base.LogMessage(message, _milestoneName);
     }
-
-    public string MilestoneName => _milestoneName;
 }

@@ -11,8 +11,6 @@ public static class GitHubConstants
 
     public static ProductHeaderValue ProductHeader => new ProductHeaderValue(ProductHeaderName);
 
-    public static string ClientSecretsVariable = "CLIENT_SECRETS";
-
     public static string ActionTokenVariable = "ACTION_TOKEN";
 
     public static string ApiTokenVariable = "API_TOKEN";

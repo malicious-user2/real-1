@@ -1,11 +1,16 @@
 using System;
 using System.Diagnostics;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Requests;
+using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.YouTube.v3;
 using Google.Protobuf;
+using Microsoft.VisualBasic;
+using Newtonsoft.Json;
 using YouRatta.Common;
 using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
@@ -58,17 +63,46 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         if (canContinue && (intelligence.ClientSecrets.InstalledClientSecrets.Equals(blankClientsecrets)))
         {
             Console.WriteLine("Entering Google API stored client secrets section");
-            if (GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredClientSecretsVariable, "empty", client.LogMessage))
+            GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
             {
-                GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+                ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets()
                 {
-                    ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets()
+                    ClientId = workflow.ClientId,
+                    ClientSecret = workflow.ClientSecret
+                },
+                Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
+            });
+            if (!string.IsNullOrEmpty(workflow.RedirectCode) && (!workflow.RedirectCode.Equals("empty")))
+            {
+                using (HttpClient tokenHttpClient = new HttpClient())
+                {
+                    string redirectTokenCode = workflow.RedirectCode.Trim().Replace("=", "").Replace("&", "");
+                    AuthorizationCodeTokenRequest authorizationCodeTokenRequest = new AuthorizationCodeTokenRequest
                     {
+                        Scope = YouTubeService.Scope.YoutubeForceSsl,
+                        RedirectUri = GoogleAuthConsts.LocalhostRedirectUri,
+                        Code = redirectTokenCode,
                         ClientId = workflow.ClientId,
                         ClientSecret = workflow.ClientSecret
-                    },
-                    Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
-                });
+                    };
+                    TokenResponse authorizationCodeTokenResponse = authorizationCodeTokenRequest.ExecuteAsync(tokenHttpClient, flow.TokenServerUrl, CancellationToken.None, flow.Clock).Result;
+                    if (authorizationCodeTokenResponse != null)
+                    {
+                        string clientSecretsString = JsonConvert.SerializeObject(authorizationCodeTokenResponse, Formatting.None);
+                        GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredClientSecretsVariable, clientSecretsString, client.LogMessage);
+                        GitHubAPIClient.DeleteSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, client.LogMessage);
+                        Console.WriteLine($"Google API stored client secrets have been saved to {YouRattaConstants.StoredClientSecretsVariable}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Could not exchange authorization code");
+                    }
+                }
+
+                
+            }
+            else if (GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredClientSecretsVariable, "empty", client.LogMessage))
+            {
                 Uri url = flow.CreateAuthorizationCodeRequest(GoogleAuthConsts.LocalhostRedirectUri).Build();
                 GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, "empty", client.LogMessage);
                 Console.WriteLine("Follow this link to authorize this GitHub application");

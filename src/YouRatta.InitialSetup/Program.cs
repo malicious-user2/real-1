@@ -59,7 +59,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             }
             canContinue = false;
         }
-        if (canContinue && (string.IsNullOrEmpty(intelligence.TokenResponse)))
+        if (canContinue && (intelligence.TokenResponse.Equals("empty")))
         {
             Console.WriteLine("Entering Google API stored token response section");
             GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer

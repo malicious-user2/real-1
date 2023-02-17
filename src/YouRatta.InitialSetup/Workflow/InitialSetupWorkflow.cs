@@ -14,9 +14,9 @@ internal class InitialSetupWorkflow
     public InitialSetupWorkflow()
     {
         _clientId = Environment
-            .GetEnvironmentVariable(YouTubeConstants.ClientIdVariable);
+            .GetEnvironmentVariable(YouTubeConstants.ProjectClientIdVariable);
         _clientSecret = Environment
-            .GetEnvironmentVariable(YouTubeConstants.ClientSecretsVariable);
+            .GetEnvironmentVariable(YouTubeConstants.ProjectClientSecretsVariable);
         _redirectCode = Environment
             .GetEnvironmentVariable(YouTubeConstants.RedirectCodeVariable);
     }

@@ -1,7 +1,7 @@
 {
   "ActionCutOuts": {
     "DisableConflictMonitorGitHubOperations": false,
-    "DisableYouTubeClientSecretsDiscovery": false,
+    "DisableStoredTokenResponseDiscovery": false,
     "DisableInitialSetupMilestone": false,
     "DisableUnsupportedGitHubAPI": false
   },

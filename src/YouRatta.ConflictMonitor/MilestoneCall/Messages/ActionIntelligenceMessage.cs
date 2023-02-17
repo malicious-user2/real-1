@@ -41,7 +41,7 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
             try
             {
                 actionIntelligence.GitHubActionEnvironment = callHandler.GetGithubActionEnvironment(_configuration.Value, _environment.Value, _conflictMonitorWorkflow);
-                actionIntelligence.ClientSecrets = callHandler.GetClientSecrets(_configuration.Value, _conflictMonitorWorkflow, _logger);
+                actionIntelligence.TokenResponse = callHandler.GetStoredTokenResponse(_configuration.Value, _conflictMonitorWorkflow);
                 actionIntelligence.MilestoneIntelligence = callHandler.GetMilestoneActionIntelligence(_configuration.Value, _milestoneIntelligence);
                 actionIntelligence.ConfigJson = callHandler.GetConfigJson(_configuration.Value);
                 actionIntelligence.LogMessages.AddRange(callHandler.GetLogs());

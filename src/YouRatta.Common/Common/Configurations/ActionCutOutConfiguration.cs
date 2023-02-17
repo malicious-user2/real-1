@@ -9,7 +9,7 @@ public class ActionCutOutConfiguration : BaseValidatableConfiguration
     public bool DisableConflictMonitorGitHubOperations { get; set; }
 
     [Required]
-    public bool DisableYouTubeClientSecretsDiscovery { get; set; }
+    public bool DisableStoredTokenResponseDiscovery { get; set; }
 
     [Required]
     public bool DisableInitialSetupMilestone { get; set; }

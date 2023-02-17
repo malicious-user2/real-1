@@ -48,21 +48,20 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             Console.WriteLine("Entering actions variables section");
             if (!config.ActionCutOuts.DisableUnsupportedGitHubAPI)
             {
-                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ClientIdVariable, "empty", client.LogMessage);
-                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ClientSecretsVariable, "empty", client.LogMessage);
+                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ProjectClientIdVariable, "empty", client.LogMessage);
+                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ProjectClientSecretsVariable, "empty", client.LogMessage);
                 Console.WriteLine("Fill repository variables and run action again");
             }
             else
             {
-                Console.WriteLine($"Create an action variable {YouTubeConstants.ClientIdVariable} to store Google API client ID");
-                Console.WriteLine($"Create an action variable {YouTubeConstants.ClientSecretsVariable} to store Google API client secrets");
+                Console.WriteLine($"Create an action variable {YouTubeConstants.ProjectClientIdVariable} to store Google API client ID");
+                Console.WriteLine($"Create an action variable {YouTubeConstants.ProjectClientSecretsVariable} to store Google API client secrets");
             }
             canContinue = false;
         }
-        InstalledClientSecrets blankClientsecrets = new InstalledClientSecrets();
-        if (canContinue && (intelligence.ClientSecrets.InstalledClientSecrets.Equals(blankClientsecrets)))
+        if (canContinue && (intelligence.TokenResponse.Equals(string.Empty)))
         {
-            Console.WriteLine("Entering Google API stored client secrets section");
+            Console.WriteLine("Entering Google API stored token response section");
             GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
             {
                 ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets()
@@ -89,9 +88,9 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                     if (authorizationCodeTokenResponse != null)
                     {
                         string clientSecretsString = JsonConvert.SerializeObject(authorizationCodeTokenResponse, Formatting.None);
-                        GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredClientSecretsVariable, clientSecretsString, client.LogMessage);
+                        GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredTokenResponseVariable, clientSecretsString, client.LogMessage);
                         GitHubAPIClient.DeleteSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, client.LogMessage);
-                        Console.WriteLine($"Google API stored client secrets have been saved to {YouRattaConstants.StoredClientSecretsVariable}");
+                        Console.WriteLine($"Google API stored token response has been saved to {YouRattaConstants.StoredTokenResponseVariable}");
                     }
                     else
                     {
@@ -101,7 +100,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
 
                 
             }
-            else if (GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredClientSecretsVariable, "empty", client.LogMessage))
+            else if (GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredTokenResponseVariable, "empty", client.LogMessage))
             {
                 Uri url = flow.CreateAuthorizationCodeRequest(GoogleAuthConsts.LocalhostRedirectUri).Build();
                 GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, "empty", client.LogMessage);

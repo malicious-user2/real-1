@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-import "Proto/ClientSecrets.proto";
 import "Proto/MilestoneActionIntelligence.proto";
 import "Proto/GitHubActionEnvironment.proto";
 
@@ -11,7 +10,7 @@ package conflict_monitor_message;
 message ActionIntelligence
 {
     MilestoneActionIntelligence Milestone_Intelligence = 1;
-    ClientSecrets Client_Secrets = 2;
+    string Token_Response = 2;
     GitHubActionEnvironment GitHub_Action_Environment = 3;
     string Config_Json = 4;
     repeated string LogMessages = 5;

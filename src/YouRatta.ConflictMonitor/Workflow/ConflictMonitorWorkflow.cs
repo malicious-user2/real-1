@@ -33,8 +33,8 @@ internal class ConflictMonitorWorkflow
 
     public bool InitialSetupComplete
     {
-        set => Environment
-            .SetEnvironmentVariable(YouRattaConstants.InitialSetupCompleteVariable, value.ToString());
+        set => GitHubWorkflowHelper
+            .PushVariable(YouRattaConstants.InitialSetupCompleteVariable, value.ToString());
     }
 
 }

@@ -122,6 +122,31 @@ public abstract class MilestoneCommunicationClient : IDisposable
         return milestoneActionIntelligence;
     }
 
+    public void BlockAllMilestones()
+    {
+        ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
+        ActionIntelligence actionIntelligence = actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
+        List<PropertyInfo> milestoneIntelligenceProperties = actionIntelligence.MilestoneIntelligence
+            .GetType()
+            .GetProperties()
+            .Where(prop => prop.PropertyType.Name.Contains("ActionIntelligence"))
+            .ToList();
+        if (milestoneIntelligenceProperties != null && milestoneIntelligenceProperties.Count > 0)
+        {
+            foreach (PropertyInfo milestoneIntelligenceProperty in milestoneIntelligenceProperties)
+            {
+                object? milestoneIntelligenceObject = milestoneIntelligenceProperty.GetValue(actionIntelligence.MilestoneIntelligence);
+                if (milestoneIntelligenceObject != null)
+                {
+                    string milestoneIntelligenceName = milestoneIntelligenceProperty.Name;
+                    milestoneIntelligenceObject.GetType().GetProperty("Condition")?.SetValue(milestoneIntelligenceObject, MilestoneCondition.MilestoneBlocked);
+
+                    SetMilestoneActionIntelligence(milestoneIntelligenceObject, milestoneIntelligenceObject.GetType(), milestoneIntelligenceName);
+                }
+            }
+        }
+    }
+
     public ActionIntelligence GetActionIntelligence()
     {
         ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);

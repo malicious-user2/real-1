@@ -7,6 +7,7 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Requests;
 using Google.Apis.Auth.OAuth2.Responses;
+using Google.Apis.Json;
 using Google.Apis.YouTube.v3;
 using Google.Protobuf;
 using Microsoft.VisualBasic;
@@ -26,9 +27,6 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
     if (client.GetMilestoneActionIntelligence().Condition == MilestoneCondition.MilestoneBlocked) return;
     if (client.GetYouRattaConfiguration().ActionCutOuts.DisableInitialSetupMilestone) return;
     InitialSetupWorkflow workflow = new InitialSetupWorkflow();
-
-
-
     ActionIntelligence intelligence = client.GetActionIntelligence();
     GitHubActionEnvironment actionEnvironment = intelligence.GitHubActionEnvironment;
     YouRattaConfiguration config = client.GetYouRattaConfiguration();
@@ -59,37 +57,20 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             }
             canContinue = false;
         }
-        if (canContinue && (intelligence.TokenResponse.Equals("empty")))
+        if (canContinue && (!YouTubeAPIHelper.IsValidTokenResponse(intelligence.TokenResponse)))
         {
             Console.WriteLine("Entering Google API stored token response section");
-            GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
-            {
-                ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets()
-                {
-                    ClientId = workflow.ClientId,
-                    ClientSecret = workflow.ClientSecret
-                },
-                Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
-            });
+            GoogleAuthorizationCodeFlow flow = YouTubeAPIHelper.GetFlow(workflow.ClientId, workflow.ClientSecret);
             if (!string.IsNullOrEmpty(workflow.RedirectCode) && (!workflow.RedirectCode.Equals("empty")))
             {
                 using (HttpClient tokenHttpClient = new HttpClient())
                 {
                     string redirectTokenCode = workflow.RedirectCode.Trim().Replace("=", "").Replace("&", "");
-                    AuthorizationCodeTokenRequest authorizationCodeTokenRequest = new AuthorizationCodeTokenRequest
-                    {
-                        Scope = YouTubeService.Scope.YoutubeForceSsl,
-                        RedirectUri = GoogleAuthConsts.LocalhostRedirectUri,
-                        Code = redirectTokenCode,
-                        ClientId = workflow.ClientId,
-                        ClientSecret = workflow.ClientSecret
-                    };
-                    TokenResponse authorizationCodeTokenResponse = authorizationCodeTokenRequest.ExecuteAsync(tokenHttpClient, flow.TokenServerUrl, CancellationToken.None, flow.Clock).Result;
+                    var authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(workflow.RedirectCode, workflow.ClientId, workflow.ClientSecret);
+                    TokenResponse? authorizationCodeTokenResponse = YouTubeAPIHelper.ExchangeAuthorizationCode(authorizationCodeTokenRequest, flow);
                     if (authorizationCodeTokenResponse != null)
                     {
-                        string clientSecretsString = JsonConvert.SerializeObject(authorizationCodeTokenResponse, Formatting.None);
-                        GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredTokenResponseVariable, clientSecretsString, client.LogMessage);
-                        GitHubAPIClient.DeleteSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, client.LogMessage);
+                        YouTubeAPIHelper.SaveTokenResponse(authorizationCodeTokenResponse, actionEnvironment, client.LogMessage);
                         Console.WriteLine($"Google API stored token response has been saved to {YouRattaConstants.StoredTokenResponseVariable}");
                     }
                     else
@@ -97,18 +78,16 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                         Console.WriteLine("Could not exchange authorization code");
                     }
                 }
-
-                
             }
             else if (GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredTokenResponseVariable, "empty", client.LogMessage))
             {
                 Uri url = flow.CreateAuthorizationCodeRequest(GoogleAuthConsts.LocalhostRedirectUri).Build();
                 GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, "empty", client.LogMessage);
                 Console.WriteLine("Follow this link to authorize this GitHub application");
-                Console.WriteLine(flow.CreateAuthorizationCodeRequest(GoogleAuthConsts.LocalhostRedirectUri).Build());
+                Console.WriteLine(url);
                 Console.WriteLine("When finished it is normal that the site can't be reached");
                 Console.WriteLine("===============================================================");
-                Console.WriteLine("Copy everything in the browsers URL between |code=| and |&|");
+                Console.WriteLine("Copy everything in the website URL between |code=| and |&|");
                 Console.WriteLine($"Paste this value in action secret {YouTubeConstants.RedirectCodeVariable}");
             }
             else
@@ -117,11 +96,13 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             }
             canContinue = false;
         }
-
+        if (!canContinue)
+        {
+            client.BlockAllMilestones();
+        }
 
 
         Console.WriteLine(client.GetActionIntelligence());
-
 
 
 
@@ -135,4 +116,3 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
     }
     client.SetStatus(MilestoneCondition.MilestoneCompleted);
 }
-

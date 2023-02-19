@@ -20,6 +20,7 @@ internal class ConflictMonitorWorkflow
             .GetEnvironmentVariable(GitHubConstants.ApiTokenVariable);
         _tokenResponse = Environment
             .GetEnvironmentVariable(YouRattaConstants.StoredTokenResponseVariable);
+        InitialSetupComplete = false;
     }
 #pragma warning restore CS8601
 #pragma warning restore CS8618
@@ -29,4 +30,11 @@ internal class ConflictMonitorWorkflow
     public string ApiToken => _apiToken;
 
     public string StoredTokenResponse => _tokenResponse;
+
+    public bool InitialSetupComplete
+    {
+        set => Environment
+            .SetEnvironmentVariable(YouRattaConstants.InitialSetupCompleteVariable, value.ToString());
+    }
+
 }

@@ -11,7 +11,6 @@ internal class MilestoneIntelligenceRegistry
     internal MilestoneIntelligenceRegistry()
     {
         InitialSetup = new InitialSetupMilestoneIntelligence();
-        InitialSetup.Condition = MilestoneCondition.MilestonePending;
         _milestones = new List<BaseMilestoneIntelligence>() { InitialSetup };
     }
 

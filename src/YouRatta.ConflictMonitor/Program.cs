@@ -15,7 +15,7 @@ ConflictMonitorWorkflow conflictMonitorWorkflow = new ConflictMonitorWorkflow();
 MilestoneIntelligenceRegistry milestoneIntelligence = new MilestoneIntelligenceRegistry();
 if (YouTubeAPIHelper.IsValidTokenResponse(conflictMonitorWorkflow.StoredTokenResponse))
 {
-    conflictMonitorWorkflow.InitialSetupComplete = false;
+    conflictMonitorWorkflow.InitialSetupComplete = true;
 }
 
 WebAppServer appServer = new WebAppServer(callHandler, logProvider, configurationHelper, environmentHelper, conflictMonitorWorkflow, milestoneIntelligence);

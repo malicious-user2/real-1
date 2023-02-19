@@ -16,4 +16,7 @@ public class ActionCutOutConfiguration : BaseValidatableConfiguration
 
     [Required]
     public bool DisableUnsupportedGitHubAPI { get; set; }
+
+    [Required]
+    public bool DisableYouTubeSyncMilestone { get; set; }
 }

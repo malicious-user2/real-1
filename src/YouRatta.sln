@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tester", "tester\tester.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YouRatta.ConflictMonitor", "YouRatta.ConflictMonitor\YouRatta.ConflictMonitor.csproj", "{6BA65881-CC70-4113-B0A6-4CB6BC345C79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouRatta.InitialSetup", "YouRatta.InitialSetup\YouRatta.InitialSetup.csproj", "{55A8DC68-9D40-40FD-BAAC-EF1848D728D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YouRatta.InitialSetup", "YouRatta.InitialSetup\YouRatta.InitialSetup.csproj", "{55A8DC68-9D40-40FD-BAAC-EF1848D728D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouRatta.YouTubeSync", "YouRatta.YouTubeSync\YouRatta.YouTubeSync.csproj", "{A29BB0A6-945B-4186-8417-D0A9CBD1F127}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +39,10 @@ Global
 		{55A8DC68-9D40-40FD-BAAC-EF1848D728D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55A8DC68-9D40-40FD-BAAC-EF1848D728D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55A8DC68-9D40-40FD-BAAC-EF1848D728D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A29BB0A6-945B-4186-8417-D0A9CBD1F127}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A29BB0A6-945B-4186-8417-D0A9CBD1F127}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A29BB0A6-945B-4186-8417-D0A9CBD1F127}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A29BB0A6-945B-4186-8417-D0A9CBD1F127}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

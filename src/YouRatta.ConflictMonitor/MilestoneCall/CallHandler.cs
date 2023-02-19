@@ -110,6 +110,18 @@ internal class CallHandler
         milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
     }
 
+    internal void UpdateYouTubeSyncActionIntelligence(YouRattaConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, YouTubeSyncActionIntelligence actionIntelligence)
+    {
+        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+        milestoneIntelligence.InitialSetup.Condition = actionIntelligence.Condition;
+        milestoneIntelligence.InitialSetup.ProcessId = actionIntelligence.ProcessId;
+        if (milestoneIntelligence.InitialSetup.StartTime == 0)
+        {
+            milestoneIntelligence.InitialSetup.StartTime = updateTime;
+        }
+        milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
+    }
+
     internal string GetConfigJson(YouRattaConfiguration appConfig)
     {
         return JsonConvert.SerializeObject(appConfig, Formatting.None);

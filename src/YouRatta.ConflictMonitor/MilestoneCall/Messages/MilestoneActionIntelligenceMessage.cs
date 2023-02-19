@@ -47,4 +47,23 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         _callManager.ActionReady.Set();
         return emptyResult.Task;
     }
+
+    public override Task<Empty> UpdateYouTubeSyncActionIntelligence(YouTubeSyncActionIntelligence request, ServerCallContext context)
+    {
+        TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
+        _callManager.ActionCallbacks.Enqueue((CallHandler callHandler) =>
+        {
+            try
+            {
+                callHandler.UpdateYouTubeSyncActionIntelligence(_configuration.Value, _milestoneIntelligence, request);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error on UpdateYouTubeSyncActionIntelligence: {e.Message}");
+            }
+            emptyResult.SetResult(new Empty());
+        });
+        _callManager.ActionReady.Set();
+        return emptyResult.Task;
+    }
 }

@@ -3,7 +3,8 @@
     "DisableConflictMonitorGitHubOperations": false,
     "DisableStoredTokenResponseDiscovery": false,
     "DisableInitialSetupMilestone": false,
-    "DisableUnsupportedGitHubAPI": false
+    "DisableUnsupportedGitHubAPI": false,
+    "DisableYouTubeSyncMilestone": false
   },
   "MilestoneLifetime": {
     "MaxUpdateDwellTime": 500,

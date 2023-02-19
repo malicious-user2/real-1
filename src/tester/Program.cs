@@ -10,12 +10,6 @@ using static YouRatta.Common.Proto.MilestoneActionIntelligenceService;
 
 Console.WriteLine("Hello, World!");
 
-var client_secrets = new YouRatta.Common.Proto.ClientSecrets();
-var installed_client_secrets = new YouRatta.Common.Proto.InstalledClientSecrets();
-installed_client_secrets.ClientId = "123";
-client_secrets.InstalledClientSecrets = installed_client_secrets;
-Console.WriteLine(JsonFormatter.Default.Format(client_secrets));
-
 
 using var channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions
 {
@@ -54,7 +48,7 @@ static SocketsHttpHandler CreateHttpHandler(string socketPath)
 public class UnixDomainSocketConnectionFactory
 {
     private readonly EndPoint _endPoint;
-    private string test;
+    private readonly string test;
 
     public UnixDomainSocketConnectionFactory(EndPoint endPoint)
     {

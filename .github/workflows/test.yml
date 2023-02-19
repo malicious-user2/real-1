@@ -35,6 +35,10 @@ jobs:
       run: dotnet restore src/YouRatta.InitialSetup/
     - name: Build Test3
       run: dotnet build src/YouRatta.InitialSetup/ --no-restore
+    - name: Restore dependencies4
+      run: dotnet restore src/YouRatta.YouTubeSync/
+    - name: Build Test4
+      run: dotnet build src/YouRatta.YouTubeSync/ --no-restore
     - name: Test (I:Debug T:Debug R:false)
       run: dotnet run --verbosity normal --project src/YouRatta.ConflictMonitor/YouRatta.ConflictMonitor.csproj --no-build src/YouRatta.ConflictMonitor/Debug/net7.0/YouRatta.ConflictMonitor.dll &
       env:
@@ -48,5 +52,7 @@ jobs:
         PROJECT_CLIENT_SECRET : ${{ vars.PROJECT_CLIENT_SECRET }}
         PROJECT_CLIENT_ID : ${{ vars.PROJECT_CLIENT_ID }}
         CODE : ${{ secrets.CODE }}
+    - name: Test3 (I:Debug T:Debug R:false)
+      run: dotnet run --verbosity normal --project src/YouRatta.YouTubeSync/YouRatta.YouTubeSync.csproj --no-build src/YouRatta.YouTubeSync/Debug/net7.0/YouRatta.YouTubeSync.dll
     - name: env
       run: env

@@ -117,13 +117,13 @@ internal class CallHandler
     internal void UpdateYouTubeSyncActionIntelligence(YouRattaConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, YouTubeSyncActionIntelligence actionIntelligence)
     {
         long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-        milestoneIntelligence.InitialSetup.Condition = actionIntelligence.Condition;
-        milestoneIntelligence.InitialSetup.ProcessId = actionIntelligence.ProcessId;
-        if (milestoneIntelligence.InitialSetup.StartTime == 0)
+        milestoneIntelligence.YouTubeSync.Condition = actionIntelligence.Condition;
+        milestoneIntelligence.YouTubeSync.ProcessId = actionIntelligence.ProcessId;
+        if (milestoneIntelligence.YouTubeSync.StartTime == 0)
         {
-            milestoneIntelligence.InitialSetup.StartTime = updateTime;
+            milestoneIntelligence.YouTubeSync.StartTime = updateTime;
         }
-        milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
+        milestoneIntelligence.YouTubeSync.LastUpdate = updateTime;
     }
 
     internal string GetConfigJson(YouRattaConfiguration appConfig)

@@ -95,6 +95,7 @@ internal class CallHandler
         actionIntelligence.InitialSetup = new InitialSetupActionIntelligence();
         actionIntelligence.InitialSetup.Condition = milestoneIntelligence.InitialSetup.Condition;
         actionIntelligence.InitialSetup.ProcessId = milestoneIntelligence.InitialSetup.ProcessId;
+        actionIntelligence.YouTubeSync = new YouTubeSyncActionIntelligence();
         actionIntelligence.YouTubeSync.Condition = milestoneIntelligence.YouTubeSync.Condition;
         actionIntelligence.YouTubeSync.ProcessId = milestoneIntelligence.YouTubeSync.ProcessId;
 

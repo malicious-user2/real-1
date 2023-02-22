@@ -40,8 +40,8 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             Console.WriteLine($"Create an action secret {GitHubConstants.ApiTokenVariable} to store GitHub personal access token");
             canContinue = false;
         }
-        if (canContinue && ((string.IsNullOrEmpty(workflow.ClientSecret) || string.IsNullOrEmpty(workflow.ClientId)) ||
-                            (workflow.ClientSecret.Equals("empty") || workflow.ClientId.Equals("empty"))))
+        if (canContinue && ((string.IsNullOrEmpty(intelligence.AppClientSecret) || string.IsNullOrEmpty(intelligence.AppClientId)) ||
+                            (intelligence.AppClientSecret.Equals("empty") || intelligence.AppClientId.Equals("empty"))))
         {
             Console.WriteLine("Entering actions variables section");
             if (!config.ActionCutOuts.DisableUnsupportedGitHubAPI)
@@ -60,13 +60,13 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         if (canContinue && (!YouTubeAPIHelper.IsValidTokenResponse(intelligence.TokenResponse)))
         {
             Console.WriteLine("Entering Google API stored token response section");
-            GoogleAuthorizationCodeFlow flow = YouTubeAPIHelper.GetFlow(workflow.ClientId, workflow.ClientSecret);
+            GoogleAuthorizationCodeFlow flow = YouTubeAPIHelper.GetFlow(intelligence.AppClientId, intelligence.AppClientSecret);
             if (!string.IsNullOrEmpty(workflow.RedirectCode) && (!workflow.RedirectCode.Equals("empty")))
             {
                 using (HttpClient tokenHttpClient = new HttpClient())
                 {
                     string redirectTokenCode = workflow.RedirectCode.Trim().Replace("=", "").Replace("&", "");
-                    var authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(workflow.RedirectCode, workflow.ClientId, workflow.ClientSecret);
+                    var authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(workflow.RedirectCode, intelligence.AppClientId, intelligence.AppClientSecret);
                     TokenResponse? authorizationCodeTokenResponse = YouTubeAPIHelper.ExchangeAuthorizationCode(authorizationCodeTokenRequest, flow);
                     if (authorizationCodeTokenResponse != null)
                     {

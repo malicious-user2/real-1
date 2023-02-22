@@ -11,7 +11,9 @@ message ActionIntelligence
 {
     MilestoneActionIntelligence Milestone_Intelligence = 1;
     string Token_Response = 2;
-    GitHubActionEnvironment GitHub_Action_Environment = 3;
-    string Config_Json = 4;
-    repeated string LogMessages = 5;
+    string App_Client_Id = 3;
+    string App_Client_Secret = 4;
+    GitHubActionEnvironment GitHub_Action_Environment = 5;
+    string Config_Json = 6;
+    repeated string LogMessages = 7;
 }

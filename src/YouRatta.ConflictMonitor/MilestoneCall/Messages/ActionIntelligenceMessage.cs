@@ -44,6 +44,8 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
                 actionIntelligence.TokenResponse = callHandler.GetStoredTokenResponse(_configuration.Value, _conflictMonitorWorkflow);
                 actionIntelligence.MilestoneIntelligence = callHandler.GetMilestoneActionIntelligence(_configuration.Value, _milestoneIntelligence);
                 actionIntelligence.ConfigJson = callHandler.GetConfigJson(_configuration.Value);
+                actionIntelligence.AppClientId = callHandler.GetAppClientId(_configuration.Value, _conflictMonitorWorkflow);
+                actionIntelligence.AppClientSecret = callHandler.GetAppClientSecret(_configuration.Value, _conflictMonitorWorkflow);
                 actionIntelligence.LogMessages.AddRange(callHandler.GetLogs());
             }
             catch (Exception e)

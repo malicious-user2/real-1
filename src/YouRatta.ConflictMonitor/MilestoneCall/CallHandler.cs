@@ -89,6 +89,24 @@ internal class CallHandler
         return string.Empty;
     }
 
+    internal string GetAppClientId(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow)
+    {
+        if (workflow.ClientId != null)
+        {
+            return workflow.ClientId;
+        }
+        return string.Empty;
+    }
+
+    internal string GetAppClientSecret(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow)
+    {
+        if (workflow.ClientSecret != null)
+        {
+            return workflow.ClientSecret;
+        }
+        return string.Empty;
+    }
+
     internal MilestoneActionIntelligence GetMilestoneActionIntelligence(YouRattaConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence)
     {
         MilestoneActionIntelligence actionIntelligence = new MilestoneActionIntelligence();

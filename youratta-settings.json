@@ -1,4 +1,7 @@
 {
+  "YouTube": {
+    "ChannelId": null
+  },
   "ActionCutOuts": {
     "DisableConflictMonitorGitHubOperations": false,
     "DisableStoredTokenResponseDiscovery": false,
@@ -9,5 +12,9 @@
   "MilestoneLifetime": {
     "MaxUpdateDwellTime": 500,
     "MaxRunTime": 501
+  },
+  "ErrataBulletin": {
+    "EmptyLinesPerTimeInterval": 0,
+    "VideoTitleLocation": "top"
   }
 }

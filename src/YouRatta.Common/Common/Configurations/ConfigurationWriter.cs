@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -21,7 +23,28 @@ public class ConfigurationWriter : IConfigurationWriter
     public void WriteBlankFile()
     {
         YouRattaConfiguration blankConfiguration = new YouRattaConfiguration();
+        FillDefaultValues(blankConfiguration);
         File.WriteAllText(_path, JsonConvert.SerializeObject(blankConfiguration, Formatting.Indented));
+    }
+
+    private void FillDefaultValues(object? configSection)
+    {
+        if (configSection == null) return;
+        foreach (PropertyInfo propInfo in configSection.GetType().GetProperties())
+        {
+            if (propInfo.PropertyType.BaseType != null && propInfo.PropertyType.BaseType == typeof(BaseValidatableConfiguration))
+            {
+                FillDefaultValues(propInfo.GetValue(configSection));
+            }
+            else
+            {
+                DefaultValueAttribute? defaultValue = propInfo.GetCustomAttribute<DefaultValueAttribute>();
+                if (defaultValue != null)
+                {
+                    propInfo.SetValue(configSection, defaultValue.Value);
+                }
+            }
+        }
     }
 
     public void WriteSection(string name, object value)

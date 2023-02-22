@@ -45,12 +45,12 @@ jobs:
         ACTION_TOKEN : ${{ secrets.GITHUB_TOKEN }}
         API_TOKEN : ${{ secrets.API_TOKEN }}
         TOKEN_RESPONSE : ${{ secrets.TOKEN_RESPONSE }}
+        PROJECT_CLIENT_SECRET : ${{ vars.PROJECT_CLIENT_SECRET }}
+        PROJECT_CLIENT_ID : ${{ vars.PROJECT_CLIENT_ID }}
     - name: Test2 (I:Debug T:Debug R:false)
       if : ${{ env.INITIAL_SETUP_COMPLETE == 'false' }}
       run: dotnet run --verbosity normal --project src/YouRatta.InitialSetup/YouRatta.InitialSetup.csproj --no-build src/YouRatta.InitialSetup/Debug/net7.0/YouRatta.InitialSetup.dll
       env:
-        PROJECT_CLIENT_SECRET : ${{ vars.PROJECT_CLIENT_SECRET }}
-        PROJECT_CLIENT_ID : ${{ vars.PROJECT_CLIENT_ID }}
         CODE : ${{ secrets.CODE }}
     - name: Test3 (I:Debug T:Debug R:false)
       run: dotnet run --verbosity normal --project src/YouRatta.YouTubeSync/YouRatta.YouTubeSync.csproj --no-build src/YouRatta.YouTubeSync/Debug/net7.0/YouRatta.YouTubeSync.dll

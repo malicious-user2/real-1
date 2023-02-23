@@ -9,4 +9,18 @@ public static class YouTubeConstants
     public static string ProjectClientIdVariable = "PROJECT_CLIENT_ID";
 
     public static string RedirectCodeVariable = "CODE";
+
+    public static string RequestIdPart = "id";
+
+    public static string RequestSnippetPart = "snippet";
+
+    public static string RequestStatusPart = "status";
+
+    public static string VideoKind = "youtube#video";
+
+    public static string PrivacyStatusPrivate = "private";
+
+    public static string PrivacyStatusUnlisted = "unlisted";
+
+    public static string PrivacyStatusPublic = "public";
 }

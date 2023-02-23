@@ -13,10 +13,44 @@ internal class ErrataBulletinBuilder
     private const string mdTemplateTitleBottom1 = "#";
     private const string mdTemplateTitleBottom2 = "{0}";
     private const string mdTemplateTitleBottom3 = "===";
+    private const string mdTemplateTimeValueMark1 = "{0} ------------------------------------------------\\";
+    private const string mdTemplateInstructions1 = "{0}";
 
     public ErrataBulletinBuilder(ErrataBulletinConfiguration config)
     {
         _configuration = config;
+    }
+
+    private void AddInstructions(ref string bulletinTemplate)
+    {
+        bulletinTemplate = string.Format(CultureInfo.InvariantCulture, mdTemplateInstructions1, _configuration.Instructions)
+            + Environment.NewLine + bulletinTemplate;
+    }
+
+    private void AddTimeValueMarks(ref string bulletinTemplate)
+    {
+        int secondCounter = 0;
+        while (secondCounter < ContentDuration.TotalSeconds)
+        {
+            if (secondCounter % _configuration.SecondsPerMark == 0)
+            {
+                TimeSpan secondValue = TimeSpan.FromSeconds(secondCounter);
+                if (secondCounter >= 3600)
+                {
+                    bulletinTemplate += string.Format(CultureInfo.InvariantCulture, mdTemplateTimeValueMark1, secondValue.ToString(@"h\:mm\:ss", CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                    bulletinTemplate += string.Format(CultureInfo.InvariantCulture, mdTemplateTimeValueMark1, secondValue.ToString(@"m\:ss", CultureInfo.InvariantCulture));
+                }
+                
+                for (int emptyLines = 0; emptyLines <= _configuration.EmptyLinesPerMark; emptyLines++)
+                {
+                    bulletinTemplate += Environment.NewLine;
+                }
+            }
+            secondCounter++;
+        }
     }
 
     private void AddTitle(ref string bulletinTemplate)
@@ -24,9 +58,8 @@ internal class ErrataBulletinBuilder
         switch (_configuration.VideoTitleLocation)
         {
             case "top":
-                bulletinTemplate = string.Format(CultureInfo.InvariantCulture, mdTemplateTitleTop1, SnippetTitle);
-                bulletinTemplate += Environment.NewLine;
-                bulletinTemplate += Environment.NewLine;
+                bulletinTemplate = string.Format(CultureInfo.InvariantCulture, mdTemplateTitleTop1, SnippetTitle)
+                    + Environment.NewLine + Environment.NewLine + bulletinTemplate;
                 break;
             case "bottom":
                 bulletinTemplate += mdTemplateTitleBottom1;
@@ -41,9 +74,11 @@ internal class ErrataBulletinBuilder
     public string Build()
     {
         string errataBulletin = string.Empty;
+        AddInstructions(ref errataBulletin);
+        AddTimeValueMarks(ref errataBulletin);
         AddTitle(ref errataBulletin);
-        return string.Empty;
         if (string.IsNullOrEmpty(SnippetTitle)) throw new Exception("No title specified to build errata bulletin");
+        return errataBulletin;
     }
 
     public string SnippetTitle;

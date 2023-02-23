@@ -1,6 +1,7 @@
 {
   "YouTube": {
-    "ChannelId": null
+    "ChannelId": null,
+    "ExcludePlaylists": null
   },
   "ActionCutOuts": {
     "DisableConflictMonitorGitHubOperations": false,
@@ -14,7 +15,9 @@
     "MaxRunTime": 501
   },
   "ErrataBulletin": {
-    "EmptyLinesPerTimeInterval": 0,
-    "VideoTitleLocation": "top"
+    "EmptyLinesPerMark": 0,
+    "SecondsPerMark": 0,
+    "VideoTitleLocation": "top",
+    "Instructions": "Enter your eratta here"
   }
 }

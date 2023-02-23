@@ -10,10 +10,18 @@ public class ErrataBulletinConfiguration : BaseValidatableConfiguration
 
     [Required]
     [Range(0, 50)]
-    public int EmptyLinesPerTimeInterval { get; set; }
+    public int EmptyLinesPerMark { get; set; }
+
+    [Required]
+    [Range(0, 50)]
+    public int SecondsPerMark { get; set; }
 
     [Required]
     [DefaultValue("top")]
     [RegularExpression(@"^(top|bottom)$", ErrorMessage = "VideoTitleLocation must be top or bottom")]
     public string VideoTitleLocation { get; set; }
+
+    [Required]
+    [DefaultValue("Enter your eratta here")]
+    public string Instructions { get; set; }
 }

@@ -57,6 +57,20 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             }
             canContinue = false;
         }
+        if (canContinue && (string.IsNullOrEmpty(intelligence.AppApiKey) || intelligence.AppApiKey.Equals("empty")))
+        {
+            Console.WriteLine("Entering Google API key section");
+            if (!config.ActionCutOuts.DisableUnsupportedGitHubAPI)
+            {
+                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ProjectApiKeyVariable, "empty", client.LogMessage);
+                Console.WriteLine("Fill repository variables and run action again");
+            }
+            else
+            {
+                Console.WriteLine($"Create an action variable {YouTubeConstants.ProjectApiKeyVariable} to store Google API key");
+            }
+            canContinue = false;
+        }
         if (canContinue && (!YouTubeAPIHelper.IsValidTokenResponse(intelligence.TokenResponse)))
         {
             Console.WriteLine("Entering Google API stored token response section");

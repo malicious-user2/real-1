@@ -91,18 +91,27 @@ internal class CallHandler
 
     internal string GetAppClientId(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow)
     {
-        if (workflow.ClientId != null)
+        if (workflow.ProjectClientId != null)
         {
-            return workflow.ClientId;
+            return workflow.ProjectClientId;
         }
         return string.Empty;
     }
 
     internal string GetAppClientSecret(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow)
     {
-        if (workflow.ClientSecret != null)
+        if (workflow.ProjectClientSecret != null)
         {
-            return workflow.ClientSecret;
+            return workflow.ProjectClientSecret;
+        }
+        return string.Empty;
+    }
+
+    internal string GetAppApiKey(YouRattaConfiguration appConfig, ConflictMonitorWorkflow workflow)
+    {
+        if (workflow.ProjectApiKey != null)
+        {
+            return workflow.ProjectApiKey;
         }
         return string.Empty;
     }

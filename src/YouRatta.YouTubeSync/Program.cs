@@ -1,17 +1,21 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Xml;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
+using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using Newtonsoft.Json;
 using Octokit;
+using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
 using YouRatta.Common.Proto;
 using YouRatta.Common.YouTube;
 using YouRatta.YouTubeSync.ConflictMonitor;
+using YouRatta.YouTubeSync.YouTube;
 using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 
 using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClient())
@@ -19,49 +23,43 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     System.Threading.Thread.Sleep(2000);
     if (client.GetMilestoneActionIntelligence().Condition == MilestoneCondition.MilestoneBlocked) return;
     if (client.GetYouRattaConfiguration().ActionCutOuts.DisableYouTubeSyncMilestone) return;
-
     client.Activate();
 
     ActionIntelligence actionInt = client.GetActionIntelligence();
-
-    TokenResponse? res = JsonConvert.DeserializeObject<TokenResponse>(actionInt.TokenResponse);
-    GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+    YouRattaConfiguration config = client.GetYouRattaConfiguration();
+    TokenResponse? savedTokenResponse = JsonConvert.DeserializeObject<TokenResponse>(actionInt.TokenResponse);
+    if (savedTokenResponse == null) return; /// throw an error
+    GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
     {
-        ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets()
+        ClientSecrets = new ClientSecrets()
         {
-            ClientId = "573861238622-2qjkd0bq0n8d4ii3gpj1ipun3sk2s2ra.apps.googleusercontent.com",
-            ClientSecret = "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"
+            ClientId = actionInt.AppClientId,
+            ClientSecret = actionInt.AppClientSecret
         },
         Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
     });
-    UserCredential cred1 = new UserCredential(flow, "user", res);
-    Console.WriteLine(cred1.UserId);
-    if (res == null) return;
-    if (res.IsExpired(flow.Clock))
+    if (savedTokenResponse.IsExpired(authFlow.Clock))
     {
-        res = flow.RefreshTokenAsync("user", res.RefreshToken, CancellationToken.None).Result;
+        savedTokenResponse = authFlow.RefreshTokenAsync(null, savedTokenResponse.RefreshToken, CancellationToken.None).Result;
+        YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
     }
-    YouTubeService yt = new YouTubeService(new Google.Apis.Services.BaseClientService.Initializer()
+    UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);
+    using (YouTubeService ytService
+            = new YouTubeService(
+                new BaseClientService.Initializer()
+                {
+                    ApiKey = actionInt.AppApiKey,
+                    ApplicationName = YouTubeConstants.RequestApplicationName,
+                    HttpClientInitializer = userCred
+                }))
     {
-        ApiKey = "AIzaSyAt13lyqRkogZxUBBtu_eXY0FWj7Fss4Ro",
-        ApplicationName = GitHubConstants.ProductHeader.Name,
-        HttpClientInitializer = cred1
-    });
+        List<ResourceId> resources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService);
 
-    PlaylistItemsResource.ListRequest req = new PlaylistItemsResource.ListRequest(yt, "snippet");
-    req.PlaylistId = "PLALOZV63REeuCwSXu59LxGeDFv80GzVdX";
-    req.MaxResults = 100;
+        foreach (ResourceId item in resources)
+        {
+            Console.WriteLine(item.VideoId);
+        }
 
-    PlaylistItemListResponse res2 = req.ExecuteAsync().Result;
-
-    foreach (PlaylistItem item in res2.Items)
-    {
-        Console.WriteLine(item.Snippet.ResourceId.VideoId);
+        Console.WriteLine(XmlConvert.ToTimeSpan("PT4M13S").ToString());
     }
-    Video v = new Video();
-
-    Console.WriteLine(XmlConvert.ToTimeSpan("PT4M13S").ToString());
-
 }
-
-Console.ReadLine();

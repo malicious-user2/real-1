@@ -8,7 +8,11 @@ public static class YouTubeConstants
 
     public static string ProjectClientIdVariable = "PROJECT_CLIENT_ID";
 
+    public static string ProjectApiKeyVariable = "PROJECT_API_KEY";
+
     public static string RedirectCodeVariable = "CODE";
+
+    public static string RequestApplicationName = "YouRatta";
 
     public static string RequestIdPart = "id";
 

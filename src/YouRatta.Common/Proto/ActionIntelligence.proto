@@ -13,7 +13,8 @@ message ActionIntelligence
     string Token_Response = 2;
     string App_Client_Id = 3;
     string App_Client_Secret = 4;
-    GitHubActionEnvironment GitHub_Action_Environment = 5;
-    string Config_Json = 6;
-    repeated string LogMessages = 7;
+    string App_Api_Key = 5;
+    GitHubActionEnvironment GitHub_Action_Environment = 6;
+    string Config_Json = 7;
+    repeated string LogMessages = 8;
 }

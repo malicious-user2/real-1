@@ -12,6 +12,7 @@ internal class ConflictMonitorWorkflow
     private readonly string _tokenResponse;
     private readonly string _clientId;
     private readonly string _clientSecret;
+    private readonly string _apiKey;
 
 #pragma warning disable CS8601
 #pragma warning disable CS8618
@@ -27,6 +28,8 @@ internal class ConflictMonitorWorkflow
             .GetEnvironmentVariable(YouTubeConstants.ProjectClientIdVariable);
         _clientSecret = Environment
             .GetEnvironmentVariable(YouTubeConstants.ProjectClientSecretsVariable);
+        _apiKey = Environment
+            .GetEnvironmentVariable(YouTubeConstants.ProjectApiKeyVariable);
         InitialSetupComplete = false;
     }
 #pragma warning restore CS8601
@@ -38,9 +41,11 @@ internal class ConflictMonitorWorkflow
 
     public string StoredTokenResponse => _tokenResponse;
 
-    public string ClientId => _clientId;
+    public string ProjectClientId => _clientId;
 
-    public string ClientSecret => _clientSecret;
+    public string ProjectClientSecret => _clientSecret;
+
+    public string ProjectApiKey => _apiKey;
 
     public bool InitialSetupComplete
     {

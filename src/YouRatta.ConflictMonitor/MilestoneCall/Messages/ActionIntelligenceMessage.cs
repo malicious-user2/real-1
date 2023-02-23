@@ -46,6 +46,7 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
                 actionIntelligence.ConfigJson = callHandler.GetConfigJson(_configuration.Value);
                 actionIntelligence.AppClientId = callHandler.GetAppClientId(_configuration.Value, _conflictMonitorWorkflow);
                 actionIntelligence.AppClientSecret = callHandler.GetAppClientSecret(_configuration.Value, _conflictMonitorWorkflow);
+                actionIntelligence.AppApiKey = callHandler.GetAppApiKey(_configuration.Value, _conflictMonitorWorkflow);
                 actionIntelligence.LogMessages.AddRange(callHandler.GetLogs());
             }
             catch (Exception e)

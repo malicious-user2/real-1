@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Xml;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
@@ -57,8 +58,9 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     {
         Console.WriteLine(item.Snippet.ResourceId.VideoId);
     }
+    Video v = new Video();
 
-
+    Console.WriteLine(XmlConvert.ToTimeSpan("PT4M13S").ToString());
 
 }
 

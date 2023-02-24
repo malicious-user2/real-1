@@ -117,9 +117,13 @@ public static class GitHubAPIClient
             {
                 secClient.Delete(repository[0], repository[1], secretName).Wait();
             }
-            catch (NotFoundException e)
+            catch (AggregateException e)
             {
                 logger(e.Message);
+                if (e.InnerException != null && e.InnerException is not NotFoundException)
+                {
+                    throw;
+                }
             }
         });
         RetryCommand(environment, deleteSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);

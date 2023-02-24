@@ -56,7 +56,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     {
         List<ResourceId> resources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService);
 
-        foreach (string dir in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "\\errata")))
+        foreach (string dir in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "errata")))
         {
             Console.WriteLine(dir);
         }

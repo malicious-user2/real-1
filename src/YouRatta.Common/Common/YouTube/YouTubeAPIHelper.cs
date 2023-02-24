@@ -67,8 +67,8 @@ public static class YouTubeAPIHelper
 
     public static void SaveTokenResponse(TokenResponse response, GitHubActionEnvironment actionEnvironment, Action<string> logger)
     {
-        string clientSecretsString = JsonConvert.SerializeObject(response, Formatting.None);
-        GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredTokenResponseVariable, clientSecretsString, logger);
+        string tokenResponseString = JsonConvert.SerializeObject(response, Formatting.None);
+        GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRattaConstants.StoredTokenResponseVariable, tokenResponseString, logger);
         GitHubAPIClient.DeleteSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, logger);
     }
 

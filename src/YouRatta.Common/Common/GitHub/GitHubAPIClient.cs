@@ -113,7 +113,14 @@ public static class GitHubAPIClient
 
             RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
             string[] repository = environment.EnvGitHubRepository.Split("/");
-            secClient.Delete(repository[0], repository[1], secretName).Wait();
+            try
+            {
+                secClient.Delete(repository[0], repository[1], secretName).Wait();
+            }
+            catch (NotFoundException e)
+            {
+                logger(e.Message);
+            }
         });
         RetryCommand(environment, deleteSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
         return true;

@@ -53,6 +53,11 @@ jobs:
       run: dotnet run --verbosity normal --project src/YouRatta.InitialSetup/YouRatta.InitialSetup.csproj --no-build src/YouRatta.InitialSetup/Debug/net7.0/YouRatta.InitialSetup.dll
       env:
         CODE : ${{ secrets.CODE }}
+    - name: Checkout errata repo
+      uses: actions/checkout@v3
+      with:
+        ref: errata
+        path: errata
     - name: Test3 (I:Debug T:Debug R:false)
       run: dotnet run --verbosity normal --project src/YouRatta.YouTubeSync/YouRatta.YouTubeSync.csproj --no-build src/YouRatta.YouTubeSync/Debug/net7.0/YouRatta.YouTubeSync.dll
     - name: env

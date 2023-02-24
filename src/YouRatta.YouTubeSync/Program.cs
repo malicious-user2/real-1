@@ -78,10 +78,10 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             {
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
                 string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
-                    $"{searchResult.Id.VideoId}" +
-                    $"/{ErrataBulletinConstants.ErrataBulletinFileName}";
+                    $"{searchResult.Id.VideoId}.md";
                 if (!Path.Exists(Path.Combine(Directory.GetCurrentDirectory(), errataBulletinPath)))
                 {
+                    Console.WriteLine(Path.Combine(Directory.GetCurrentDirectory(), errataBulletinPath));
                     VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(ytService, new string[] { YouTubeConstants.RequestContentDetailsPart });
                     videoRequest.Id = searchResult.Id.VideoId;
                     videoRequest.MaxResults = 1;

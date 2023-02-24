@@ -13,7 +13,7 @@ internal class ErrataBulletinBuilder
     private const string mdTemplateTitleBottom1 = "#";
     private const string mdTemplateTitleBottom2 = "{0}";
     private const string mdTemplateTitleBottom3 = "===";
-    private const string mdTemplateTimeValueMark1 = "{0} ------------------------------------------------\\";
+    private const string mdTemplateTimeValueMark1 = "{0} ------------------------------------------------  ";
     private const string mdTemplateInstructions1 = "{0}";
 
     public ErrataBulletinBuilder(ErrataBulletinConfiguration config)

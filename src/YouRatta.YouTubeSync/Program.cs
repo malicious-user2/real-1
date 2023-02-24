@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Xml;
 using Google.Apis.Auth.OAuth2;
@@ -55,9 +56,9 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     {
         List<ResourceId> resources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService);
 
-        foreach (ResourceId item in resources)
+        foreach (string dir in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "/errata")))
         {
-            Console.WriteLine(item.VideoId);
+            Console.WriteLine(dir);
         }
 
         Console.WriteLine(XmlConvert.ToTimeSpan("PT4M13S").ToString());

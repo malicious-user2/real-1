@@ -8,12 +8,14 @@ namespace YouRatta.YouTubeSync.YouTube;
 
 internal static class YouTubePlaylistHelper
 {
-    public static List<ResourceId> GetPlaylistVideos(string[] playlists, YouTubeService service)
+    public static List<ResourceId> GetPlaylistVideos(string[]? playlists, YouTubeService service)
     {
         List<string> videoIds = new List<string>();
         List<ResourceId> playlistResourceIds = new List<ResourceId>();
+        if (playlists == null) return playlistResourceIds;
         foreach (string playlist in playlists)
         {
+            if (playlist == null) continue;
             PlaylistItemsResource.ListRequest playlistRequest = new PlaylistItemsResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart, YouTubeConstants.RequestStatusPart });
             playlistRequest.PlaylistId = playlist;
             playlistRequest.MaxResults = 50;

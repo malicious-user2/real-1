@@ -89,15 +89,14 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     VideoListResponse videoResponse = videoRequest.Execute();
                     Video videoDetails = videoResponse.Items.First();
                     ErrataBulletinBuilder bulletinBuilder = new ErrataBulletinBuilder(config.ErrataBulletin);
-                    string videoTitle = WebUtility.HtmlDecode(searchResult.Snippet.Title);
-                    bulletinBuilder.SnippetTitle = string.IsNullOrEmpty(videoTitle) ? "Unknown Video" : videoTitle;
+                    string ytVideoTitle = WebUtility.HtmlDecode(searchResult.Snippet.Title);
+                    string videoTitle = string.IsNullOrEmpty(ytVideoTitle) ? "Unknown Video" : ytVideoTitle;
+                    bulletinBuilder.SnippetTitle = videoTitle;
                     bulletinBuilder.ContentDuration = XmlConvert.ToTimeSpan(videoDetails.ContentDetails.Duration);
                     string errataBulletin = bulletinBuilder.Build();
 
 
-                    CreateFileRequest createFile = new CreateFileRequest(searchResult.Snippet.Title,
-                        errataBulletin,
-                        GitHubConstants.ErrataBranch);
+                    CreateFileRequest createFile = new CreateFileRequest(videoTitle, errataBulletin, GitHubConstants.ErrataBranch);
                     ghClient.Repository.Content.CreateFile(repository[0], repository[1], errataBulletinPath, createFile).Wait();
                 }
 

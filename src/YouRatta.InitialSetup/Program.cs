@@ -60,15 +60,8 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         if (canContinue && (string.IsNullOrEmpty(intelligence.AppApiKey) || intelligence.AppApiKey.Equals("empty")))
         {
             Console.WriteLine("Entering Google API key section");
-            if (!config.ActionCutOuts.DisableUnsupportedGitHubAPI)
-            {
-                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ProjectApiKeyVariable, "empty", client.LogMessage);
-                Console.WriteLine("Fill repository variables and run action again");
-            }
-            else
-            {
-                Console.WriteLine($"Create an action variable {YouTubeConstants.ProjectApiKeyVariable} to store Google API key");
-            }
+            GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.ProjectApiKeyVariable, "empty", client.LogMessage);
+            Console.WriteLine($"Paste Google API key in action secret {YouTubeConstants.ProjectApiKeyVariable}");
             canContinue = false;
         }
         if (canContinue && (!YouTubeAPIHelper.IsValidTokenResponse(intelligence.TokenResponse)))

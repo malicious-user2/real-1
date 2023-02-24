@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
@@ -38,6 +39,12 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         {
             Console.WriteLine("Entering actions secrets section");
             Console.WriteLine($"Create an action secret {GitHubConstants.ApiTokenVariable} to store GitHub personal access token");
+            canContinue = false;
+        }
+        if (canContinue && (!Regex.IsMatch(actionEnvironment.ApiToken, @"^ghp_[a-zA-Z0-9]{36}$")))
+        {
+            Console.WriteLine("Entering actions secrets verify section");
+            Console.WriteLine($"Action secret {GitHubConstants.ApiTokenVariable} is not a GitHub personal access token");
             canContinue = false;
         }
         if (canContinue && ((string.IsNullOrEmpty(intelligence.AppClientSecret) || string.IsNullOrEmpty(intelligence.AppClientId)) ||

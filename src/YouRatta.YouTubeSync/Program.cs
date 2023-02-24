@@ -54,7 +54,25 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     HttpClientInitializer = userCred
                 }))
     {
-        List<ResourceId> resources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService);
+        List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService);
+
+        SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(ytService, new string[] { YouTubeConstants.RequestSnippetPart });
+        if (string.IsNullOrEmpty(config.YouTube.ChannelId)) return;
+        searchRequest.ChannelId = config.YouTube.ChannelId;
+        searchRequest.MaxResults = 50;
+        bool requestNextPage = true;
+        while (requestNextPage)
+        {
+            SearchListResponse searchResponse = searchRequest.Execute();
+            foreach (SearchResult searchResult in searchResponse.Items)
+            {
+                if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
+                Console.WriteLine(searchResult.Snippet.Title);
+            }
+            requestNextPage = !string.IsNullOrEmpty(searchResponse.NextPageToken);
+            searchRequest.PageToken = searchResponse.NextPageToken;
+        }
+
 
         foreach (string dir in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "errata")))
         {

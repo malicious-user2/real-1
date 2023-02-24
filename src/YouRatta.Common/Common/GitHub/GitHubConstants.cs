@@ -14,4 +14,6 @@ public static class GitHubConstants
     public static string ActionTokenVariable = "ACTION_TOKEN";
 
     public static string ApiTokenVariable = "API_TOKEN";
+
+    public static string ErrataBranch = "errata";
 }

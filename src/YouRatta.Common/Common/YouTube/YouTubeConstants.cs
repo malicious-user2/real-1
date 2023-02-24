@@ -20,6 +20,8 @@ public static class YouTubeConstants
 
     public static string RequestStatusPart = "status";
 
+    public static string RequestContentDetailsPart = "contentDetails";
+
     public static string VideoKind = "youtube#video";
 
     public static string PrivacyStatusPrivate = "private";

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Xml;
 using Google.Apis.Auth.OAuth2;
@@ -9,6 +10,7 @@ using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Octokit;
 using YouRatta.Common.Configurations;
@@ -16,6 +18,7 @@ using YouRatta.Common.GitHub;
 using YouRatta.Common.Proto;
 using YouRatta.Common.YouTube;
 using YouRatta.YouTubeSync.ConflictMonitor;
+using YouRatta.YouTubeSync.ErrataBulletin;
 using YouRatta.YouTubeSync.YouTube;
 using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 
@@ -28,6 +31,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
 
     ActionIntelligence actionInt = client.GetActionIntelligence();
     YouRattaConfiguration config = client.GetYouRattaConfiguration();
+    GitHubActionEnvironment actionEnvironment = actionInt.GitHubActionEnvironment;
     TokenResponse? savedTokenResponse = JsonConvert.DeserializeObject<TokenResponse>(actionInt.TokenResponse);
     if (savedTokenResponse == null) return; /// throw an error
     GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
@@ -63,11 +67,38 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         bool requestNextPage = true;
         while (requestNextPage)
         {
+            GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
+            {
+                Credentials = new Credentials(actionEnvironment.ApiToken, AuthenticationType.Bearer)
+            };
+            ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
+            string[] repository = actionEnvironment.EnvGitHubRepository.Split("/");
             SearchListResponse searchResponse = searchRequest.Execute();
             foreach (SearchResult searchResult in searchResponse.Items)
             {
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
-                Console.WriteLine(searchResult.Snippet.Title);
+                string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
+                    $"{searchResult.Id.VideoId}" +
+                    $"/{ErrataBulletinConstants.ErrataBulletinFileName}";
+                if (!Path.Exists(Path.Combine(Directory.GetCurrentDirectory(), errataBulletinPath)))
+                {
+                    VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(ytService, new string[] { YouTubeConstants.RequestContentDetailsPart });
+                    videoRequest.Id = searchResult.Id.VideoId;
+                    videoRequest.MaxResults = 1;
+                    VideoListResponse videoResponse = videoRequest.Execute();
+                    Video videoDetails = videoResponse.Items.First();
+                    ErrataBulletinBuilder bulletinBuilder = new ErrataBulletinBuilder(config.ErrataBulletin);
+                    bulletinBuilder.SnippetTitle = searchResult.Snippet.Title;
+                    bulletinBuilder.ContentDuration = XmlConvert.ToTimeSpan(videoDetails.ContentDetails.Duration);
+                    string errataBulletin = bulletinBuilder.Build();
+
+
+                    CreateFileRequest createFile = new CreateFileRequest(searchResult.Snippet.Title,
+                        errataBulletin,
+                        GitHubConstants.ErrataBranch);
+                    ghClient.Repository.Content.CreateFile(repository[0], repository[1], errataBulletinPath, createFile).Wait();
+                }
+
             }
             requestNextPage = !string.IsNullOrEmpty(searchResponse.NextPageToken);
             searchRequest.PageToken = searchResponse.NextPageToken;

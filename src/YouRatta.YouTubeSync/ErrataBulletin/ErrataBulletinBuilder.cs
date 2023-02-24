@@ -13,7 +13,7 @@ internal class ErrataBulletinBuilder
     private const string mdTemplateTitleBottom1 = "#";
     private const string mdTemplateTitleBottom2 = "{0}";
     private const string mdTemplateTitleBottom3 = "===";
-    private const string mdTemplateTimeValueMark1 = "{0} ------------------------------------------------  ";
+    private const string mdTemplateTimeValueMark1 = "{0} ------------------------------------------------";
     private const string mdTemplateInstructions1 = "{0}";
 
     public ErrataBulletinBuilder(ErrataBulletinConfiguration config)
@@ -24,7 +24,7 @@ internal class ErrataBulletinBuilder
     private void AddInstructions(ref string bulletinTemplate)
     {
         bulletinTemplate = string.Format(CultureInfo.InvariantCulture, mdTemplateInstructions1, _configuration.Instructions)
-            + Environment.NewLine + bulletinTemplate;
+            + GitHubNewLine + bulletinTemplate;
     }
 
     private void AddTimeValueMarks(ref string bulletinTemplate)
@@ -46,7 +46,7 @@ internal class ErrataBulletinBuilder
                 
                 for (int emptyLines = 0; emptyLines <= _configuration.EmptyLinesPerMark; emptyLines++)
                 {
-                    bulletinTemplate += Environment.NewLine;
+                    bulletinTemplate += GitHubNewLine;
                 }
             }
             secondCounter++;
@@ -59,13 +59,13 @@ internal class ErrataBulletinBuilder
         {
             case "top":
                 bulletinTemplate = string.Format(CultureInfo.InvariantCulture, mdTemplateTitleTop1, SnippetTitle)
-                    + Environment.NewLine + Environment.NewLine + bulletinTemplate;
+                    + GitHubNewLine + GitHubNewLine + bulletinTemplate;
                 break;
             case "bottom":
                 bulletinTemplate += mdTemplateTitleBottom1;
-                bulletinTemplate += Environment.NewLine;
+                bulletinTemplate += GitHubNewLine;
                 bulletinTemplate += string.Format(CultureInfo.InvariantCulture, mdTemplateTitleBottom2, SnippetTitle);
-                bulletinTemplate += Environment.NewLine;
+                bulletinTemplate += GitHubNewLine;
                 bulletinTemplate += mdTemplateTitleBottom3;
                 break;
         }
@@ -84,4 +84,6 @@ internal class ErrataBulletinBuilder
     public string SnippetTitle;
 
     public TimeSpan ContentDuration;
+
+    private string GitHubNewLine => "  " + Environment.NewLine;
 }

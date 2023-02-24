@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Xml;
 using Google.Apis.Auth.OAuth2;
@@ -88,7 +89,8 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     VideoListResponse videoResponse = videoRequest.Execute();
                     Video videoDetails = videoResponse.Items.First();
                     ErrataBulletinBuilder bulletinBuilder = new ErrataBulletinBuilder(config.ErrataBulletin);
-                    bulletinBuilder.SnippetTitle = searchResult.Snippet.Title;
+                    string videoTitle = WebUtility.HtmlDecode(searchResult.Snippet.Title);
+                    bulletinBuilder.SnippetTitle = string.IsNullOrEmpty(videoTitle) ? "Unknown Video" : videoTitle;
                     bulletinBuilder.ContentDuration = XmlConvert.ToTimeSpan(videoDetails.ContentDetails.Duration);
                     string errataBulletin = bulletinBuilder.Build();
 

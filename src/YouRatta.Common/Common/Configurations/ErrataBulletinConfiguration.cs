@@ -9,11 +9,11 @@ public class ErrataBulletinConfiguration : BaseValidatableConfiguration
 {
 
     [Required]
-    [Range(0, 50)]
+    [Range(1, 50)]
     public int EmptyLinesPerMark { get; set; }
 
     [Required]
-    [Range(0, 50)]
+    [Range(1, 50)]
     public int SecondsPerMark { get; set; }
 
     [Required]

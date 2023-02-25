@@ -56,7 +56,8 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 {
                     ApiKey = actionInt.AppApiKey,
                     ApplicationName = YouTubeConstants.RequestApplicationName,
-                    HttpClientInitializer = userCred
+                    HttpClientInitializer = userCred,
+                    BaseUri = "http://localhost"
                 }))
     {
         List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService);
@@ -80,9 +81,8 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
                 string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
                     $"{searchResult.Id.VideoId}.md";
-                if (!Path.Exists(Path.Combine(Directory.GetCurrentDirectory(), GitHubConstants.ErrataBranch, errataBulletinPath)))
+                if (!Path.Exists(Path.Combine(Directory.GetCurrentDirectory(), GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
                 {
-                    Console.WriteLine(Path.Combine(Directory.GetCurrentDirectory(), GitHubConstants.ErrataBranch, errataBulletinPath));
                     VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(ytService, new string[] { YouTubeConstants.RequestContentDetailsPart });
                     videoRequest.Id = searchResult.Id.VideoId;
                     videoRequest.MaxResults = 1;

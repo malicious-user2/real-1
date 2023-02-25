@@ -16,4 +16,6 @@ public static class GitHubConstants
     public static string ApiTokenVariable = "API_TOKEN";
 
     public static string ErrataBranch = "errata";
+
+    public static string ErrataCheckoutPath = "errata-checkout";
 }

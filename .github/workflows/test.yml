@@ -57,7 +57,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         ref: errata
-        path: errata
+        path: errata-checkout
     - name: Test3 (I:Debug T:Debug R:false)
       run: dotnet run --verbosity normal --project src/YouRatta.YouTubeSync/YouRatta.YouTubeSync.csproj --no-build src/YouRatta.YouTubeSync/Debug/net7.0/YouRatta.YouTubeSync.dll
     - name: env

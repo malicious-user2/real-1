@@ -1,7 +1,8 @@
 {
   "YouTube": {
-    "ChannelId": "UCGOP073meOyUB5n794IcZnw",
-    "ExcludePlaylists": null
+    "ChannelId": "UCEvt5rd7Mvh2slOs1vHYezg",
+    "ExcludePlaylists": null,
+    "ErattaLinkLocation": "bottom"
   },
   "ActionCutOuts": {
     "DisableConflictMonitorGitHubOperations": false,
@@ -15,9 +16,9 @@
     "MaxRunTime": 501
   },
   "ErrataBulletin": {
-    "EmptyLinesPerMark": 3,
-    "SecondsPerMark": 30,
-    "VideoTitleLocation": "bottom",
+    "EmptyLinesPerMark": 0,
+    "SecondsPerMark": 0,
+    "VideoTitleLocation": "top",
     "Instructions": "Enter your eratta here"
   }
 }

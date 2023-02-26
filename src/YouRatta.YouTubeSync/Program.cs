@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -82,6 +83,16 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
 
                 CreateFileRequest createFile = new CreateFileRequest(videoTitle, errataBulletin, GitHubConstants.ErrataBranch);
                 ghClient.Repository.Content.CreateFile(repository[0], repository[1], errataBulletinPath, createFile).Wait();
+
+                string erattaLink =
+                    string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}",
+                    actionEnvironment.EnvGitHubServerUrl,
+                    actionEnvironment.EnvGitHubRepository,
+                    errataBulletinPath);
+                string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
+                video.Snippet.Description = newDescription;
+                VideosResource.UpdateRequest videoUpdate = new VideosResource.UpdateRequest(ytService, video, new string[] { YouTubeConstants.RequestSnippetPart });
+                videoUpdate.Execute();
 
             }
         }

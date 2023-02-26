@@ -46,7 +46,7 @@ internal class ErrataBulletinBuilder
                 
                 for (int emptyLines = 0; emptyLines <= _configuration.EmptyLinesPerMark; emptyLines++)
                 {
-                    bulletinTemplate += GitHubNewLine;
+                    bulletinTemplate += Environment.NewLine;
                 }
             }
             secondCounter++;

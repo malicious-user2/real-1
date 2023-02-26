@@ -91,7 +91,9 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     errataBulletinPath);
                 string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
                 video.Snippet.Description = newDescription;
+                video.ContentDetails = null;
                 VideosResource.UpdateRequest videoUpdate = new VideosResource.UpdateRequest(ytService, video, new string[] { YouTubeConstants.RequestSnippetPart });
+
                 videoUpdate.Execute();
 
             }

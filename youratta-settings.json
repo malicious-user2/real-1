@@ -16,8 +16,8 @@
     "MaxRunTime": 501
   },
   "ErrataBulletin": {
-    "EmptyLinesPerMark": 0,
-    "SecondsPerMark": 0,
+    "EmptyLinesPerMark": 4,
+    "SecondsPerMark": 30,
     "VideoTitleLocation": "top",
     "Instructions": "Enter your eratta here"
   }

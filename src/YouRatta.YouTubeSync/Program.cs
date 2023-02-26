@@ -98,10 +98,5 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
 
             }
         }
-
-        foreach (string dir in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "errata")))
-        {
-            Console.WriteLine(dir);
-        }
     }
 }

@@ -28,7 +28,7 @@ internal static class YouTubeVideoHelper
             foreach (SearchResult searchResult in searchResponse.Items)
             {
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
-                VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart });
+                VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
                 videoRequest.Id = searchResult.Id.VideoId;
                 videoRequest.MaxResults = 1;
                 VideoListResponse videoResponse = videoRequest.Execute();

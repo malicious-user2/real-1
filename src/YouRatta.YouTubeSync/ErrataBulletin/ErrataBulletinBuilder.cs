@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using YouRatta.Common.Configurations;
+using YouRatta.Common.Milestone;
 
 namespace YouRatta.YouTubeSync.ErrataBulletin;
 
@@ -77,7 +78,7 @@ internal class ErrataBulletinBuilder
         AddInstructions(ref errataBulletin);
         AddTimeValueMarks(ref errataBulletin);
         AddTitle(ref errataBulletin);
-        if (string.IsNullOrEmpty(SnippetTitle)) throw new Exception("No title specified to build errata bulletin");
+        if (string.IsNullOrEmpty(SnippetTitle)) throw new MilestoneException("No title specified to build errata bulletin");
         return errataBulletin;
     }
 

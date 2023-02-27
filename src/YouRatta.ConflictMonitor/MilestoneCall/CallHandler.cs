@@ -29,32 +29,6 @@ internal class CallHandler
         _logBuilder = new List<string>();
     }
 
-    public static T? RetryCommand<T>(Func<T> command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
-    {
-        int retryCount = 0;
-        T? returnValue = default(T?);
-        while (retryCount < 10)
-        {
-            try
-            {
-                returnValue = command.Invoke();
-                break;
-            }
-            catch (Exception ex)
-            {
-                retryCount++;
-                logger.Invoke(ex.Message);
-                if (retryCount > 9)
-                {
-                    throw;
-                }
-            }
-            TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(minRetry, maxRetry);
-            Thread.Sleep(backOff);
-        }
-        return returnValue;
-    }
-
     internal GitHubActionEnvironment GetGithubActionEnvironment(YouRattaConfiguration appConfig, GitHubEnvironment environment, ConflictMonitorWorkflow workflow)
     {
         GitHubActionEnvironment actionEnvironment = environment.GetActionEnvironment();
@@ -67,7 +41,7 @@ internal class CallHandler
                 ghClient.Credentials = new Credentials(workflow.GitHubToken, AuthenticationType.Bearer);
                 return ghClient.RateLimit.GetRateLimits().Result.Resources;
             });
-            ghRateLimit = RetryCommand<ResourceRateLimit>(getResourceRateLimit, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), AppendLog);
+            ghRateLimit = GitHubRetryHelper.ForceRetryCommand<ResourceRateLimit>(getResourceRateLimit, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), AppendLog);
             if (ghRateLimit != null)
             {
                 actionEnvironment.RateLimitCoreRemaining = ghRateLimit.Core.Remaining;

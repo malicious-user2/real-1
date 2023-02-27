@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using YouRatta.Common.Proto;
 using Newtonsoft.Json;
 using System.Text;
+using YouRatta.Common.Milestone;
 
 namespace YouRatta.Common.GitHub;
 
@@ -30,7 +31,7 @@ public static class UnsupportedGitHubAPIClient
                 logger.Invoke(ex.Message);
                 if (retryCount > 1)
                 {
-                    throw;
+                    throw new MilestoneException("GitHub API failure", ex);
                 }
             }
             TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(minRetry, maxRetry);

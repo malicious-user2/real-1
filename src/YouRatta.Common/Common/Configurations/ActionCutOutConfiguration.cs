@@ -19,4 +19,7 @@ public class ActionCutOutConfiguration : BaseValidatableConfiguration
 
     [Required]
     public bool DisableYouTubeSyncMilestone { get; set; }
+
+    [Required]
+    public bool DisableYouTubeVideoUpdate { get; set; }
 }

@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using YouRatta.Common;
 using YouRatta.Common.Configurations;
 using YouRatta.Common.GitHub;
+using YouRatta.Common.Milestone;
 using YouRatta.Common.Proto;
 using YouRatta.Common.YouTube;
 using YouRatta.InitialSetup.ConflictMonitor;
@@ -123,10 +124,10 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
 
 
     }
-    catch (Exception)
+    catch (Exception ex)
     {
         client.SetStatus(MilestoneCondition.MilestoneFailed);
-        throw;
+        throw new MilestoneException("InitialSetup failed", ex);
     }
     client.SetStatus(MilestoneCondition.MilestoneCompleted);
 }

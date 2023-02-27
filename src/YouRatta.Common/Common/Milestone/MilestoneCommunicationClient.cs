@@ -111,9 +111,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
         }
         catch (Grpc.Core.RpcException ex)
         {
-            Console.WriteLine("Failed to connect to ConflictMonitor");
-            Console.WriteLine(ex.StackTrace);
-            return null;
+            throw new MilestoneException("Failed to connect to ConflictMonitor", ex);
         }
         if (actionIntelligence == null) return milestoneActionIntelligence;
         List<PropertyInfo> milestoneIntelligenceProperties = actionIntelligence.MilestoneIntelligence

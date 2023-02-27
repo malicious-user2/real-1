@@ -72,6 +72,8 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, ytService);
         foreach (Video video in videoList)
         {
+            if (video.ContentDetails == null) continue;
+            if (video.Snippet == null) continue;
             string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
                 $"{video.Id}.md";
             if (!Path.Exists(Path.Combine(Directory.GetCurrentDirectory(), GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
@@ -86,18 +88,16 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 CreateFileRequest createFile = new CreateFileRequest(videoTitle, errataBulletin, GitHubConstants.ErrataBranch);
                 ghClient.Repository.Content.CreateFile(repository[0], repository[1], errataBulletinPath, createFile).Wait();
 
-                string erattaLink =
-                    string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}",
-                    actionEnvironment.EnvGitHubServerUrl,
-                    actionEnvironment.EnvGitHubRepository,
-                    errataBulletinPath);
-                string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
-                video.Snippet.Description = newDescription;
-                video.ContentDetails = null;
-                VideosResource.UpdateRequest videoUpdate = new VideosResource.UpdateRequest(ytService, video, new string[] { YouTubeConstants.RequestSnippetPart });
-
-                videoUpdate.Execute();
-
+                if (!config.ActionCutOuts.DisableYouTubeVideoUpdate)
+                {
+                    string erattaLink =
+                        string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}",
+                        actionEnvironment.EnvGitHubServerUrl,
+                        actionEnvironment.EnvGitHubRepository,
+                        errataBulletinPath);
+                    string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
+                    YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, ytService);
+                }
             }
         }
     }

@@ -9,68 +9,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Octokit;
 using Sodium;
+using YouRatta.Common.Milestone;
 using YouRatta.Common.Proto;
 
 namespace YouRatta.Common.GitHub;
 
 public static class GitHubAPIClient
 {
-    private static void RetryCommand(GitHubActionEnvironment environment, Action command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
-    {
-        int retryCount = 0;
-        while (retryCount < 3)
-        {
-            try
-            {
-                {
-                    environment.RateLimitCoreRemaining--;
-                    command.Invoke();
-                }
-                break;
-            }
-            catch (Exception ex)
-            {
-                retryCount++;
-                logger.Invoke(ex.Message);
-                if (retryCount > 1)
-                {
-                    throw;
-                }
-            }
-            TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(minRetry, maxRetry);
-            Thread.Sleep(backOff);
-        }
-    }
-
-    public static T? RetryCommand<T>(GitHubActionEnvironment environment, Func<T> command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
-    {
-        int retryCount = 0;
-        T? returnValue = default(T?);
-        while (retryCount < 3)
-        {
-            try
-            {
-                {
-                    environment.RateLimitCoreRemaining--;
-                    returnValue = command.Invoke();
-                }
-                break;
-            }
-            catch (Exception ex)
-            {
-                retryCount++;
-                logger.Invoke(ex.Message);
-                if (retryCount > 1)
-                {
-                    throw;
-                }
-            }
-            TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(minRetry, maxRetry);
-            Thread.Sleep(backOff);
-        }
-        return returnValue;
-    }
-
     private static UpsertRepositorySecret CreateSecret(string secretValue, SecretsPublicKey key)
     {
         byte[] secretBytes = Encoding.UTF8.GetBytes(secretValue);
@@ -122,11 +67,11 @@ public static class GitHubAPIClient
                 logger(e.Message);
                 if (e.InnerException != null && e.InnerException is not NotFoundException)
                 {
-                    throw;
+                    throw new MilestoneException("GitHub API failure", e);
                 }
             }
         });
-        RetryCommand(environment, deleteSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+        GitHubRetryHelper.RetryCommand(environment, deleteSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
         return true;
     }
 
@@ -151,12 +96,12 @@ public static class GitHubAPIClient
             {
                 return secClient.GetPublicKey(repository[0], repository[1]).Result;
             });
-            publicKey = RetryCommand(environment, getPublicKey, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
-            if (publicKey == null) throw new InvalidOperationException("Could not get repository public key to create secret");
+            publicKey = GitHubRetryHelper.RetryCommand(environment, getPublicKey, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+            if (publicKey == null) throw new MilestoneException("Could not get GitHub repository public key to create secret");
             UpsertRepositorySecret secret = CreateSecret(secretValue, publicKey);
             secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();
         });
-        RetryCommand(environment, updateSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+        GitHubRetryHelper.RetryCommand(environment, updateSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
         return true;
     }
 }

@@ -14,6 +14,26 @@ namespace YouRatta.YouTubeSync.YouTube;
 internal static class YouTubeVideoHelper
 {
 
+    public static void UpdateVideoDescription(Video video, string description, YouTubeService service)
+    {
+        video.ContentDetails = null;
+        video.FileDetails = null;
+        video.LiveStreamingDetails = null;
+        video.Localizations = null;
+        video.Player = null;
+        video.ProcessingDetails = null;
+        video.RecordingDetails = null;
+        video.Statistics = null;
+        video.Status = null;
+        video.Suggestions = null;
+        video.TopicDetails = null;
+        if (video.Snippet == null) return;
+        video.Snippet.Description = description;
+        video.ContentDetails = null;
+        VideosResource.UpdateRequest videoUpdate = new VideosResource.UpdateRequest(service, video, new string[] { YouTubeConstants.RequestSnippetPart });
+        videoUpdate.Execute();
+    }
+
     public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeService service)
     {
         List<Video> channelVideos = new List<Video>();

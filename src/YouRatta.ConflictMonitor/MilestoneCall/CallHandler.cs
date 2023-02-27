@@ -99,6 +99,8 @@ internal class CallHandler
         actionIntelligence.YouTubeSync = new YouTubeSyncActionIntelligence();
         actionIntelligence.YouTubeSync.Condition = milestoneIntelligence.YouTubeSync.Condition;
         actionIntelligence.YouTubeSync.ProcessId = milestoneIntelligence.YouTubeSync.ProcessId;
+        actionIntelligence.YouTubeSync.VideosProcessed = milestoneIntelligence.YouTubeSync.VideosProcessed;
+        actionIntelligence.YouTubeSync.VideosSkipped = milestoneIntelligence.YouTubeSync.VideosSkipped;
 
         return actionIntelligence;
     }
@@ -125,6 +127,8 @@ internal class CallHandler
             milestoneIntelligence.YouTubeSync.StartTime = updateTime;
         }
         milestoneIntelligence.YouTubeSync.LastUpdate = updateTime;
+        milestoneIntelligence.YouTubeSync.VideosProcessed = actionIntelligence.VideosProcessed;
+        milestoneIntelligence.YouTubeSync.VideosSkipped = actionIntelligence.VideosSkipped;
     }
 
     internal string GetConfigJson(YouRattaConfiguration appConfig)

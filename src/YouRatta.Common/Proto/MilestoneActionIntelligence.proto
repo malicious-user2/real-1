@@ -23,6 +23,8 @@ message MilestoneActionIntelligence
     {
         MilestoneCondition Condition = 1;
         int32 Process_Id = 2;
+        int32 Videos_Processed = 3;
+        int32 Videos_Skipped = 4;
     }
     reserved 1;
     optional InitialSetupActionIntelligence Initial_Setup = 2;

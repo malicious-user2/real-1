@@ -8,6 +8,7 @@ using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using YouRatta.Common.YouTube;
 using YouRatta.YouTubeSync.ErrataBulletin;
+using static YouRatta.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRatta.YouTubeSync.YouTube;
 
@@ -34,7 +35,7 @@ internal static class YouTubeVideoHelper
         videoUpdate.Execute();
     }
 
-    public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeService service)
+    public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service)
     {
         List<Video> channelVideos = new List<Video>();
         SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
@@ -53,7 +54,11 @@ internal static class YouTubeVideoHelper
                 videoRequest.MaxResults = 1;
                 VideoListResponse videoResponse = videoRequest.Execute();
                 Video videoDetails = videoResponse.Items.First();
-                if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null) continue;
+                if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null)
+                {
+                    intelligence.VideosSkipped++;
+                    continue;
+                }
                 channelVideos.Add(videoDetails);
             }
             requestNextPage = !string.IsNullOrEmpty(searchResponse.NextPageToken);

@@ -69,7 +69,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         };
         ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
         string[] repository = actionEnvironment.EnvGitHubRepository.Split("/");
-        List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, ytService);
+        List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService);
         foreach (Video video in videoList)
         {
             if (video.ContentDetails == null) continue;
@@ -98,7 +98,10 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
                     YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, ytService);
                 }
+                milestoneInt.VideosProcessed++;
             }
         }
     }
+    client.SetMilestoneActionIntelligence(milestoneInt);
+    Console.WriteLine(client.GetMilestoneActionIntelligence());
 }

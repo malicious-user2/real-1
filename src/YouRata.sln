@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YouRata.InitialSetup", "You
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YouRata.YouTubeSync", "YouRata.YouTubeSync\YouRata.YouTubeSync.csproj", "{A29BB0A6-945B-4186-8417-D0A9CBD1F127}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouRata.ActionReport", "YouRata.ActionReport\YouRata.ActionReport.csproj", "{F9CFB56C-E77B-4DC7-B1C2-4691FAEFD4A7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{A29BB0A6-945B-4186-8417-D0A9CBD1F127}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A29BB0A6-945B-4186-8417-D0A9CBD1F127}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A29BB0A6-945B-4186-8417-D0A9CBD1F127}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9CFB56C-E77B-4DC7-B1C2-4691FAEFD4A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9CFB56C-E77B-4DC7-B1C2-4691FAEFD4A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9CFB56C-E77B-4DC7-B1C2-4691FAEFD4A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9CFB56C-E77B-4DC7-B1C2-4691FAEFD4A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -36,7 +36,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         {
             try
             {
-                callHandler.UpdateInitialSetupMilestoneIntelligence(_configuration.Value, _milestoneIntelligence, request);
+                callHandler.UpdateInitialSetupActionIntelligence(_configuration.Value, _milestoneIntelligence, request);
             }
             catch (Exception e)
             {
@@ -60,6 +60,25 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
             catch (Exception e)
             {
                 _logger.LogError($"Error on UpdateYouTubeSyncActionIntelligence: {e.Message}");
+            }
+            emptyResult.SetResult(new Empty());
+        });
+        _callManager.ActionReady.Set();
+        return emptyResult.Task;
+    }
+
+    public override Task<Empty> UpdateActionReportActionIntelligence(ActionReportActionIntelligence request, ServerCallContext context)
+    {
+        TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
+        _callManager.ActionCallbacks.Enqueue((CallHandler callHandler) =>
+        {
+            try
+            {
+                callHandler.UpdateActionReportMilestoneIntelligence(_configuration.Value, _milestoneIntelligence, request);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error on UpdateActionReportActionIntelligence: {e.Message}");
             }
             emptyResult.SetResult(new Empty());
         });

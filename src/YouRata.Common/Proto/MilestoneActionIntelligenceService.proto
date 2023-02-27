@@ -11,4 +11,5 @@ service MilestoneActionIntelligenceService
 {
     rpc UpdateInitialSetupActionIntelligence (MilestoneActionIntelligence.InitialSetupActionIntelligence) returns (google.protobuf.Empty);
     rpc UpdateYouTubeSyncActionIntelligence (MilestoneActionIntelligence.YouTubeSyncActionIntelligence) returns (google.protobuf.Empty);
+    rpc UpdateActionReportActionIntelligence (MilestoneActionIntelligence.ActionReportActionIntelligence) returns (google.protobuf.Empty);
 }

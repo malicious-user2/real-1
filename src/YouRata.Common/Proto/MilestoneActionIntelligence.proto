@@ -26,7 +26,13 @@ message MilestoneActionIntelligence
         int32 Videos_Processed = 3;
         int32 Videos_Skipped = 4;
     }
+    message ActionReportActionIntelligence
+    {
+        MilestoneCondition Condition = 1;
+        int32 Process_Id = 2;
+    }
     reserved 1;
     optional InitialSetupActionIntelligence Initial_Setup = 2;
     optional YouTubeSyncActionIntelligence You_Tube_Sync = 3;
+    optional ActionReportActionIntelligence Action_Report = 4;
 }

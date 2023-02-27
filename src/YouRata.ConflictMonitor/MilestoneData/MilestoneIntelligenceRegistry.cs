@@ -12,7 +12,8 @@ internal class MilestoneIntelligenceRegistry
     {
         InitialSetup = new InitialSetupMilestoneIntelligence();
         YouTubeSync = new YouTubeSyncMilestoneIntelligence();
-        _milestones = new List<BaseMilestoneIntelligence>() { InitialSetup, YouTubeSync };
+        ActionReport = new ActionReportMilestoneIntelligence();
+        _milestones = new List<BaseMilestoneIntelligence>() { InitialSetup, YouTubeSync, ActionReport };
     }
 
     internal IReadOnlyCollection<BaseMilestoneIntelligence> Milestones => _milestones;
@@ -20,4 +21,6 @@ internal class MilestoneIntelligenceRegistry
     internal InitialSetupMilestoneIntelligence InitialSetup { get; set; }
 
     internal YouTubeSyncMilestoneIntelligence YouTubeSync { get; set; }
+
+    internal ActionReportMilestoneIntelligence ActionReport { get; set; }
 }

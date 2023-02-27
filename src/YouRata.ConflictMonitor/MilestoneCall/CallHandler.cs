@@ -101,11 +101,14 @@ internal class CallHandler
         actionIntelligence.YouTubeSync.ProcessId = milestoneIntelligence.YouTubeSync.ProcessId;
         actionIntelligence.YouTubeSync.VideosProcessed = milestoneIntelligence.YouTubeSync.VideosProcessed;
         actionIntelligence.YouTubeSync.VideosSkipped = milestoneIntelligence.YouTubeSync.VideosSkipped;
+        actionIntelligence.ActionReport = new ActionReportActionIntelligence();
+        actionIntelligence.ActionReport.Condition = milestoneIntelligence.ActionReport.Condition;
+        actionIntelligence.ActionReport.ProcessId = milestoneIntelligence.ActionReport.ProcessId;
 
         return actionIntelligence;
     }
 
-    internal void UpdateInitialSetupMilestoneIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, InitialSetupActionIntelligence actionIntelligence)
+    internal void UpdateInitialSetupActionIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, InitialSetupActionIntelligence actionIntelligence)
     {
         long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
         milestoneIntelligence.InitialSetup.Condition = actionIntelligence.Condition;
@@ -129,6 +132,18 @@ internal class CallHandler
         milestoneIntelligence.YouTubeSync.LastUpdate = updateTime;
         milestoneIntelligence.YouTubeSync.VideosProcessed = actionIntelligence.VideosProcessed;
         milestoneIntelligence.YouTubeSync.VideosSkipped = actionIntelligence.VideosSkipped;
+    }
+
+    internal void UpdateActionReportMilestoneIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, ActionReportActionIntelligence actionIntelligence)
+    {
+        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+        milestoneIntelligence.ActionReport.Condition = actionIntelligence.Condition;
+        milestoneIntelligence.ActionReport.ProcessId = actionIntelligence.ProcessId;
+        if (milestoneIntelligence.ActionReport.StartTime == 0)
+        {
+            milestoneIntelligence.ActionReport.StartTime = updateTime;
+        }
+        milestoneIntelligence.ActionReport.LastUpdate = updateTime;
     }
 
     internal string GetConfigJson(YouRataConfiguration appConfig)

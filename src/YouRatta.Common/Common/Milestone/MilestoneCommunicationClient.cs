@@ -107,7 +107,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
         ActionIntelligence actionIntelligence = default;
         try
         {
-            actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
+            actionIntelligence = actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
         }
         catch (Grpc.Core.RpcException ex)
         {

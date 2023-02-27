@@ -38,13 +38,13 @@ internal class YouTubeSyncCommunicationClient : MilestoneCommunicationClient
         base.SetMilestoneActionIntelligence(youTubeSyncActionIntelligence, _milestoneType, _milestoneName);
     }
 
-    public YouTubeSyncActionIntelligence GetMilestoneActionIntelligence()
+    public YouTubeSyncActionIntelligence? GetMilestoneActionIntelligence()
     {
-        YouTubeSyncActionIntelligence youTubeSyncActionIntelligence = new YouTubeSyncActionIntelligence();
+        YouTubeSyncActionIntelligence? youTubeSyncActionIntelligence = null;
         object? milestoneActionIntelligence = base.GetMilestoneActionIntelligence(_milestoneType);
         if (milestoneActionIntelligence != null)
         {
-            youTubeSyncActionIntelligence = (YouTubeSyncActionIntelligence)milestoneActionIntelligence;
+            youTubeSyncActionIntelligence = (YouTubeSyncActionIntelligence?)milestoneActionIntelligence;
         }
         return youTubeSyncActionIntelligence;
     }

@@ -104,7 +104,18 @@ public abstract class MilestoneCommunicationClient : IDisposable
         object? milestoneActionIntelligence = null;
         if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return milestoneActionIntelligence;
         ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
-        ActionIntelligence actionIntelligence = actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
+        ActionIntelligence actionIntelligence = default;
+        try
+        {
+            actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
+        }
+        catch (Grpc.Core.RpcException ex)
+        {
+            Console.WriteLine("Failed to connect to ConflictMonitor");
+            Console.WriteLine(ex.StackTrace);
+            return null;
+        }
+        if (actionIntelligence == null) return milestoneActionIntelligence;
         List<PropertyInfo> milestoneIntelligenceProperties = actionIntelligence.MilestoneIntelligence
             .GetType()
             .GetProperties()

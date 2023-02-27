@@ -38,13 +38,13 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
         base.SetMilestoneActionIntelligence(initialSetupActionIntelligence, _milestoneType, _milestoneName);
     }
 
-    public InitialSetupActionIntelligence GetMilestoneActionIntelligence()
+    public InitialSetupActionIntelligence? GetMilestoneActionIntelligence()
     {
-        InitialSetupActionIntelligence initialSetupActionIntelligence = new InitialSetupActionIntelligence();
+        InitialSetupActionIntelligence? initialSetupActionIntelligence = null;
         object? milestoneActionIntelligence = base.GetMilestoneActionIntelligence(_milestoneType);
         if (milestoneActionIntelligence != null)
         {
-            initialSetupActionIntelligence = (InitialSetupActionIntelligence)milestoneActionIntelligence;
+            initialSetupActionIntelligence = (InitialSetupActionIntelligence?)milestoneActionIntelligence;
         }
         return initialSetupActionIntelligence;
     }

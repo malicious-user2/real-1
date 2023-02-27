@@ -4,16 +4,16 @@ using Grpc.Net.Client;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using YouRatta.Common.Proto;
-using static YouRatta.Common.Proto.ActionIntelligenceService;
-using static YouRatta.Common.Proto.MilestoneActionIntelligenceService;
+using YouRata.Common.Proto;
+using static YouRata.Common.Proto.ActionIntelligenceService;
+using static YouRata.Common.Proto.MilestoneActionIntelligenceService;
 
 Console.WriteLine("Hello, World!");
 
 
 using var channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions
 {
-    HttpHandler = CreateHttpHandler(YouRatta.ConflictMonitor.GrpcConstants.UnixSocketPath)
+    HttpHandler = CreateHttpHandler(YouRata.ConflictMonitor.GrpcConstants.UnixSocketPath)
 });
 
 ActionIntelligenceServiceClient client = new ActionIntelligenceServiceClient(channel);

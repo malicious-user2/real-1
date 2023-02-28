@@ -4,7 +4,7 @@ namespace YouRata.ConflictMonitor.MilestoneData;
 
 internal abstract class BaseMilestoneIntelligence
 {
-    internal BaseMilestoneIntelligence()
+    private protected BaseMilestoneIntelligence()
     {
         Condition = MilestoneCondition.MilestonePending;
     }

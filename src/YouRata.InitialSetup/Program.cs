@@ -81,7 +81,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                 using (HttpClient tokenHttpClient = new HttpClient())
                 {
                     string redirectTokenCode = workflow.RedirectCode.Trim().Replace("=", "").Replace("&", "");
-                    var authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(workflow.RedirectCode, intelligence.AppClientId, intelligence.AppClientSecret);
+                    var authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(redirectTokenCode, intelligence.AppClientId, intelligence.AppClientSecret);
                     TokenResponse? authorizationCodeTokenResponse = YouTubeAPIHelper.ExchangeAuthorizationCode(authorizationCodeTokenRequest, flow);
                     if (authorizationCodeTokenResponse != null)
                     {

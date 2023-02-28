@@ -42,7 +42,7 @@ public static class YouTubeAPIHelper
     {
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
-            ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets()
+            ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets
             {
                 ClientId = clientId,
                 ClientSecret = clientSecret
@@ -74,7 +74,7 @@ public static class YouTubeAPIHelper
 
     public static TokenResponse? ExchangeAuthorizationCode(AuthorizationCodeTokenRequest request, GoogleAuthorizationCodeFlow flow)
     {
-        TokenResponse? authorizationCodeTokenResponse = default;
+        TokenResponse? authorizationCodeTokenResponse;
         using (HttpClient tokenHttpClient = new HttpClient())
         {
             authorizationCodeTokenResponse = request.ExecuteAsync(tokenHttpClient, flow.TokenServerUrl, CancellationToken.None, flow.Clock).Result;

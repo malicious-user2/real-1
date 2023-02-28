@@ -40,7 +40,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     if (savedTokenResponse == null) return; /// throw an error
     GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
     {
-        ClientSecrets = new ClientSecrets()
+        ClientSecrets = new ClientSecrets
         {
             ClientId = actionInt.AppClientId,
             ClientSecret = actionInt.AppClientSecret

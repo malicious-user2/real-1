@@ -83,6 +83,7 @@ public class ConfigurationWriter : IConfigurationWriter
             jParent = jSeeker;
         }
         string sectionName = parts[parts.Length - 1];
+        if (jParent == null) return;
         jParent[sectionName] = JToken.FromObject(value);
         File.WriteAllText(_path, JsonConvert.SerializeObject(jRoot, Formatting.Indented));
     }

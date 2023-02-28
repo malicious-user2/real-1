@@ -10,7 +10,7 @@ namespace YouRata.ConflictMonitor.MilestoneInterface;
 internal class InServiceLoggerProvider : ILoggerProvider
 {
     private readonly CallHandler _callHandler;
-    private bool _disposed = false;
+    private bool _disposed;
 
     public ILogger CreateLogger(string categoryName)
     {

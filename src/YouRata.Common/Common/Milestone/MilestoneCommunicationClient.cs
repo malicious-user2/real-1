@@ -28,7 +28,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
     private readonly GrpcChannel _conflictMonitorChannel;
     private bool _disposed;
 
-    public MilestoneCommunicationClient()
+    protected MilestoneCommunicationClient()
     {
         _conflictMonitorChannel = GrpcChannel.ForAddress($"http://{IPAddress.Loopback}", new GrpcChannelOptions
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -47,15 +48,20 @@ public static class GitHubAPIClient
         return true;
     }
 
+    private static IApiConnection GetApiConnection(string token)
+    {
+        GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
+        {
+            Credentials = new Credentials(token, AuthenticationType.Bearer)
+        };
+        ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
+        return new ApiConnection(ghClient.Connection);
+    }
+
     public static bool DeleteSecret(GitHubActionEnvironment environment, string secretName, Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) return false;
-        GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
-        {
-            Credentials = new Credentials(environment.ApiToken, AuthenticationType.Bearer)
-        };
-        ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
-        IApiConnection apiCon = new ApiConnection(ghClient.Connection);
+        IApiConnection apiCon = GetApiConnection(environment.ApiToken);
 
         RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
         string[] repository = environment.EnvGitHubRepository.Split("/");
@@ -78,15 +84,26 @@ public static class GitHubAPIClient
         return true;
     }
 
+    public static bool CreateContentFile(GitHubActionEnvironment environment, string message, string content, string path, Action<string> logger)
+    {
+        if (!HasRemainingCalls(environment)) return false;
+        IApiConnection apiCon = GetApiConnection(environment.ApiToken);
+
+        string[] repository = environment.EnvGitHubRepository.Split("/");
+        CreateFileRequest createFileRequest = new CreateFileRequest(message, content, GitHubConstants.ErrataBranch);
+        RepositoryContentsClient conClient = new RepositoryContentsClient(apiCon);
+        Action createFile = (() =>
+        {
+            conClient.CreateFile(repository[0], repository[1], path, createFileRequest).Wait();
+        });
+        GitHubRetryHelper.RetryCommand(environment, createFile, logger);
+        return true;
+    }
+
     public static bool CreateOrUpdateSecret(GitHubActionEnvironment environment, string secretName, string secretValue, Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) return false;
-        GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
-        {
-            Credentials = new Credentials(environment.ApiToken, AuthenticationType.Bearer)
-        };
-        ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
-        IApiConnection apiCon = new ApiConnection(ghClient.Connection);
+        IApiConnection apiCon = GetApiConnection(environment.ApiToken);
 
         RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
         string[] repository = environment.EnvGitHubRepository.Split("/");

@@ -6,6 +6,7 @@ using System.Net;
 using System.Xml;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using YouRata.Common.Milestone;
 using YouRata.Common.YouTube;
 using YouRata.YouTubeSync.ErrataBulletin;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
@@ -36,7 +37,15 @@ internal static class YouTubeVideoHelper
         {
             videoUpdateRequest.Execute();
         });
-        YouTubeRetryHelper.RetryCommand(videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
+        try
+        {
+            YouTubeRetryHelper.RetryCommand(videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
+        }
+        catch
+        {
+            Console.WriteLine($"Could not update YouTube video description for video {video.Id}");
+            throw;
+        }
     }
 
     public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, Action<string> logger)
@@ -54,7 +63,7 @@ internal static class YouTubeVideoHelper
                 return searchRequest.Execute();
             });
             SearchListResponse? searchResponse = YouTubeRetryHelper.RetryCommand(getSearchResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
-            if (searchResponse == null) break;
+            if (searchResponse == null) throw new MilestoneException($"Could not get YouTube video list for channel id {searchRequest.ChannelId}");
             foreach (SearchResult searchResult in searchResponse.Items)
             {
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
@@ -66,7 +75,7 @@ internal static class YouTubeVideoHelper
                     return videoRequest.Execute();
                 });
                 VideoListResponse? videoResponse = YouTubeRetryHelper.RetryCommand(getVideoResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
-                if (videoResponse == null) break;
+                if (videoResponse == null) throw new MilestoneException($"Could not get YouTube video {videoRequest.Id}");
                 Video videoDetails = videoResponse.Items.First();
                 if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null)
                 {

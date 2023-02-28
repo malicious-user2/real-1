@@ -59,17 +59,10 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 {
                     ApiKey = actionInt.AppApiKey,
                     ApplicationName = YouTubeConstants.RequestApplicationName,
-                    HttpClientInitializer = userCred,
-                    BaseUri = "https://localhost"
+                    HttpClientInitializer = userCred
                 }))
     {
         List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService, client.LogMessage);
-        GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
-        {
-            Credentials = new Credentials(actionEnvironment.ApiToken, AuthenticationType.Bearer)
-        };
-        ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
-        string[] repository = actionEnvironment.EnvGitHubRepository.Split("/");
         List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService, client.LogMessage);
         foreach (Video video in videoList)
         {
@@ -85,18 +78,18 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 ErrataBulletinBuilder bulletinBuilder = new ErrataBulletinBuilder(config.ErrataBulletin, videoTitle, contentDuration);
                 string errataBulletin = bulletinBuilder.Build();
 
-                CreateFileRequest createFile = new CreateFileRequest(videoTitle, errataBulletin, GitHubConstants.ErrataBranch);
-                ghClient.Repository.Content.CreateFile(repository[0], repository[1], errataBulletinPath, createFile).Wait();
-
-                if (!config.ActionCutOuts.DisableYouTubeVideoUpdate)
+                if (GitHubAPIClient.CreateContentFile(actionEnvironment, videoTitle, errataBulletin, errataBulletinPath, client.LogMessage))
                 {
-                    string erattaLink =
-                        string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}",
-                        actionEnvironment.EnvGitHubServerUrl,
-                        actionEnvironment.EnvGitHubRepository,
-                        errataBulletinPath);
-                    string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
-                    YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, ytService, client.LogMessage);
+                    if (!config.ActionCutOuts.DisableYouTubeVideoUpdate)
+                    {
+                        string erattaLink =
+                            string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}",
+                            actionEnvironment.EnvGitHubServerUrl,
+                            actionEnvironment.EnvGitHubRepository,
+                            errataBulletinPath);
+                        string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
+                        YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, ytService, client.LogMessage);
+                    }
                 }
                 milestoneInt.VideosProcessed++;
             }

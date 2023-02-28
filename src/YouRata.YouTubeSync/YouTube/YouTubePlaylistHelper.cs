@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using YouRata.Common.Milestone;
 using YouRata.Common.YouTube;
 
 namespace YouRata.YouTubeSync.YouTube;
@@ -27,7 +28,7 @@ internal static class YouTubePlaylistHelper
                     return playlistRequest.Execute();
                 });
                 PlaylistItemListResponse? playlistResponse = YouTubeRetryHelper.RetryCommand(getPlaylistResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
-                if (playlistResponse == null) break;
+                if (playlistResponse == null) throw new MilestoneException("Could not get YouTube playlist items");
                 foreach (PlaylistItem playlistItem in playlistResponse.Items)
                 {
                     if (playlistItem.Snippet.ResourceId.Kind != YouTubeConstants.VideoKind) continue;

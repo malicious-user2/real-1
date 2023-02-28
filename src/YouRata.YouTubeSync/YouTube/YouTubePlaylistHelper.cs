@@ -8,7 +8,7 @@ namespace YouRata.YouTubeSync.YouTube;
 
 internal static class YouTubePlaylistHelper
 {
-    public static List<ResourceId> GetPlaylistVideos(string[]? playlists, YouTubeService service)
+    public static List<ResourceId> GetPlaylistVideos(string[]? playlists, YouTubeService service, Action<string> logger)
     {
         List<string> videoIds = new List<string>();
         List<ResourceId> playlistResourceIds = new List<ResourceId>();
@@ -22,7 +22,12 @@ internal static class YouTubePlaylistHelper
             bool requestNextPage = true;
             while (requestNextPage)
             {
-                PlaylistItemListResponse playlistResponse = playlistRequest.Execute();
+                Func<PlaylistItemListResponse> getPlaylistResponse = (() =>
+                {
+                    return playlistRequest.Execute();
+                });
+                PlaylistItemListResponse? playlistResponse = YouTubeRetryHelper.RetryCommand(getPlaylistResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
+                if (playlistResponse == null) break;
                 foreach (PlaylistItem playlistItem in playlistResponse.Items)
                 {
                     if (playlistItem.Snippet.ResourceId.Kind != YouTubeConstants.VideoKind) continue;

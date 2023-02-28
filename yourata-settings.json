@@ -20,7 +20,7 @@
   "ErrataBulletin": {
     "EmptyLinesPerMark": 3,
     "SecondsPerMark": 30,
-    "VideoTitleLocation": "top",
+    "TitleLocation": "top",
     "Instructions": "Enter your errata here"
   }
 }

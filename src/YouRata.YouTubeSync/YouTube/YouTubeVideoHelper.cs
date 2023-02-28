@@ -15,7 +15,7 @@ namespace YouRata.YouTubeSync.YouTube;
 internal static class YouTubeVideoHelper
 {
 
-    public static void UpdateVideoDescription(Video video, string description, YouTubeService service)
+    public static void UpdateVideoDescription(Video video, string description, YouTubeService service, Action<string> logger)
     {
         video.ContentDetails = null;
         video.FileDetails = null;
@@ -31,11 +31,15 @@ internal static class YouTubeVideoHelper
         if (video.Snippet == null) return;
         video.Snippet.Description = description;
         video.ContentDetails = null;
-        VideosResource.UpdateRequest videoUpdate = new VideosResource.UpdateRequest(service, video, new string[] { YouTubeConstants.RequestSnippetPart });
-        videoUpdate.Execute();
+        VideosResource.UpdateRequest videoUpdateRequest = new VideosResource.UpdateRequest(service, video, new string[] { YouTubeConstants.RequestSnippetPart });
+        Action videoUpdate = (() =>
+        {
+            videoUpdateRequest.Execute();
+        });
+        YouTubeRetryHelper.RetryCommand(videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
     }
 
-    public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service)
+    public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, Action<string> logger)
     {
         List<Video> channelVideos = new List<Video>();
         SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
@@ -45,14 +49,24 @@ internal static class YouTubeVideoHelper
         bool requestNextPage = true;
         while (requestNextPage)
         {
-            SearchListResponse searchResponse = searchRequest.Execute();
+            Func<SearchListResponse> getSearchResponse = (() =>
+            {
+                return searchRequest.Execute();
+            });
+            SearchListResponse? searchResponse = YouTubeRetryHelper.RetryCommand(getSearchResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
+            if (searchResponse == null) break;
             foreach (SearchResult searchResult in searchResponse.Items)
             {
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
                 VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
                 videoRequest.Id = searchResult.Id.VideoId;
                 videoRequest.MaxResults = 1;
-                VideoListResponse videoResponse = videoRequest.Execute();
+                Func<VideoListResponse> getVideoResponse = (() =>
+                {
+                    return videoRequest.Execute();
+                });
+                VideoListResponse? videoResponse = YouTubeRetryHelper.RetryCommand(getVideoResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
+                if (videoResponse == null) break;
                 Video videoDetails = videoResponse.Items.First();
                 if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null)
                 {

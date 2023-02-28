@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Octokit;
@@ -47,17 +50,17 @@ public static class GitHubAPIClient
     public static bool DeleteSecret(GitHubActionEnvironment environment, string secretName, Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) return false;
+        GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
+        {
+            Credentials = new Credentials(environment.ApiToken, AuthenticationType.Bearer)
+        };
+        ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
+        IApiConnection apiCon = new ApiConnection(ghClient.Connection);
+
+        RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
+        string[] repository = environment.EnvGitHubRepository.Split("/");
         Action deleteSecret = (() =>
         {
-            GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
-            {
-                Credentials = new Credentials(environment.ApiToken, AuthenticationType.Bearer)
-            };
-            ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
-            IApiConnection apiCon = new ApiConnection(ghClient.Connection);
-
-            RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
-            string[] repository = environment.EnvGitHubRepository.Split("/");
             try
             {
                 secClient.Delete(repository[0], repository[1], secretName).Wait();
@@ -78,30 +81,31 @@ public static class GitHubAPIClient
     public static bool CreateOrUpdateSecret(GitHubActionEnvironment environment, string secretName, string secretValue, Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) return false;
-        Action updateSecret = (() =>
+        GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
         {
-            GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
-            {
-                Credentials = new Credentials(environment.ApiToken, AuthenticationType.Bearer)
-            };
-            ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
-            IApiConnection apiCon = new ApiConnection(ghClient.Connection);
+            Credentials = new Credentials(environment.ApiToken, AuthenticationType.Bearer)
+        };
+        ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
+        IApiConnection apiCon = new ApiConnection(ghClient.Connection);
 
-            RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
-            string[] repository = environment.EnvGitHubRepository.Split("/");
+        RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
+        string[] repository = environment.EnvGitHubRepository.Split("/");
 
-            SecretsPublicKey? publicKey = default;
+        SecretsPublicKey? publicKey = default;
 
-            Func<SecretsPublicKey> getPublicKey = (() =>
-            {
-                return secClient.GetPublicKey(repository[0], repository[1]).Result;
-            });
-            publicKey = GitHubRetryHelper.RetryCommand(environment, getPublicKey, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
-            if (publicKey == null) throw new MilestoneException("Could not get GitHub repository public key to create secret");
-            UpsertRepositorySecret secret = CreateSecret(secretValue, publicKey);
+        Func<SecretsPublicKey> getPublicKey = (() =>
+        {
+            return secClient.GetPublicKey(repository[0], repository[1]).Result;
+        });
+        publicKey = GitHubRetryHelper.RetryCommand(environment, getPublicKey, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+        if (publicKey == null) throw new MilestoneException("Could not get GitHub repository public key to create secret");
+        UpsertRepositorySecret secret = CreateSecret(secretValue, publicKey);
+        secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();
+        Action createOrUpdateSecret = (() =>
+        {
             secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();
         });
-        GitHubRetryHelper.RetryCommand(environment, updateSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+        GitHubRetryHelper.RetryCommand(environment, createOrUpdateSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
         return true;
     }
 }

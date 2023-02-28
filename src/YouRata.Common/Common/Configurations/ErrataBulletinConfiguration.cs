@@ -18,8 +18,8 @@ public class ErrataBulletinConfiguration : BaseValidatableConfiguration
 
     [Required]
     [DefaultValue("top")]
-    [RegularExpression(@"^(top|bottom)$", ErrorMessage = "ErrataBulletinConfiguration.VideoTitleLocation must be top or bottom")]
-    public string VideoTitleLocation { get; set; }
+    [RegularExpression(@"^(top|bottom)$", ErrorMessage = "ErrataBulletinConfiguration.TitleLocation must be top or bottom")]
+    public string TitleLocation { get; set; }
 
     [Required]
     [DefaultValue("Enter your errata here")]

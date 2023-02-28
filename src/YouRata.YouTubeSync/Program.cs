@@ -62,14 +62,14 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     HttpClientInitializer = userCred
                 }))
     {
-        List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService);
+        List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService, client.LogMessage);
         GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
         {
             Credentials = new Credentials(actionEnvironment.ApiToken, AuthenticationType.Bearer)
         };
         ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
         string[] repository = actionEnvironment.EnvGitHubRepository.Split("/");
-        List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService);
+        List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService, client.LogMessage);
         foreach (Video video in videoList)
         {
             if (video.ContentDetails == null) continue;
@@ -78,11 +78,10 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 $"{video.Id}.md";
             if (!Path.Exists(Path.Combine(Directory.GetCurrentDirectory(), GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
             {
-                ErrataBulletinBuilder bulletinBuilder = new ErrataBulletinBuilder(config.ErrataBulletin);
                 string ytVideoTitle = WebUtility.HtmlDecode(video.Snippet.Title);
                 string videoTitle = string.IsNullOrEmpty(ytVideoTitle) ? "Unknown Video" : ytVideoTitle;
-                bulletinBuilder.SnippetTitle = videoTitle;
-                bulletinBuilder.ContentDuration = XmlConvert.ToTimeSpan(video.ContentDetails.Duration);
+                TimeSpan contentDuration = XmlConvert.ToTimeSpan(video.ContentDetails.Duration);
+                ErrataBulletinBuilder bulletinBuilder = new ErrataBulletinBuilder(config.ErrataBulletin, videoTitle, contentDuration);
                 string errataBulletin = bulletinBuilder.Build();
 
                 CreateFileRequest createFile = new CreateFileRequest(videoTitle, errataBulletin, GitHubConstants.ErrataBranch);
@@ -96,7 +95,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                         actionEnvironment.EnvGitHubRepository,
                         errataBulletinPath);
                     string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
-                    YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, ytService);
+                    YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, ytService, client.LogMessage);
                 }
                 milestoneInt.VideosProcessed++;
             }

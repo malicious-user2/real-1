@@ -74,7 +74,7 @@ public static class GitHubAPIClient
                 }
             }
         });
-        GitHubRetryHelper.RetryCommand(environment, deleteSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+        GitHubRetryHelper.RetryCommand(environment, deleteSecret, logger);
         return true;
     }
 
@@ -97,7 +97,7 @@ public static class GitHubAPIClient
         {
             return secClient.GetPublicKey(repository[0], repository[1]).Result;
         });
-        publicKey = GitHubRetryHelper.RetryCommand(environment, getPublicKey, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+        publicKey = GitHubRetryHelper.RetryCommand(environment, getPublicKey, logger);
         if (publicKey == null) throw new MilestoneException("Could not get GitHub repository public key to create secret");
         UpsertRepositorySecret secret = CreateSecret(secretValue, publicKey);
         secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();
@@ -105,7 +105,7 @@ public static class GitHubAPIClient
         {
             secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();
         });
-        GitHubRetryHelper.RetryCommand(environment, createOrUpdateSecret, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
+        GitHubRetryHelper.RetryCommand(environment, createOrUpdateSecret, logger);
         return true;
     }
 }

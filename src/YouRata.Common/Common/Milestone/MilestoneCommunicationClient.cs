@@ -148,9 +148,25 @@ public abstract class MilestoneCommunicationClient : IDisposable
                 if (milestoneIntelligenceObject != null)
                 {
                     string milestoneIntelligenceName = milestoneIntelligenceProperty.Name;
-                    milestoneIntelligenceObject.GetType().GetProperty("Condition")?.SetValue(milestoneIntelligenceObject, MilestoneCondition.MilestoneBlocked);
+                    System.Type milestoneIntelligenceType = milestoneIntelligenceObject.GetType();
+                    PropertyInfo? conditionProperty = milestoneIntelligenceType.GetProperty("Condition");
+                    if (conditionProperty == null)
+                    {
+                        continue;
+                    }
+                    Object? conditionCurrentValue = conditionProperty.GetValue(milestoneIntelligenceObject);
+                    if (conditionCurrentValue != null && conditionCurrentValue is MilestoneCondition)
+                    {
+                        MilestoneCondition currentCondition = (MilestoneCondition)conditionCurrentValue;
+                        if (currentCondition == MilestoneCondition.MilestoneCompleted ||
+                            currentCondition == MilestoneCondition.MilestoneFailed)
+                        {
+                            continue;
+                        }
+                    }
+                    conditionProperty.SetValue(milestoneIntelligenceObject, MilestoneCondition.MilestoneBlocked);
 
-                    SetMilestoneActionIntelligence(milestoneIntelligenceObject, milestoneIntelligenceObject.GetType(), milestoneIntelligenceName);
+                    SetMilestoneActionIntelligence(milestoneIntelligenceObject, milestoneIntelligenceType, milestoneIntelligenceName);
                 }
             }
         }

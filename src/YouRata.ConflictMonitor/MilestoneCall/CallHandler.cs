@@ -41,7 +41,7 @@ internal class CallHandler
                 ghClient.Credentials = new Credentials(workflow.GitHubToken, AuthenticationType.Bearer);
                 return ghClient.RateLimit.GetRateLimits().Result.Resources;
             });
-            ghRateLimit = GitHubRetryHelper.ForceRetryCommand<ResourceRateLimit>(getResourceRateLimit, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), AppendLog);
+            ghRateLimit = GitHubRetryHelper.RetryCommand<ResourceRateLimit>(getResourceRateLimit, AppendLog);
             if (ghRateLimit != null)
             {
                 actionEnvironment.RateLimitCoreRemaining = ghRateLimit.Core.Remaining;

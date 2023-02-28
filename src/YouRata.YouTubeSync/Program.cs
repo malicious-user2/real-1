@@ -59,7 +59,8 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 {
                     ApiKey = actionInt.AppApiKey,
                     ApplicationName = YouTubeConstants.RequestApplicationName,
-                    HttpClientInitializer = userCred
+                    HttpClientInitializer = userCred,
+                    BaseUri = "https://localhost"
                 }))
     {
         List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService, client.LogMessage);

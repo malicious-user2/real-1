@@ -113,7 +113,6 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         }
         if (!canContinue)
         {
-            client.SetStatus(MilestoneCondition.MilestoneCompleted);
             client.BlockAllMilestones();
         }
 

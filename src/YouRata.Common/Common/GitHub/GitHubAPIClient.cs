@@ -41,7 +41,7 @@ public static class GitHubAPIClient
         {
             Console.WriteLine($"WARNING: Only {environment.RateLimitCoreRemaining} GitHub API calls remaining");
         }
-        if (environment.RateLimitCoreRemaining < 3)
+        if (environment.RateLimitCoreRemaining < 4)
         {
             return false;
         }
@@ -71,12 +71,12 @@ public static class GitHubAPIClient
             {
                 secClient.Delete(repository[0], repository[1], secretName).Wait();
             }
-            catch (AggregateException e)
+            catch (AggregateException ex)
             {
-                logger(e.Message);
-                if (e.InnerException != null && e.InnerException is not NotFoundException)
+                if (ex.InnerException != null && ex.InnerException is not NotFoundException)
                 {
-                    throw new MilestoneException("GitHub API failure", e);
+                    logger.Invoke($"GitHub API: {ex.Message}");
+                    throw new MilestoneException("GitHub API failure", ex);
                 }
             }
         });

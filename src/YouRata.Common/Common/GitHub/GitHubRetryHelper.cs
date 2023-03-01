@@ -62,9 +62,4 @@ public static class GitHubRetryHelper
         }
         return returnValue;
     }
-
-    public static T? RetryCommand<T>(Func<T> command, Action<string> logger)
-    {
-        return RetryCommand<T>(new GitHubActionEnvironment { RateLimitCoreRemaining = 1000 }, command, logger);
-    }
 }

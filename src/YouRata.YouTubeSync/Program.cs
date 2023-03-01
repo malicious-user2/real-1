@@ -98,7 +98,4 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         }
     }
     client.SetMilestoneActionIntelligence(milestoneInt);
-    JsonFormatter format = new JsonFormatter(JsonFormatter.Settings.Default.WithFormatDefaultValues(true));
-
-    Console.WriteLine(format.Format(client.GetActionIntelligence()));
 }

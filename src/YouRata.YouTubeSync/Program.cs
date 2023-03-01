@@ -12,6 +12,8 @@ using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using Google.Protobuf;
+using Google.Protobuf.Collections;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Octokit;
@@ -64,8 +66,6 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     {
         List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService, client.LogMessage);
         List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService, client.LogMessage);
-        milestoneInt.VideosProcessed = 0;
-        milestoneInt.VideosSkipped = 0;
         foreach (Video video in videoList)
         {
             if (video.ContentDetails == null) continue;
@@ -98,5 +98,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         }
     }
     client.SetMilestoneActionIntelligence(milestoneInt);
-    Console.WriteLine(client.GetMilestoneActionIntelligence());
+    JsonFormatter format = new JsonFormatter(JsonFormatter.Settings.Default.WithFormatDefaultValues(true));
+
+    Console.WriteLine(format.Format(client.GetActionIntelligence()));
 }

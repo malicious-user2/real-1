@@ -64,6 +64,8 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     {
         List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService, client.LogMessage);
         List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService, client.LogMessage);
+        milestoneInt.VideosProcessed = 0;
+        milestoneInt.VideosSkipped = 0;
         foreach (Video video in videoList)
         {
             if (video.ContentDetails == null) continue;

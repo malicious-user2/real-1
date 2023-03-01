@@ -18,5 +18,5 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
 
 
 
-    GitHubAPIClient.UpdateContentFile(actionEnvironment.GetBlank(), "update this", builder.Build(), "action-report.json", client.LogMessage);
+    GitHubAPIClient.UpdateContentFile(actionEnvironment.GetBlank(actionEnvironment.ApiToken), "update this", builder.Build(), "action-report.json", client.LogMessage);
 }

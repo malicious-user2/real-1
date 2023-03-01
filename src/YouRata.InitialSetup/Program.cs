@@ -25,13 +25,15 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 using (InitialSetupCommunicationClient client = new InitialSetupCommunicationClient())
 {
-    System.Threading.Thread.Sleep(2000);
-    if (client.GetMilestoneActionIntelligence().Condition == MilestoneCondition.MilestoneBlocked) return;
+    InitialSetupActionIntelligence? milestoneInt = client.GetMilestoneActionIntelligence();
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableInitialSetupMilestone) return;
+    if (milestoneInt == null) return;
+    if (milestoneInt.Condition == MilestoneCondition.MilestoneBlocked) return;
     InitialSetupWorkflow workflow = new InitialSetupWorkflow();
-    ActionIntelligence intelligence = client.GetActionIntelligence();
-    GitHubActionEnvironment actionEnvironment = intelligence.GitHubActionEnvironment;
-    YouRataConfiguration config = client.GetYouRataConfiguration();
+    ActionIntelligence actionInt;
+    GitHubActionEnvironment actionEnvironment;
+    YouRataConfiguration config;
+    MilestoneVariablesHelper.CreateRuntimeVariables(client, out actionInt, out config, out actionEnvironment);
     try
     {
         client.Activate();
@@ -48,8 +50,8 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             Console.WriteLine($"Action secret {GitHubConstants.ApiTokenVariable} is not a GitHub personal access token");
             canContinue = false;
         }
-        if (canContinue && ((string.IsNullOrEmpty(intelligence.AppClientSecret) || string.IsNullOrEmpty(intelligence.AppClientId)) ||
-                            (intelligence.AppClientSecret.Equals("empty") || intelligence.AppClientId.Equals("empty"))))
+        if (canContinue && ((string.IsNullOrEmpty(actionInt.AppClientSecret) || string.IsNullOrEmpty(actionInt.AppClientId)) ||
+                            (actionInt.AppClientSecret.Equals("empty") || actionInt.AppClientId.Equals("empty"))))
         {
             Console.WriteLine("Entering actions variables section");
             if (!config.ActionCutOuts.DisableUnsupportedGitHubAPI)
@@ -65,32 +67,34 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             }
             canContinue = false;
         }
-        if (canContinue && (string.IsNullOrEmpty(intelligence.AppApiKey) || intelligence.AppApiKey.Equals("empty")))
+        if (canContinue && (string.IsNullOrEmpty(actionInt.AppApiKey) || actionInt.AppApiKey.Equals("empty")))
         {
             Console.WriteLine("Entering Google API key section");
             GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.ProjectApiKeyVariable, "empty", client.LogMessage);
             Console.WriteLine($"Paste Google API key in action secret {YouTubeConstants.ProjectApiKeyVariable}");
             canContinue = false;
         }
-        if (canContinue && (!YouTubeAPIHelper.IsValidTokenResponse(intelligence.TokenResponse)))
+        if (canContinue && (!YouTubeAPIHelper.IsValidTokenResponse(actionInt.TokenResponse)))
         {
             Console.WriteLine("Entering Google API stored token response section");
-            GoogleAuthorizationCodeFlow flow = YouTubeAPIHelper.GetFlow(intelligence.AppClientId, intelligence.AppClientSecret);
+            GoogleAuthorizationCodeFlow flow = YouTubeAPIHelper.GetFlow(actionInt.AppClientId, actionInt.AppClientSecret);
             if (!string.IsNullOrEmpty(workflow.RedirectCode) && (!workflow.RedirectCode.Equals("empty")))
             {
                 using (HttpClient tokenHttpClient = new HttpClient())
                 {
                     string redirectTokenCode = workflow.RedirectCode.Trim().Replace("=", "").Replace("&", "");
-                    var authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(redirectTokenCode, intelligence.AppClientId, intelligence.AppClientSecret);
+                    var authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(redirectTokenCode, actionInt.AppClientId, actionInt.AppClientSecret);
                     TokenResponse? authorizationCodeTokenResponse = YouTubeAPIHelper.ExchangeAuthorizationCode(authorizationCodeTokenRequest, flow);
                     if (authorizationCodeTokenResponse != null)
                     {
                         YouTubeAPIHelper.SaveTokenResponse(authorizationCodeTokenResponse, actionEnvironment, client.LogMessage);
                         Console.WriteLine($"Google API stored token response has been saved to {YouRataConstants.StoredTokenResponseVariable}");
+                        workflow.InitialSetupComplete = false;
                     }
                     else
                     {
                         Console.WriteLine("Could not exchange authorization code");
+                        canContinue = false;
                     }
                 }
             }
@@ -104,25 +108,18 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                 Console.WriteLine("===============================================================");
                 Console.WriteLine("Copy everything in the website URL between |code=| and |&|");
                 Console.WriteLine($"Paste this value in action secret {YouTubeConstants.RedirectCodeVariable}");
+                canContinue = false;
             }
             else
             {
                 Console.WriteLine("Failed to create repository secrets");
+                canContinue = false;
             }
-            canContinue = false;
         }
         if (!canContinue)
         {
             client.BlockAllMilestones();
         }
-
-
-        Console.WriteLine(client.GetActionIntelligence());
-
-
-
-
-
     }
     catch (Exception ex)
     {

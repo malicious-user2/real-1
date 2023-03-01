@@ -22,4 +22,7 @@ public class ActionCutOutConfiguration : BaseValidatableConfiguration
 
     [Required]
     public bool DisableYouTubeVideoUpdate { get; set; }
+
+    [Required]
+    public bool DisableActionReportMilestone { get; set; }
 }

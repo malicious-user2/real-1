@@ -1,4 +1,6 @@
 using System;
+using YouRata.Common.GitHub;
+using YouRata.Common;
 using YouRata.Common.YouTube;
 
 namespace YouRata.InitialSetup.Workflow;
@@ -18,4 +20,10 @@ internal class InitialSetupWorkflow
 #pragma warning restore CS8618
 
     public string RedirectCode => _redirectCode;
+
+    public bool InitialSetupComplete
+    {
+        set => GitHubWorkflowHelper
+            .PushVariable(YouRataConstants.InitialSetupCompleteVariable, value.ToString());
+    }
 }

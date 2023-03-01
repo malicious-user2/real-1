@@ -23,7 +23,7 @@ public static class GitHubRetryHelper
             catch (Exception ex)
             {
                 retryCount++;
-                logger.Invoke(ex.Message);
+                logger.Invoke($"GitHub API: {ex.Message}");
                 if (retryCount > 1)
                 {
                     throw new MilestoneException("GitHub API failure", ex);
@@ -51,7 +51,7 @@ public static class GitHubRetryHelper
             catch (Exception ex)
             {
                 retryCount++;
-                logger.Invoke(ex.Message);
+                logger.Invoke($"GitHub API: {ex.Message}");
                 if (retryCount > 1)
                 {
                     throw new MilestoneException("GitHub API failure", ex);

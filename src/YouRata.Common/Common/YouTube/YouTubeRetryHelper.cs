@@ -20,7 +20,7 @@ public static class YouTubeRetryHelper
             catch (Exception ex)
             {
                 retryCount++;
-                logger.Invoke(ex.Message);
+                logger.Invoke($"YouTube API: {ex.Message}");
                 if (retryCount > 1)
                 {
                     throw new MilestoneException("YouTube API failure", ex);
@@ -45,7 +45,7 @@ public static class YouTubeRetryHelper
             catch (Exception ex)
             {
                 retryCount++;
-                logger.Invoke(ex.Message);
+                logger.Invoke($"YouTube API: {ex.Message}");
                 if (retryCount > 1)
                 {
                     throw new MilestoneException("YouTube API failure", ex);

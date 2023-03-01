@@ -106,24 +106,16 @@ public static class GitHubAPIClient
         IApiConnection apiCon = GetApiConnection(environment.ApiToken);
 
         string[] repository = environment.EnvGitHubRepository.Split("/");
-
-
-
-
-
-
-
-
-
         RepositoryContentsClient conClient = new RepositoryContentsClient(apiCon);
-
-        IReadOnlyList<RepositoryContent> allCon = conClient.GetAllContentsByRef(repository[0], repository[1], path, GitHubConstants.ErrataBranch).Result;
-        if (allCon == null || allCon.Count == 0) throw new MilestoneException($"Could not find old content at {path} to update in GitHub");
-
-        RepositoryContent conToUpdate = allCon.First();
-
-        UpdateFileRequest updateFileRequest = new UpdateFileRequest(message, content, conToUpdate.Sha, GitHubConstants.ErrataBranch);
-
+        IReadOnlyList<RepositoryContent>? foundContent = default;
+        Action getContents = (() =>
+        {
+            foundContent = conClient.GetAllContentsByRef(repository[0], repository[1], path, GitHubConstants.ErrataBranch).Result;
+        });
+        GitHubRetryHelper.RetryCommand(environment, getContents, logger);
+        if (foundContent == null || foundContent.Count == 0) throw new MilestoneException($"Could not find any content at {path} to update in GitHub");
+        RepositoryContent oldContent = foundContent.First();
+        UpdateFileRequest updateFileRequest = new UpdateFileRequest(message, content, oldContent.Sha, GitHubConstants.ErrataBranch);
         Action updateFile = (() =>
         {
             conClient.UpdateFile(repository[0], repository[1], path, updateFileRequest).Wait();

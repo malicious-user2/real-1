@@ -60,7 +60,7 @@ public static class GitHubAPIClient
 
     public static bool DeleteSecret(GitHubActionEnvironment environment, string secretName, Action<string> logger)
     {
-        if (!HasRemainingCalls(environment)) return false;
+        if (!HasRemainingCalls(environment)) throw new MilestoneException("GitHub API rate limit exceeded");
         IApiConnection apiCon = GetApiConnection(environment.ApiToken);
 
         RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
@@ -86,7 +86,7 @@ public static class GitHubAPIClient
 
     public static bool CreateContentFile(GitHubActionEnvironment environment, string message, string content, string path, Action<string> logger)
     {
-        if (!HasRemainingCalls(environment)) return false;
+        if (!HasRemainingCalls(environment)) throw new MilestoneException("GitHub API rate limit exceeded");
         IApiConnection apiCon = GetApiConnection(environment.ApiToken);
 
         string[] repository = environment.EnvGitHubRepository.Split("/");
@@ -100,9 +100,41 @@ public static class GitHubAPIClient
         return true;
     }
 
+    public static bool UpdateContentFile(GitHubActionEnvironment environment, string message, string content, string path, Action<string> logger)
+    {
+        if (!HasRemainingCalls(environment)) throw new MilestoneException("GitHub API rate limit exceeded");
+        IApiConnection apiCon = GetApiConnection(environment.ApiToken);
+
+        string[] repository = environment.EnvGitHubRepository.Split("/");
+
+
+
+
+
+
+
+
+
+        RepositoryContentsClient conClient = new RepositoryContentsClient(apiCon);
+
+        IReadOnlyList<RepositoryContent> allCon = conClient.GetAllContentsByRef(repository[0], repository[1], path, GitHubConstants.ErrataBranch).Result;
+        if (allCon == null || allCon.Count == 0) throw new MilestoneException($"Could not find old content at {path} to update in GitHub");
+
+        RepositoryContent conToUpdate = allCon.First();
+
+        UpdateFileRequest updateFileRequest = new UpdateFileRequest(message, content, conToUpdate.Sha, GitHubConstants.ErrataBranch);
+
+        Action updateFile = (() =>
+        {
+            conClient.UpdateFile(repository[0], repository[1], path, updateFileRequest).Wait();
+        });
+        GitHubRetryHelper.RetryCommand(environment, updateFile, logger);
+        return true;
+    }
+
     public static bool CreateOrUpdateSecret(GitHubActionEnvironment environment, string secretName, string secretValue, Action<string> logger)
     {
-        if (!HasRemainingCalls(environment)) return false;
+        if (!HasRemainingCalls(environment)) throw new MilestoneException("GitHub API rate limit exceeded");
         IApiConnection apiCon = GetApiConnection(environment.ApiToken);
 
         RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);

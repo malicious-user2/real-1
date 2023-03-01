@@ -1,6 +1,7 @@
 using System;
 using YouRata.ActionReport.ActionReportFile;
 using YouRata.ActionReport.ConflictMonitor;
+using YouRata.Common.GitHub;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 using (ActionReportCommunicationClient client = new ActionReportCommunicationClient())
@@ -11,5 +12,6 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
 
 
     ActionReportFileBuilder builder = new ActionReportFileBuilder(client.GetActionIntelligence());
-    Console.WriteLine(builder.Build());
+
+    GitHubAPIClient.UpdateContentFile(client.GetActionIntelligence().GitHubActionEnvironment, "update this", builder.Build(), "action-report.json", client.LogMessage);
 }

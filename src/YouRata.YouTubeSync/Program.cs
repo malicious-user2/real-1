@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -43,6 +44,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     try
     {
         client.Activate();
+        Console.WriteLine(Process.GetCurrentProcess().Id);
         GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
             ClientSecrets = new ClientSecrets

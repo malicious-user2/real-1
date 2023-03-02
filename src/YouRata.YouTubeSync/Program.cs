@@ -44,7 +44,6 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     try
     {
         client.Activate();
-        Console.WriteLine(Process.GetCurrentProcess().Id);
         GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
             ClientSecrets = new ClientSecrets
@@ -69,8 +68,8 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                         HttpClientInitializer = userCred
                     }))
         {
-            List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService, client.LogMessage);
-            List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService, client.LogMessage);
+            List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService, client);
+            List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, ytService, client);
             foreach (Video video in videoList)
             {
                 if (video.ContentDetails == null) continue;
@@ -95,14 +94,13 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                                 actionEnvironment.EnvGitHubRepository,
                                 errataBulletinPath);
                             string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
-                            YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, ytService, client.LogMessage);
+                            YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, ytService, client);
                         }
                     }
-                    milestoneInt.VideosProcessed++;
+                    client.LogVideosProcessed();
                 }
             }
         }
-        client.SetMilestoneActionIntelligence(milestoneInt);
     }
     catch (Exception ex)
     {

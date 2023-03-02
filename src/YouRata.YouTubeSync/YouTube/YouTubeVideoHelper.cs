@@ -8,6 +8,7 @@ using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using YouRata.Common.Milestone;
 using YouRata.Common.YouTube;
+using YouRata.YouTubeSync.ConflictMonitor;
 using YouRata.YouTubeSync.ErrataBulletin;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
@@ -16,7 +17,7 @@ namespace YouRata.YouTubeSync.YouTube;
 internal static class YouTubeVideoHelper
 {
 
-    public static void UpdateVideoDescription(Video video, string description, YouTubeService service, Action<string> logger)
+    public static void UpdateVideoDescription(Video video, string description, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         video.ContentDetails = null;
         video.FileDetails = null;
@@ -37,10 +38,10 @@ internal static class YouTubeVideoHelper
         {
             videoUpdateRequest.Execute();
         });
-        YouTubeRetryHelper.RetryCommand(videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
+        YouTubeRetryHelper.RetryCommand(videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
     }
 
-    public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, Action<string> logger)
+    public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         List<Video> channelVideos = new List<Video>();
         SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
@@ -54,7 +55,7 @@ internal static class YouTubeVideoHelper
             {
                 return searchRequest.Execute();
             });
-            SearchListResponse? searchResponse = YouTubeRetryHelper.RetryCommand(getSearchResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
+            SearchListResponse? searchResponse = YouTubeRetryHelper.RetryCommand(getSearchResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
             if (searchResponse == null) throw new MilestoneException($"Could not get YouTube video list for channel id {searchRequest.ChannelId}");
             foreach (SearchResult searchResult in searchResponse.Items)
             {
@@ -66,12 +67,12 @@ internal static class YouTubeVideoHelper
                 {
                     return videoRequest.Execute();
                 });
-                VideoListResponse? videoResponse = YouTubeRetryHelper.RetryCommand(getVideoResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
+                VideoListResponse? videoResponse = YouTubeRetryHelper.RetryCommand(getVideoResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
                 if (videoResponse == null) throw new MilestoneException($"Could not get YouTube video {videoRequest.Id}");
                 Video videoDetails = videoResponse.Items.First();
                 if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null)
                 {
-                    intelligence.VideosSkipped++;
+                    client.LogVideosSkipped();
                     continue;
                 }
                 channelVideos.Add(videoDetails);

@@ -78,6 +78,10 @@ public static class GitHubAPIClient
                     logger.Invoke($"GitHub API: {ex.Message}");
                     throw new MilestoneException("GitHub API failure", ex);
                 }
+                else
+                {
+                    throw;
+                }
             }
         });
         GitHubRetryHelper.RetryCommand(environment, deleteSecret, logger);
@@ -104,6 +108,10 @@ public static class GitHubAPIClient
                 {
                     logger.Invoke($"GitHub API: {ex.Message}");
                     throw new MilestoneException("GitHub API failure", ex);
+                }
+                else
+                {
+                    throw;
                 }
             }
         });
@@ -133,6 +141,7 @@ public static class GitHubAPIClient
                     try
                     {
                         conClient.CreateFile(repository[0], repository[1], path, createFileRequest).Wait();
+                        foundContent = conClient.GetAllContentsByRef(repository[0], repository[1], path, GitHubConstants.ErrataBranch).Result;
                     }
                     catch (AggregateException ex2)
                     {
@@ -147,6 +156,10 @@ public static class GitHubAPIClient
                 {
                     logger.Invoke($"GitHub API: {ex.Message}");
                     throw new MilestoneException("GitHub API failure", ex);
+                }
+                else
+                {
+                    throw;
                 }
             }
         });
@@ -166,6 +179,10 @@ public static class GitHubAPIClient
                 {
                     logger.Invoke($"GitHub API: {ex.Message}");
                     throw new MilestoneException("GitHub API failure", ex);
+                }
+                else
+                {
+                    throw;
                 }
             }
         });
@@ -196,8 +213,11 @@ public static class GitHubAPIClient
                     logger.Invoke($"GitHub API: {ex.Message}");
                     throw new MilestoneException("GitHub API failure", ex);
                 }
+                else
+                {
+                    throw;
+                }
             }
-            return new SecretsPublicKey();
         });
         publicKey = GitHubRetryHelper.RetryCommand(environment, getPublicKey, logger);
         if (publicKey == null) throw new MilestoneException("Could not get GitHub repository public key to create secret");
@@ -215,6 +235,10 @@ public static class GitHubAPIClient
                 {
                     logger.Invoke($"GitHub API: {ex.Message}");
                     throw new MilestoneException("GitHub API failure", ex);
+                }
+                else
+                {
+                    throw;
                 }
             }
         });

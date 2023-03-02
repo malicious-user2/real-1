@@ -118,32 +118,13 @@ public static class GitHubAPIClient
 
         string[] repository = environment.EnvGitHubRepository.Split("/");
         RepositoryContentsClient conClient = new RepositoryContentsClient(apiCon);
+        CreateFileRequest createFileRequest = new CreateFileRequest(message, content, GitHubConstants.ErrataBranch);
         IReadOnlyList<RepositoryContent>? foundContent = default;
         Action getContents = (() =>
         {
             try
             {
                 foundContent = conClient.GetAllContentsByRef(repository[0], repository[1], path, GitHubConstants.ErrataBranch).Result;
-            }
-            catch (AggregateException ex)
-            {
-                if (ex.InnerException != null)
-                {
-                    logger.Invoke($"GitHub API: {ex.Message}");
-                    throw new MilestoneException("GitHub API failure", ex);
-                }
-            }
-        });
-        GitHubRetryHelper.RetryCommand(environment, getContents, logger);
-        if (foundContent == null || foundContent.Count == 0) throw new MilestoneException($"Could not find any content at {path} to update in GitHub");
-        RepositoryContent oldContent = foundContent.First();
-        UpdateFileRequest updateFileRequest = new UpdateFileRequest(message, content, oldContent.Sha, GitHubConstants.ErrataBranch);
-        CreateFileRequest createFileRequest = new CreateFileRequest(message, content, GitHubConstants.ErrataBranch);
-        Action updateFile = (() =>
-        {
-            try
-            {
-                conClient.UpdateFile(repository[0], repository[1], path, updateFileRequest).Wait();
             }
             catch (AggregateException ex)
             {
@@ -163,6 +144,25 @@ public static class GitHubAPIClient
                     }
                 }
                 else if (ex.InnerException != null)
+                {
+                    logger.Invoke($"GitHub API: {ex.Message}");
+                    throw new MilestoneException("GitHub API failure", ex);
+                }
+            }
+        });
+        GitHubRetryHelper.RetryCommand(environment, getContents, logger);
+        if (foundContent == null || foundContent.Count == 0) throw new MilestoneException($"Could not find any content at {path} to update in GitHub");
+        RepositoryContent oldContent = foundContent.First();
+        UpdateFileRequest updateFileRequest = new UpdateFileRequest(message, content, oldContent.Sha, GitHubConstants.ErrataBranch);
+        Action updateFile = (() =>
+        {
+            try
+            {
+                conClient.UpdateFile(repository[0], repository[1], path, updateFileRequest).Wait();
+            }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerException != null)
                 {
                     logger.Invoke($"GitHub API: {ex.Message}");
                     throw new MilestoneException("GitHub API failure", ex);

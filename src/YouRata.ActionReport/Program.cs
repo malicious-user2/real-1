@@ -21,6 +21,12 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
     ActionReportFileBuilder builder = new ActionReportFileBuilder(client.GetActionIntelligence());
 
 
-
-    GitHubAPIClient.UpdateContentFile(actionEnvironment.OverrideRateLimit(), "update this", builder.Build(), "action-report.json", client.LogMessage);
+    try
+    {
+        GitHubAPIClient.UpdateContentFile(actionEnvironment.OverrideRateLimit(), "update this", builder.Build(), "action-report.json", client.LogMessage);
+    }
+    catch (Octokit.NotFoundException)
+    {
+        GitHubAPIClient.CreateContentFile(actionEnvironment.OverrideRateLimit(), "update this", builder.Build(), "action-report.json", client.LogMessage);
+    }
 }

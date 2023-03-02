@@ -37,9 +37,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     GitHubActionEnvironment actionEnvironment;
     YouRataConfiguration config;
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out actionInt, out config, out actionEnvironment);
-    Console.WriteLine(actionInt.TokenResponse);
-    if (YouTubeAPIHelper.IsValidTokenResponse(actionInt.TokenResponse)) return;
-    Console.WriteLine(actionInt.TokenResponse);
+    if (!YouTubeAPIHelper.IsValidTokenResponse(actionInt.TokenResponse)) return;
     TokenResponse? savedTokenResponse = JsonConvert.DeserializeObject<TokenResponse>(actionInt.TokenResponse);
     if (savedTokenResponse == null) return;
     try

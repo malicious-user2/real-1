@@ -37,15 +37,7 @@ internal static class YouTubeVideoHelper
         {
             videoUpdateRequest.Execute();
         });
-        try
-        {
-            YouTubeRetryHelper.RetryCommand(videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
-        }
-        catch
-        {
-            Console.WriteLine($"Could not update YouTube video description for video {video.Id}");
-            throw;
-        }
+        YouTubeRetryHelper.RetryCommand(videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), logger);
     }
 
     public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, Action<string> logger)

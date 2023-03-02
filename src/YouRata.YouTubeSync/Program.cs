@@ -24,7 +24,6 @@ using YouRata.Common.Proto;
 using YouRata.Common.YouTube;
 using YouRata.YouTubeSync.ConflictMonitor;
 using YouRata.YouTubeSync.ErrataBulletin;
-using YouRata.YouTubeSync.Workflow;
 using YouRata.YouTubeSync.YouTube;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
@@ -34,14 +33,13 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableYouTubeSyncMilestone) return;
     if (milestoneInt == null) return;
     if (milestoneInt.Condition == MilestoneCondition.MilestoneBlocked) return;
-    YouTubeSyncWorkflow workflow = new YouTubeSyncWorkflow();
     ActionIntelligence actionInt;
     GitHubActionEnvironment actionEnvironment;
     YouRataConfiguration config;
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out actionInt, out config, out actionEnvironment);
-    if (!workflow.InitialSetupComplete) return;
+    if (YouTubeAPIHelper.IsValidTokenResponse(actionInt.TokenResponse)) return;
     TokenResponse? savedTokenResponse = JsonConvert.DeserializeObject<TokenResponse>(actionInt.TokenResponse);
-    if (savedTokenResponse == null) return; /// throw an error
+    if (savedTokenResponse == null) return;
     GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
     {
         ClientSecrets = new ClientSecrets

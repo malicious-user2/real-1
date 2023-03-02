@@ -94,7 +94,18 @@ public static class GitHubAPIClient
         RepositoryContentsClient conClient = new RepositoryContentsClient(apiCon);
         Action createFile = (() =>
         {
-            conClient.CreateFile(repository[0], repository[1], path, createFileRequest).Wait();
+            try
+            {
+                conClient.CreateFile(repository[0], repository[1], path, createFileRequest).Wait();
+            }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    logger.Invoke($"GitHub API: {ex.Message}");
+                    throw new MilestoneException("GitHub API failure", ex);
+                }
+            }
         });
         GitHubRetryHelper.RetryCommand(environment, createFile, logger);
         return true;
@@ -110,15 +121,53 @@ public static class GitHubAPIClient
         IReadOnlyList<RepositoryContent>? foundContent = default;
         Action getContents = (() =>
         {
-            foundContent = conClient.GetAllContentsByRef(repository[0], repository[1], path, GitHubConstants.ErrataBranch).Result;
+            try
+            {
+                foundContent = conClient.GetAllContentsByRef(repository[0], repository[1], path, GitHubConstants.ErrataBranch).Result;
+            }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    logger.Invoke($"GitHub API: {ex.Message}");
+                    throw new MilestoneException("GitHub API failure", ex);
+                }
+            }
         });
         GitHubRetryHelper.RetryCommand(environment, getContents, logger);
         if (foundContent == null || foundContent.Count == 0) throw new MilestoneException($"Could not find any content at {path} to update in GitHub");
         RepositoryContent oldContent = foundContent.First();
         UpdateFileRequest updateFileRequest = new UpdateFileRequest(message, content, oldContent.Sha, GitHubConstants.ErrataBranch);
+        CreateFileRequest createFileRequest = new CreateFileRequest(message, content, GitHubConstants.ErrataBranch);
         Action updateFile = (() =>
         {
-            conClient.UpdateFile(repository[0], repository[1], path, updateFileRequest).Wait();
+            try
+            {
+                conClient.UpdateFile(repository[0], repository[1], path, updateFileRequest).Wait();
+            }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerException != null && ex.InnerException is NotFoundException)
+                {
+                    try
+                    {
+                        conClient.CreateFile(repository[0], repository[1], path, createFileRequest).Wait();
+                    }
+                    catch (AggregateException ex2)
+                    {
+                        if (ex2.InnerException != null)
+                        {
+                            logger.Invoke($"GitHub API: {ex2.Message}");
+                            throw new MilestoneException("GitHub API failure", ex2);
+                        }
+                    }
+                }
+                else if (ex.InnerException != null)
+                {
+                    logger.Invoke($"GitHub API: {ex.Message}");
+                    throw new MilestoneException("GitHub API failure", ex);
+                }
+            }
         });
         GitHubRetryHelper.RetryCommand(environment, updateFile, logger);
         return true;
@@ -136,7 +185,19 @@ public static class GitHubAPIClient
 
         Func<SecretsPublicKey> getPublicKey = (() =>
         {
-            return secClient.GetPublicKey(repository[0], repository[1]).Result;
+            try
+            {
+                return secClient.GetPublicKey(repository[0], repository[1]).Result;
+            }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    logger.Invoke($"GitHub API: {ex.Message}");
+                    throw new MilestoneException("GitHub API failure", ex);
+                }
+            }
+            return new SecretsPublicKey();
         });
         publicKey = GitHubRetryHelper.RetryCommand(environment, getPublicKey, logger);
         if (publicKey == null) throw new MilestoneException("Could not get GitHub repository public key to create secret");
@@ -144,7 +205,18 @@ public static class GitHubAPIClient
         secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();
         Action createOrUpdateSecret = (() =>
         {
-            secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();
+            try
+            {
+                secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();
+            }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerException != null)
+                {
+                    logger.Invoke($"GitHub API: {ex.Message}");
+                    throw new MilestoneException("GitHub API failure", ex);
+                }
+            }
         });
         GitHubRetryHelper.RetryCommand(environment, createOrUpdateSecret, logger);
         return true;

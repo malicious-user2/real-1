@@ -20,13 +20,12 @@ public static class GitHubRetryHelper
                 }
                 break;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 retryCount++;
-                logger.Invoke($"GitHub API: {ex.Message}");
                 if (retryCount > 1)
                 {
-                    throw new MilestoneException("GitHub API failure", ex);
+                    throw;
                 }
             }
             TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
@@ -48,13 +47,12 @@ public static class GitHubRetryHelper
                 }
                 break;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 retryCount++;
-                logger.Invoke($"GitHub API: {ex.Message}");
                 if (retryCount > 1)
                 {
-                    throw new MilestoneException("GitHub API failure", ex);
+                    throw;
                 }
             }
             TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));

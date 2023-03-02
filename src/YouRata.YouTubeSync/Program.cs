@@ -40,62 +40,72 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     if (YouTubeAPIHelper.IsValidTokenResponse(actionInt.TokenResponse)) return;
     TokenResponse? savedTokenResponse = JsonConvert.DeserializeObject<TokenResponse>(actionInt.TokenResponse);
     if (savedTokenResponse == null) return;
-    GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
+    try
     {
-        ClientSecrets = new ClientSecrets
+        client.Activate();
+        GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
-            ClientId = actionInt.AppClientId,
-            ClientSecret = actionInt.AppClientSecret
-        },
-        Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
-    });
-    if (savedTokenResponse.IsExpired(authFlow.Clock))
-    {
-        savedTokenResponse = authFlow.RefreshTokenAsync(null, savedTokenResponse.RefreshToken, CancellationToken.None).Result;
-        YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
-    }
-    UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);
-    using (YouTubeService ytService
-            = new YouTubeService(
-                new BaseClientService.Initializer()
-                {
-                    ApiKey = actionInt.AppApiKey,
-                    ApplicationName = YouTubeConstants.RequestApplicationName,
-                    HttpClientInitializer = userCred
-                }))
-    {
-        List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService, client.LogMessage);
-        List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService, client.LogMessage);
-        foreach (Video video in videoList)
-        {
-            if (video.ContentDetails == null) continue;
-            if (video.Snippet == null) continue;
-            string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
-                $"{video.Id}.md";
-            if (!Path.Exists(Path.Combine(Directory.GetCurrentDirectory(), GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
+            ClientSecrets = new ClientSecrets
             {
-                string ytVideoTitle = WebUtility.HtmlDecode(video.Snippet.Title);
-                string videoTitle = string.IsNullOrEmpty(ytVideoTitle) ? "Unknown Video" : ytVideoTitle;
-                TimeSpan contentDuration = XmlConvert.ToTimeSpan(video.ContentDetails.Duration);
-                ErrataBulletinBuilder bulletinBuilder = new ErrataBulletinBuilder(config.ErrataBulletin, videoTitle, contentDuration);
-                string errataBulletin = bulletinBuilder.Build();
-
-                if (GitHubAPIClient.CreateContentFile(actionEnvironment, videoTitle, errataBulletin, errataBulletinPath, client.LogMessage))
-                {
-                    if (!config.ActionCutOuts.DisableYouTubeVideoUpdate)
+                ClientId = actionInt.AppClientId,
+                ClientSecret = actionInt.AppClientSecret
+            },
+            Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
+        });
+        if (savedTokenResponse.IsExpired(authFlow.Clock))
+        {
+            savedTokenResponse = authFlow.RefreshTokenAsync(null, savedTokenResponse.RefreshToken, CancellationToken.None).Result;
+            YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
+        }
+        UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);
+        using (YouTubeService ytService
+                = new YouTubeService(
+                    new BaseClientService.Initializer()
                     {
-                        string erattaLink =
-                            string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}",
-                            actionEnvironment.EnvGitHubServerUrl,
-                            actionEnvironment.EnvGitHubRepository,
-                            errataBulletinPath);
-                        string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
-                        YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, ytService, client.LogMessage);
+                        ApiKey = actionInt.AppApiKey,
+                        ApplicationName = YouTubeConstants.RequestApplicationName,
+                        HttpClientInitializer = userCred
+                    }))
+        {
+            List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, ytService, client.LogMessage);
+            List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService, client.LogMessage);
+            foreach (Video video in videoList)
+            {
+                if (video.ContentDetails == null) continue;
+                if (video.Snippet == null) continue;
+                string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
+                    $"{video.Id}.md";
+                if (!Path.Exists(Path.Combine(Directory.GetCurrentDirectory(), GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
+                {
+                    string ytVideoTitle = WebUtility.HtmlDecode(video.Snippet.Title);
+                    string videoTitle = string.IsNullOrEmpty(ytVideoTitle) ? "Unknown Video" : ytVideoTitle;
+                    TimeSpan contentDuration = XmlConvert.ToTimeSpan(video.ContentDetails.Duration);
+                    ErrataBulletinBuilder bulletinBuilder = new ErrataBulletinBuilder(config.ErrataBulletin, videoTitle, contentDuration);
+                    string errataBulletin = bulletinBuilder.Build();
+
+                    if (GitHubAPIClient.CreateContentFile(actionEnvironment, videoTitle, errataBulletin, errataBulletinPath, client.LogMessage))
+                    {
+                        if (!config.ActionCutOuts.DisableYouTubeVideoUpdate)
+                        {
+                            string erattaLink =
+                                string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}",
+                                actionEnvironment.EnvGitHubServerUrl,
+                                actionEnvironment.EnvGitHubRepository,
+                                errataBulletinPath);
+                            string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
+                            YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, ytService, client.LogMessage);
+                        }
                     }
+                    milestoneInt.VideosProcessed++;
                 }
-                milestoneInt.VideosProcessed++;
             }
         }
+        client.SetMilestoneActionIntelligence(milestoneInt);
     }
-    client.SetMilestoneActionIntelligence(milestoneInt);
+    catch (Exception ex)
+    {
+        client.SetStatus(MilestoneCondition.MilestoneFailed);
+        throw new MilestoneException("YouTubeSync failed", ex);
+    }
+    client.SetStatus(MilestoneCondition.MilestoneCompleted);
 }

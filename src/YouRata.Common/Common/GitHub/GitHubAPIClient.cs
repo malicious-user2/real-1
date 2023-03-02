@@ -73,14 +73,13 @@ public static class GitHubAPIClient
             }
             catch (AggregateException ex)
             {
-                if (ex.InnerException != null && ex.InnerException is not NotFoundException)
+                if (ex.InnerException != null && ex.InnerException is NotFoundException)
                 {
                     logger.Invoke($"GitHub API: {ex.Message}");
-                    throw new MilestoneException("GitHub API failure", ex);
                 }
                 else
                 {
-                    throw;
+                    throw new MilestoneException("GitHub API failure", ex);
                 }
             }
         });
@@ -104,15 +103,8 @@ public static class GitHubAPIClient
             }
             catch (AggregateException ex)
             {
-                if (ex.InnerException != null)
-                {
-                    logger.Invoke($"GitHub API: {ex.Message}");
-                    throw new MilestoneException("GitHub API failure", ex);
-                }
-                else
-                {
-                    throw;
-                }
+                logger.Invoke($"GitHub API: {ex.Message}");
+                throw new MilestoneException("GitHub API failure", ex);
             }
         });
         GitHubRetryHelper.RetryCommand(environment, createFile, logger);
@@ -145,21 +137,14 @@ public static class GitHubAPIClient
                     }
                     catch (AggregateException ex2)
                     {
-                        if (ex2.InnerException != null)
-                        {
-                            logger.Invoke($"GitHub API: {ex2.Message}");
-                            throw new MilestoneException("GitHub API failure", ex2);
-                        }
+                        logger.Invoke($"GitHub API: {ex2.Message}");
+                        throw new MilestoneException("GitHub API failure", ex2);
                     }
-                }
-                else if (ex.InnerException != null)
-                {
-                    logger.Invoke($"GitHub API: {ex.Message}");
-                    throw new MilestoneException("GitHub API failure", ex);
                 }
                 else
                 {
-                    throw;
+                    logger.Invoke($"GitHub API: {ex.Message}");
+                    throw new MilestoneException("GitHub API failure", ex);
                 }
             }
         });
@@ -175,15 +160,8 @@ public static class GitHubAPIClient
             }
             catch (AggregateException ex)
             {
-                if (ex.InnerException != null)
-                {
-                    logger.Invoke($"GitHub API: {ex.Message}");
-                    throw new MilestoneException("GitHub API failure", ex);
-                }
-                else
-                {
-                    throw;
-                }
+                logger.Invoke($"GitHub API: {ex.Message}");
+                throw new MilestoneException("GitHub API failure", ex);
             }
         });
         GitHubRetryHelper.RetryCommand(environment, updateFile, logger);
@@ -208,15 +186,8 @@ public static class GitHubAPIClient
             }
             catch (AggregateException ex)
             {
-                if (ex.InnerException != null)
-                {
-                    logger.Invoke($"GitHub API: {ex.Message}");
-                    throw new MilestoneException("GitHub API failure", ex);
-                }
-                else
-                {
-                    throw;
-                }
+                logger.Invoke($"GitHub API: {ex.Message}");
+                throw new MilestoneException("GitHub API failure", ex);
             }
         });
         publicKey = GitHubRetryHelper.RetryCommand(environment, getPublicKey, logger);
@@ -231,15 +202,8 @@ public static class GitHubAPIClient
             }
             catch (AggregateException ex)
             {
-                if (ex.InnerException != null)
-                {
-                    logger.Invoke($"GitHub API: {ex.Message}");
-                    throw new MilestoneException("GitHub API failure", ex);
-                }
-                else
-                {
-                    throw;
-                }
+                logger.Invoke($"GitHub API: {ex.Message}");
+                throw new MilestoneException("GitHub API failure", ex);
             }
         });
         GitHubRetryHelper.RetryCommand(environment, createOrUpdateSecret, logger);

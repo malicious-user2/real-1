@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Octokit;
 using YouRata.Common.Milestone;
 using YouRata.Common.Proto;
 
@@ -9,6 +10,12 @@ public static class GitHubRetryHelper
 {
     public static void RetryCommand(GitHubActionEnvironment environment, Action command, Action<string> logger)
     {
+        RetryCommand(environment, command, logger, null, out _);
+    }
+
+    public static void RetryCommand(GitHubActionEnvironment environment, Action command, Action<string> logger, Type? trapInnerException, out bool trapped)
+    {
+        trapped = false;
         int retryCount = 0;
         while (retryCount < 3)
         {
@@ -19,6 +26,23 @@ public static class GitHubRetryHelper
                     command.Invoke();
                 }
                 break;
+            }
+            catch (Exception ex) when (trapInnerException != null)
+            {
+                if (ex.InnerException != null && ex.InnerException.GetType().Equals(trapInnerException))
+                {
+                    logger.Invoke($"GitHub API: {ex.Message}");
+                    trapped = true;
+                    break;
+                }
+                else
+                {
+                    retryCount++;
+                    if (retryCount > 1)
+                    {
+                        throw new MilestoneException("GitHub API failure", ex);
+                    }
+                }
             }
             catch (Exception)
             {
@@ -35,6 +59,12 @@ public static class GitHubRetryHelper
 
     public static T? RetryCommand<T>(GitHubActionEnvironment environment, Func<T> command, Action<string> logger)
     {
+        return RetryCommand(environment, command, logger, null, out _);
+    }
+
+    public static T? RetryCommand<T>(GitHubActionEnvironment environment, Func<T> command, Action<string> logger, Type? trapInnerException, out bool trapped)
+    {
+        trapped = false;
         int retryCount = 0;
         T? returnValue = default(T?);
         while (retryCount < 3)
@@ -46,6 +76,23 @@ public static class GitHubRetryHelper
                     returnValue = command.Invoke();
                 }
                 break;
+            }
+            catch (Exception ex) when (trapInnerException != null)
+            {
+                if (ex.InnerException != null && ex.InnerException.GetType().Equals(trapInnerException))
+                {
+                    logger.Invoke($"GitHub API: {ex.Message}");
+                    trapped = true;
+                    break;
+                }
+                else
+                {
+                    retryCount++;
+                    if (retryCount > 1)
+                    {
+                        throw new MilestoneException("GitHub API failure", ex);
+                    }
+                }
             }
             catch (Exception)
             {

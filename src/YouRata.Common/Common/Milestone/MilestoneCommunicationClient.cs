@@ -75,6 +75,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
             if (conditionValue != null)
             {
                 milestoneCondition = (MilestoneCondition)conditionValue;
+            }
         }
         return milestoneCondition;
     }
@@ -102,7 +103,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
         object? milestoneActionIntelligence = null;
         if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return milestoneActionIntelligence;
         ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
-        ActionIntelligence actionIntelligence = default;
+        ActionIntelligence? actionIntelligence = null;
         try
         {
             actionIntelligence = actionIntelligenceServiceClient.GetActionIntelligence(new Empty());

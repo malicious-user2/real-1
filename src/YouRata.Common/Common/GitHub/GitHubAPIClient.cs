@@ -97,13 +97,12 @@ public static class GitHubAPIClient
         string[] repository = environment.EnvGitHubRepository.Split("/");
         RepositoryContentsClient conClient = new RepositoryContentsClient(apiCon);
         CreateFileRequest createFileRequest = new CreateFileRequest(message, content, GitHubConstants.ErrataBranch);
-        IReadOnlyList<RepositoryContent>? foundContent = default;
-        Action getContents = (() =>
+        Func<IReadOnlyList<RepositoryContent>> getContents = (() =>
         {
-            foundContent = conClient.GetAllContentsByRef(repository[0], repository[1], path, GitHubConstants.ErrataBranch).Result;
+            return conClient.GetAllContentsByRef(repository[0], repository[1], path, GitHubConstants.ErrataBranch).Result;
         });
         bool noContentsFound = false;
-        GitHubRetryHelper.RetryCommand(environment, getContents, logger, typeof(NotFoundException), out noContentsFound);
+        IReadOnlyList<RepositoryContent>? foundContent = GitHubRetryHelper.RetryCommand(environment, getContents, logger, typeof(NotFoundException), out noContentsFound);
         if (noContentsFound)
         {
             Action createFile = (() =>
@@ -131,14 +130,11 @@ public static class GitHubAPIClient
 
         RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
         string[] repository = environment.EnvGitHubRepository.Split("/");
-
-        SecretsPublicKey? publicKey = default;
-
         Func<SecretsPublicKey> getPublicKey = (() =>
         {
             return secClient.GetPublicKey(repository[0], repository[1]).Result;
         });
-        publicKey = GitHubRetryHelper.RetryCommand(environment, getPublicKey, logger);
+        SecretsPublicKey? publicKey = GitHubRetryHelper.RetryCommand(environment, getPublicKey, logger);
         if (publicKey == null) throw new MilestoneException("Could not get GitHub repository public key to create secret");
         UpsertRepositorySecret secret = CreateSecret(secretValue, publicKey);
         secClient.CreateOrUpdate(repository[0], repository[1], secretName, secret).Wait();

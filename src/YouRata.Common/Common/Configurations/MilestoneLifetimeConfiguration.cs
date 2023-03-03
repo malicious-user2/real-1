@@ -5,7 +5,6 @@ namespace YouRata.Common.Configurations;
 
 public class MilestoneLifetimeConfiguration : BaseValidatableConfiguration
 {
-
     [Required]
     [Range(5, 9000)]
     public int MaxUpdateDwellTime { get; set; }

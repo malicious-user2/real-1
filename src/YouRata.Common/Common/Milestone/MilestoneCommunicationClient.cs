@@ -75,8 +75,6 @@ public abstract class MilestoneCommunicationClient : IDisposable
             if (conditionValue != null)
             {
                 milestoneCondition = (MilestoneCondition)conditionValue;
-            }
-
         }
         return milestoneCondition;
     }

@@ -5,7 +5,6 @@ namespace YouRata.Common.GitHub;
 
 public sealed class GitHubEnvironmentHelper
 {
-
     public IConfiguration Build()
     {
         return new ConfigurationBuilder()

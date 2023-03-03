@@ -2,7 +2,6 @@ namespace YouRata.ConflictMonitor.MilestoneData;
 
 internal class YouTubeSyncMilestoneIntelligence : BaseMilestoneIntelligence
 {
-
     public YouTubeSyncMilestoneIntelligence()
     {
         VideosProcessed = 0;

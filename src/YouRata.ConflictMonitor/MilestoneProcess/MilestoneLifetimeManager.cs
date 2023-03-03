@@ -79,7 +79,6 @@ internal class MilestoneLifetimeManager : IDisposable
                     milestoneIntelligence.StartTime != 0 &&
                     milestoneIntelligence.ProcessId != 0)
                     {
-
                         long dwellTime = DateTimeOffset.Now.ToUnixTimeSeconds() - milestoneIntelligence.LastUpdate;
                         long runTime = DateTimeOffset.Now.ToUnixTimeSeconds() - milestoneIntelligence.StartTime;
                         if (dwellTime > config.MaxUpdateDwellTime ||

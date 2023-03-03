@@ -56,9 +56,6 @@ internal class WebAppServer
         builder.Services.AddAppConfiguration(appConfig);
         builder.Services.AddGitHubEnvironment(environmentConfig);
         builder.Services.AddConfigurationWriter(_configurationHelper.SettingsFilePath);
-
-
-
         builder.Services.AddSingleton<ConflictMonitorWorkflow>(service => _conflictMonitorWorkflow);
         builder.Services.AddSingleton<MilestoneIntelligenceRegistry>(service => _milestoneIntelligence);
         builder.Services.AddSingleton<CallManager>(service => _callManager);

@@ -52,5 +52,4 @@ internal class ConflictMonitorWorkflow
         set => GitHubWorkflowHelper
             .PushVariable(YouRataConstants.InitialSetupCompleteVariable, value.ToString());
     }
-
 }

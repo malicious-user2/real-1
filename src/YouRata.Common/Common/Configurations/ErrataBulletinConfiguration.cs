@@ -7,7 +7,6 @@ namespace YouRata.Common.Configurations;
 
 public class ErrataBulletinConfiguration : BaseValidatableConfiguration
 {
-
     [Required]
     [Range(1, 50)]
     public int EmptyLinesPerMark { get; set; }

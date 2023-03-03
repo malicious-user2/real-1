@@ -6,7 +6,6 @@ namespace YouRata.Common.Configurations;
 
 public class YouTubeConfiguration : BaseValidatableConfiguration
 {
-
     [RegularExpression(@"^UC[-_0-9A-Za-z]{21}[AQgw]$", ErrorMessage = "Invalid YouTubeConfiguration.ChannelId")]
     public string ChannelId { get; set; }
 

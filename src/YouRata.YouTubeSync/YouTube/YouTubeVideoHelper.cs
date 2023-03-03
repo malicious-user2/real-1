@@ -16,7 +16,6 @@ namespace YouRata.YouTubeSync.YouTube;
 
 internal static class YouTubeVideoHelper
 {
-
     public static void UpdateVideoDescription(Video video, string description, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         video.ContentDetails = null;

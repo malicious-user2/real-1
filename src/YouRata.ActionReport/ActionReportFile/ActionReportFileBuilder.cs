@@ -24,8 +24,6 @@ internal class ActionReportFileBuilder
         string status = "Unknown";
         JsonFormatter intelligenceFormatter = new JsonFormatter(JsonFormatter.Settings.Default.WithFormatDefaultValues(true));
         MilestoneActionIntelligence milestoneInt = _actionIntelligence.MilestoneIntelligence;
-
-
         if (milestoneInt.InitialSetup.Condition != MilestoneCondition.MilestoneFailed &&
             milestoneInt.InitialSetup.Condition != MilestoneCondition.MilestoneBlocked &&
             milestoneInt.YouTubeSync.Condition == MilestoneCondition.MilestoneCompleted)

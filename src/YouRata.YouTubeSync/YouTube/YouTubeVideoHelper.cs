@@ -71,7 +71,7 @@ internal static class YouTubeVideoHelper
                 Video videoDetails = videoResponse.Items.First();
                 if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null)
                 {
-                    client.LogVideosSkipped();
+                    client.LogVideoSkipped();
                     continue;
                 }
                 channelVideos.Add(videoDetails);

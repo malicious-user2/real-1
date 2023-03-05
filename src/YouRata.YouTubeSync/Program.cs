@@ -97,7 +97,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                             YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, ytService, client);
                         }
                     }
-                    client.LogVideosProcessed();
+                    client.LogVideoProcessed();
                 }
             }
         }

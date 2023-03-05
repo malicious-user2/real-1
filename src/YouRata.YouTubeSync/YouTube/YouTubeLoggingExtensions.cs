@@ -7,7 +7,7 @@ namespace YouRata.YouTubeSync.YouTube;
 
 internal static class YouTubeLoggingExtensions
 {
-    internal static void LogVideosProcessed(this YouTubeSyncCommunicationClient client)
+    internal static void LogVideoProcessed(this YouTubeSyncCommunicationClient client)
     {
         YouTubeSyncActionIntelligence? milestoneActionIntelligence = client.GetMilestoneActionIntelligence();
         if (milestoneActionIntelligence == null) return;
@@ -15,7 +15,7 @@ internal static class YouTubeLoggingExtensions
         client.SetMilestoneActionIntelligence(milestoneActionIntelligence);
     }
 
-    internal static void LogVideosSkipped(this YouTubeSyncCommunicationClient client)
+    internal static void LogVideoSkipped(this YouTubeSyncCommunicationClient client)
     {
         YouTubeSyncActionIntelligence? milestoneActionIntelligence = client.GetMilestoneActionIntelligence();
         if (milestoneActionIntelligence == null) return;

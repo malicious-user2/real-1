@@ -84,6 +84,8 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     ErrataBulletinBuilder bulletinBuilder = new ErrataBulletinBuilder(config.ErrataBulletin, videoTitle, contentDuration);
                     string errataBulletin = bulletinBuilder.Build();
 
+                    Console.WriteLine(video.Id);
+
                     if (GitHubAPIClient.CreateContentFile(actionEnvironment, videoTitle, errataBulletin, errataBulletinPath, client.LogMessage))
                     {
                         if (!config.ActionCutOuts.DisableYouTubeVideoUpdate)

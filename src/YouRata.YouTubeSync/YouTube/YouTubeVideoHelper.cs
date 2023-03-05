@@ -47,6 +47,7 @@ internal static class YouTubeVideoHelper
         if (string.IsNullOrEmpty(channelId)) return channelVideos;
         searchRequest.ChannelId = channelId;
         searchRequest.MaxResults = 50;
+        searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
         bool requestNextPage = true;
         while (requestNextPage)
         {

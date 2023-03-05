@@ -16,7 +16,7 @@
   },
   "MilestoneLifetime": {
     "MaxUpdateDwellTime": 500,
-    "MaxRunTime": 501
+    "MaxRunTime": 1000
   },
   "ErrataBulletin": {
     "EmptyLinesPerMark": 3,

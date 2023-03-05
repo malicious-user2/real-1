@@ -48,7 +48,7 @@ internal static class YouTubeVideoHelper
             foreach (string searchResult in lines)
             {
                 VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
-                videoRequest.Id = searchResult;
+                videoRequest.Id = searchResult.Replace("\n", "").Replace("\r", ""); ;
                 videoRequest.MaxResults = 1;
                 Func<VideoListResponse> getVideoResponse = (() =>
                 {

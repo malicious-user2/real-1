@@ -43,25 +43,12 @@ internal static class YouTubeVideoHelper
     public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         List<Video> channelVideos = new List<Video>();
-        SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
-        if (string.IsNullOrEmpty(channelId)) return channelVideos;
-        searchRequest.ChannelId = channelId;
-        searchRequest.MaxResults = 50;
-        searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
-        bool requestNextPage = true;
-        while (requestNextPage)
-        {
-            Func<SearchListResponse> getSearchResponse = (() =>
+        string[] lines = File.ReadAllLines(Directory.GetCurrentDirectory() + "\\prod.txt");
+
+            foreach (string searchResult in lines)
             {
-                return searchRequest.Execute();
-            });
-            SearchListResponse? searchResponse = YouTubeRetryHelper.RetryCommand(getSearchResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
-            if (searchResponse == null) throw new MilestoneException($"Could not get YouTube video list for channel id {searchRequest.ChannelId}");
-            foreach (SearchResult searchResult in searchResponse.Items)
-            {
-                if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
                 VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
-                videoRequest.Id = searchResult.Id.VideoId;
+                videoRequest.Id = searchResult;
                 videoRequest.MaxResults = 1;
                 Func<VideoListResponse> getVideoResponse = (() =>
                 {
@@ -77,9 +64,6 @@ internal static class YouTubeVideoHelper
                 }
                 channelVideos.Add(videoDetails);
             }
-            requestNextPage = !string.IsNullOrEmpty(searchResponse.NextPageToken);
-            searchRequest.PageToken = searchResponse.NextPageToken;
-        }
         return channelVideos;
     }
 }

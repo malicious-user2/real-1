@@ -43,7 +43,7 @@ internal static class YouTubeVideoHelper
     public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         List<Video> channelVideos = new List<Video>();
-        string[] lines = File.ReadAllLines(Directory.GetCurrentDirectory() + "\\prod.txt");
+        string[] lines = File.ReadAllLines(Directory.GetCurrentDirectory() + "/prod.txt");
 
             foreach (string searchResult in lines)
             {

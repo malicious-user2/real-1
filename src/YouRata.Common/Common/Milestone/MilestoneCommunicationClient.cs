@@ -183,6 +183,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
     {
         ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
         string actionReportText = actionIntelligenceServiceClient.GetActionIntelligence(new Empty()).PreviousActionReport;
+        Console.WriteLine(actionReportText);
         ActionReportLayout actionReport = new ActionReportLayout();
         if (!string.IsNullOrEmpty(actionReportText))
         {

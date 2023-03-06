@@ -49,6 +49,11 @@ internal class ActionReportFileBuilder
             Logs = _actionIntelligence.LogMessages.ToString()
         };
 
-        return JsonConvert.SerializeObject(actionReport, Formatting.Indented);
+        ActionReportRoot actionReportRoot = new ActionReportRoot
+        {
+            ActionReport = actionReport
+        };
+
+        return JsonConvert.SerializeObject(actionReportRoot, Formatting.Indented);
     }
 }

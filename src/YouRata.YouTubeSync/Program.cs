@@ -72,13 +72,11 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, ytService, client);
             foreach (Video video in videoList)
             {
-                if (video.ContentDetails == null) continue;
-                if (video.Snippet == null) continue;
                 string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
                     $"{video.Id}.md";
                 if (!Path.Exists(Path.Combine(Directory.GetCurrentDirectory(), GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
                 {
-                    string ytVideoTitle = WebUtility.HtmlDecode(video.Snippet.Title);
+                    string ytVideoTitle = string.Empty;
                     string videoTitle = string.IsNullOrEmpty(ytVideoTitle) ? "Unknown Video" : ytVideoTitle;
                     TimeSpan contentDuration = TimeSpan.FromSeconds(400);
                     ErrataBulletinBuilder bulletinBuilder = new ErrataBulletinBuilder(config.ErrataBulletin, videoTitle, contentDuration);

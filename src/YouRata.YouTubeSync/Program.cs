@@ -80,7 +80,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 {
                     string ytVideoTitle = WebUtility.HtmlDecode(video.Snippet.Title);
                     string videoTitle = string.IsNullOrEmpty(ytVideoTitle) ? "Unknown Video" : ytVideoTitle;
-                    TimeSpan contentDuration = XmlConvert.ToTimeSpan(video.ContentDetails.Duration);
+                    TimeSpan contentDuration = TimeSpan.FromSeconds(400);
                     ErrataBulletinBuilder bulletinBuilder = new ErrataBulletinBuilder(config.ErrataBulletin, videoTitle, contentDuration);
                     string errataBulletin = bulletinBuilder.Build();
 

@@ -50,8 +50,9 @@ internal static class YouTubeVideoHelper
             if (string.IsNullOrEmpty(searchResult)) continue;
             Video videoDetails = new Video();
             videoDetails.Id = searchResult.Replace("\n", "").Replace("\r", ""); ;
-               
-                channelVideos.Add(videoDetails);
+
+            channelVideos.Add(videoDetails);
+                Console.WriteLine(videoDetails.Id);
             }
         return channelVideos;
     }

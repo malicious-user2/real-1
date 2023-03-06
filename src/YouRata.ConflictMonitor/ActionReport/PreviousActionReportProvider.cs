@@ -24,6 +24,7 @@ internal class PreviousActionReportProvider
         }
         catch
         {
+            throw;
         }
     }
 

@@ -1,6 +1,7 @@
 using System;
 using YouRata.ActionReport.ActionReportFile;
 using YouRata.ActionReport.ConflictMonitor;
+using YouRata.Common;
 using YouRata.Common.Configurations;
 using YouRata.Common.GitHub;
 using YouRata.Common.Milestone;
@@ -21,6 +22,6 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
     ActionReportFileBuilder builder = new ActionReportFileBuilder(client.GetActionIntelligence());
 
 
-    GitHubAPIClient.UpdateContentFile(actionEnvironment.OverrideRateLimit(), "update this", builder.Build(), "action-report.json", client.LogMessage);
+    GitHubAPIClient.UpdateContentFile(actionEnvironment.OverrideRateLimit(), "update this", builder.Build(), YouRataConstants.ActionReportFileName, client.LogMessage);
 
 }

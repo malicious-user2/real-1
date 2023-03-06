@@ -4,6 +4,7 @@ using Google.Protobuf;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using YouRata.Common;
+using YouRata.Common.ActionReport;
 using YouRata.Common.Proto;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
@@ -39,18 +40,15 @@ internal class ActionReportFileBuilder
             status = "YouTube Sync Failed";
         }
 
-        JObject actionReport = new JObject
+        ActionReportLayout actionReport = new ActionReportLayout
         {
-            ["Status"] = status,
-            ["InitialSetupIntelligence"] = intelligenceFormatter.Format(milestoneInt.InitialSetup),
-            ["YouTubeSyncIntelligence"] = intelligenceFormatter.Format(milestoneInt.YouTubeSync),
-            ["ActionReportIntelligence"] = intelligenceFormatter.Format(milestoneInt.ActionReport),
-            ["Logs"] = _actionIntelligence.LogMessages.ToString()
+            Status = status,
+            InitialSetupIntelligence = intelligenceFormatter.Format(milestoneInt.InitialSetup),
+            YouTubeSyncIntelligence = intelligenceFormatter.Format(milestoneInt.YouTubeSync),
+            ActionReportIntelligence = intelligenceFormatter.Format(milestoneInt.ActionReport),
+            Logs = _actionIntelligence.LogMessages.ToString()
         };
-        JObject jsonRoot = new JObject
-        {
-            ["ActionReport"] = actionReport
-        };
-        return actionReport.ToString(Formatting.Indented);
+
+        return JsonConvert.SerializeObject(actionReport, Formatting.Indented);
     }
 }

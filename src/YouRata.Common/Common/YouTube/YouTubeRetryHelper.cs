@@ -2,19 +2,23 @@ using System;
 using Microsoft.Extensions.Hosting;
 using System.Threading;
 using YouRata.Common.Milestone;
+using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.Common.YouTube;
 
 public static class YouTubeRetryHelper
 {
-    public static void RetryCommand(Action command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
+    public static void RetryCommand(YouTubeSyncActionIntelligence intelligence, int quotaCost, Action command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
     {
         int retryCount = 0;
         while (retryCount < 3)
         {
             try
             {
-                command.Invoke();
+                {
+                    intelligence.CalculatedQueriesPerDayRemaining -= quotaCost;
+                    command.Invoke();
+                }
                 break;
             }
             catch (Exception ex)
@@ -31,7 +35,7 @@ public static class YouTubeRetryHelper
         }
     }
 
-    public static T? RetryCommand<T>(Func<T> command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
+    public static T? RetryCommand<T>(YouTubeSyncActionIntelligence intelligence, int quotaCost, Func<T> command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
     {
         int retryCount = 0;
         T? returnValue = default(T?);
@@ -39,7 +43,10 @@ public static class YouTubeRetryHelper
         {
             try
             {
-                returnValue = command.Invoke();
+                {
+                    intelligence.CalculatedQueriesPerDayRemaining -= quotaCost;
+                    command.Invoke();
+                }
                 break;
             }
             catch (Exception ex)

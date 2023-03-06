@@ -16,7 +16,7 @@ namespace YouRata.YouTubeSync.YouTube;
 
 internal static class YouTubeVideoHelper
 {
-    public static void UpdateVideoDescription(Video video, string description, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static void UpdateVideoDescription(Video video, string description, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         video.ContentDetails = null;
         video.FileDetails = null;
@@ -37,23 +37,49 @@ internal static class YouTubeVideoHelper
         {
             videoUpdateRequest.Execute();
         });
-        YouTubeRetryHelper.RetryCommand(videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
+        YouTubeRetryHelper.RetryCommand(intelligence, 50, videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
     }
 
-    public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         List<Video> channelVideos = new List<Video>();
-        string[] lines = File.ReadAllLines(Directory.GetCurrentDirectory() + "/prod.txt");
-
-            foreach (string searchResult in lines)
+        SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
+        if (string.IsNullOrEmpty(channelId)) return channelVideos;
+        searchRequest.ChannelId = channelId;
+        searchRequest.MaxResults = 50;
+        searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
+        bool requestNextPage = true;
+        while (requestNextPage)
+        {
+            Func<SearchListResponse> getSearchResponse = (() =>
             {
-            if (string.IsNullOrEmpty(searchResult)) continue;
-            Video videoDetails = new Video();
-            videoDetails.Id = searchResult.Replace("\n", "").Replace("\r", ""); ;
-
-            channelVideos.Add(videoDetails);
-                Console.WriteLine(videoDetails.Id);
+                return searchRequest.Execute();
+            });
+            SearchListResponse? searchResponse = YouTubeRetryHelper.RetryCommand(intelligence, 100, getSearchResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
+            if (searchResponse == null) throw new MilestoneException($"Could not get YouTube video list for channel id {searchRequest.ChannelId}");
+            foreach (SearchResult searchResult in searchResponse.Items)
+            {
+                if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
+                VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
+                videoRequest.Id = searchResult.Id.VideoId;
+                videoRequest.MaxResults = 1;
+                Func<VideoListResponse> getVideoResponse = (() =>
+                {
+                    return videoRequest.Execute();
+                });
+                VideoListResponse? videoResponse = YouTubeRetryHelper.RetryCommand(intelligence, 1, getVideoResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
+                if (videoResponse == null) throw new MilestoneException($"Could not get YouTube video {videoRequest.Id}");
+                Video videoDetails = videoResponse.Items.First();
+                if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null)
+                {
+                    client.LogVideoSkipped();
+                    continue;
+                }
+                channelVideos.Add(videoDetails);
             }
+            requestNextPage = !string.IsNullOrEmpty(searchResponse.NextPageToken);
+            searchRequest.PageToken = searchResponse.NextPageToken;
+        }
         return channelVideos;
     }
 }

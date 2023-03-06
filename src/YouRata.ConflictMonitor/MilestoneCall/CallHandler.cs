@@ -101,6 +101,8 @@ internal class CallHandler
         actionIntelligence.YouTubeSync.ProcessId = milestoneIntelligence.YouTubeSync.ProcessId;
         actionIntelligence.YouTubeSync.VideosProcessed = milestoneIntelligence.YouTubeSync.VideosProcessed;
         actionIntelligence.YouTubeSync.VideosSkipped = milestoneIntelligence.YouTubeSync.VideosSkipped;
+        actionIntelligence.YouTubeSync.CalculatedQueriesPerDayRemaining = milestoneIntelligence.YouTubeSync.CalculatedQueriesPerDayRemaining;
+        actionIntelligence.YouTubeSync.LastQueryTime = milestoneIntelligence.YouTubeSync.LastQueryTime;
         actionIntelligence.ActionReport = new ActionReportActionIntelligence();
         actionIntelligence.ActionReport.Condition = milestoneIntelligence.ActionReport.Condition;
         actionIntelligence.ActionReport.ProcessId = milestoneIntelligence.ActionReport.ProcessId;

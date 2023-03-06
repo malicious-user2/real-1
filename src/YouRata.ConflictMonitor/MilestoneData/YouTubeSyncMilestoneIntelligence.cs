@@ -11,4 +11,8 @@ internal class YouTubeSyncMilestoneIntelligence : BaseMilestoneIntelligence
     public int VideosProcessed { get; set; }
 
     public int VideosSkipped { get; set; }
+
+    public int CalculatedQueriesPerDayRemaining { get; set; }
+
+    public long LastQueryTime { get; set; }
 }

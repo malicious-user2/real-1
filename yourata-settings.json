@@ -10,7 +10,7 @@
     "DisableStoredTokenResponseDiscovery": false,
     "DisableInitialSetupMilestone": false,
     "DisableUnsupportedGitHubAPI": false,
-    "DisableYouTubeSyncMilestone": false,
+    "DisableYouTubeSyncMilestone": true,
     "DisableYouTubeVideoUpdate": true,
     "DisableActionReportMilestone": false
   },

@@ -47,22 +47,10 @@ internal static class YouTubeVideoHelper
 
             foreach (string searchResult in lines)
             {
-                VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
-                videoRequest.Id = searchResult.Replace("\n", "").Replace("\r", ""); ;
-                videoRequest.MaxResults = 1;
-            Console.WriteLine(videoRequest.Id.First());
-                Func<VideoListResponse> getVideoResponse = (() =>
-                {
-                    return videoRequest.Execute();
-                });
-                VideoListResponse? videoResponse = YouTubeRetryHelper.RetryCommand(getVideoResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
-                if (videoResponse == null) throw new MilestoneException($"Could not get YouTube video {videoRequest.Id}");
-                Video videoDetails = videoResponse.Items.First();
-                if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null)
-                {
-                    client.LogVideoSkipped();
-                    continue;
-                }
+            if (string.IsNullOrEmpty(searchResult)) continue;
+            Video videoDetails = new Video();
+            videoDetails.Id = searchResult.Replace("\n", "").Replace("\r", ""); ;
+               
                 channelVideos.Add(videoDetails);
             }
         return channelVideos;

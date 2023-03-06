@@ -1,0 +1,40 @@
+using System;
+using Newtonsoft.Json;
+using YouRata.Common;
+using YouRata.Common.ActionReport;
+using YouRata.Common.Configurations;
+using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
+
+namespace YouRata.YouTubeSync.YouTube;
+
+internal static class YouTubeQuotaHelper
+{
+
+    public static void FillCurrentQuota(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence, ActionReportLayout previousActionReport)
+    {
+        if (previousActionReport != null && previousActionReport.YouTubeSyncIntelligence != null)
+        {
+            try
+            {
+                YouTubeSyncActionIntelligence? previousIntelligence = JsonConvert
+                    .DeserializeObject<YouTubeSyncActionIntelligence>(previousActionReport.YouTubeSyncIntelligence);
+                if (previousIntelligence != null)
+                {
+                    DateTime lastQuery = DateTimeOffset.FromUnixTimeSeconds(previousIntelligence.LastQueryTime).Date;
+                    DateTime resetTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, TimeZoneInfo.Utc.Id, YouRataConstants.PacificTimeZone).Date;
+                    if (resetTime > lastQuery)
+                    {
+                        intelligence.CalculatedQueriesPerDayRemaining = config.QueriesPerDay;
+                    }
+                    else
+                    {
+                        intelligence.CalculatedQueriesPerDayRemaining = previousIntelligence.CalculatedQueriesPerDayRemaining;
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+    }
+}

@@ -3,15 +3,16 @@
     "ChannelId": "UC_Ftxa2jwg8R4IWDw48uyBw",
     "ExcludePlaylists": null,
     "ErattaLinkLocation": "bottom",
-    "ErrataLinkTemplate": "To see errata for this video: {0}"
+    "ErrataLinkTemplate": "To see errata for this video: {0}",
+    "QueriesPerDay": 10000
   },
   "ActionCutOuts": {
     "DisableConflictMonitorGitHubOperations": false,
     "DisableStoredTokenResponseDiscovery": false,
     "DisableInitialSetupMilestone": false,
     "DisableUnsupportedGitHubAPI": false,
-    "DisableYouTubeSyncMilestone": true,
-    "DisableYouTubeVideoUpdate": true,
+    "DisableYouTubeSyncMilestone": false,
+    "DisableYouTubeVideoUpdate": false,
     "DisableActionReportMilestone": false
   },
   "MilestoneLifetime": {

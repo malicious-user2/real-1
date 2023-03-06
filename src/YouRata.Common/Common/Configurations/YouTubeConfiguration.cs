@@ -19,4 +19,8 @@ public class YouTubeConfiguration : BaseValidatableConfiguration
     [Required]
     [DefaultValue("To see errata for this video: {0}")]
     public string ErrataLinkTemplate { get; set; }
+
+    [Required]
+    [DefaultValue(10000)]
+    public int QueriesPerDay { get; set; }
 }

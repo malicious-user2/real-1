@@ -18,6 +18,7 @@ using Google.Protobuf.Collections;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Octokit;
+using YouRata.Common.ActionReport;
 using YouRata.Common.Configurations;
 using YouRata.Common.GitHub;
 using YouRata.Common.Milestone;
@@ -41,9 +42,13 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     if (!YouTubeAPIHelper.IsValidTokenResponse(actionInt.TokenResponse)) return;
     TokenResponse? savedTokenResponse = JsonConvert.DeserializeObject<TokenResponse>(actionInt.TokenResponse);
     if (savedTokenResponse == null) return;
+    string? workspace = Environment.GetEnvironmentVariable(GitHubConstants.GitHubWorkspaceVariable);
+    if (workspace == null) return;
+    ActionReportLayout previousActionReport = client.GetPreviousActionReport();
     try
     {
         client.Activate();
+        YouTubeQuotaHelper.FillCurrentQuota(config.YouTube, milestoneInt, previousActionReport);
         GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
             ClientSecrets = new ClientSecrets
@@ -76,7 +81,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 if (video.Snippet == null) continue;
                 string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
                     $"{video.Id}.md";
-                if (!Path.Exists(Path.Combine(Directory.GetCurrentDirectory(), GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
+                if (!Path.Exists(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
                 {
                     string ytVideoTitle = WebUtility.HtmlDecode(video.Snippet.Title);
                     string videoTitle = string.IsNullOrEmpty(ytVideoTitle) ? "Unknown Video" : ytVideoTitle;

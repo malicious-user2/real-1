@@ -13,6 +13,8 @@ public static class GitHubConstants
 
     public static string ActionTokenVariable = "ACTION_TOKEN";
 
+    public static string GitHubWorkspaceVariable = "GITHUB_WORKSPACE";
+
     public static readonly string ApiTokenVariable = "API_TOKEN";
 
     public static readonly string ErrataBranch = "errata";

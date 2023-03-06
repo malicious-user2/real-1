@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Newtonsoft.Json;
 using YouRata.Common;
@@ -12,19 +13,22 @@ internal class PreviousActionReportProvider
 
     public PreviousActionReportProvider()
     {
-        string fileName = Path.Combine(Directory.GetCurrentDirectory(), GitHubConstants.ErrataCheckoutPath, YouRataConstants.ActionReportFileName);
         _actionReportRoot = new ActionReportRoot();
-        try
+        string? workspace = Environment.GetEnvironmentVariable(GitHubConstants.GitHubWorkspaceVariable);
+        if (workspace != null)
         {
-            ActionReportRoot? deserializeActionReportRoot = JsonConvert.DeserializeObject<ActionReportRoot>(File.ReadAllText(fileName));
-            if (deserializeActionReportRoot != null)
+            string fileName = Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, YouRataConstants.ActionReportFileName);
+            try
             {
-                _actionReportRoot = deserializeActionReportRoot;
+                ActionReportRoot? deserializeActionReportRoot = JsonConvert.DeserializeObject<ActionReportRoot>(File.ReadAllText(fileName));
+                if (deserializeActionReportRoot != null)
+                {
+                    _actionReportRoot = deserializeActionReportRoot;
+                }
             }
-        }
-        catch
-        {
-            throw;
+            catch
+            {
+            }
         }
     }
 

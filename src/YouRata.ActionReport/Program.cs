@@ -21,6 +21,8 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
     client.Activate();
     ActionReportFileBuilder builder = new ActionReportFileBuilder(client.GetActionIntelligence());
 
+    Console.WriteLine(client.GetPreviousActionReport().ActionReportIntelligence.ToString());
+
 
     GitHubAPIClient.UpdateContentFile(actionEnvironment.OverrideRateLimit(), "update this", builder.Build(), YouRataConstants.ActionReportFileName, client.LogMessage);
 

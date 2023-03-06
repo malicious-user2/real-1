@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using YouRata.Common.Configurations;
 using YouRata.Common.GitHub;
 using YouRata.Common.Proto;
+using YouRata.ConflictMonitor.ActionReport;
 using YouRata.ConflictMonitor.MilestoneData;
 using YouRata.ConflictMonitor.Workflow;
 
@@ -21,8 +22,9 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
     private readonly IOptions<GitHubEnvironment> _environment;
     private readonly ConflictMonitorWorkflow _conflictMonitorWorkflow;
     private readonly MilestoneIntelligenceRegistry _milestoneIntelligence;
+    private readonly PreviousActionReportProvider _previousActionReport;
 
-    public ActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager, IOptions<YouRataConfiguration> configuration, IOptions<GitHubEnvironment> environment, ConflictMonitorWorkflow conflictMonitorWorkflow, MilestoneIntelligenceRegistry milestoneIntelligence)
+    public ActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager, IOptions<YouRataConfiguration> configuration, IOptions<GitHubEnvironment> environment, ConflictMonitorWorkflow conflictMonitorWorkflow, MilestoneIntelligenceRegistry milestoneIntelligence, PreviousActionReportProvider actionReportProvider)
     {
         _logger = loggerFactory.CreateLogger<ActionIntelligenceMessage>();
         _callManager = callManager;
@@ -30,6 +32,7 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
         _environment = environment;
         _conflictMonitorWorkflow = conflictMonitorWorkflow;
         _milestoneIntelligence = milestoneIntelligence;
+        _previousActionReport = actionReportProvider;
     }
 
     public override Task<ActionIntelligence> GetActionIntelligence(Empty request, ServerCallContext context)
@@ -47,6 +50,7 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
                 actionIntelligence.AppClientId = callHandler.GetAppClientId(_configuration.Value, _conflictMonitorWorkflow);
                 actionIntelligence.AppClientSecret = callHandler.GetAppClientSecret(_configuration.Value, _conflictMonitorWorkflow);
                 actionIntelligence.AppApiKey = callHandler.GetAppApiKey(_configuration.Value, _conflictMonitorWorkflow);
+                actionIntelligence.PreviousActionReport = callHandler.GetPreviousActionReport(_configuration.Value, _previousActionReport);
                 actionIntelligence.LogMessages.AddRange(callHandler.GetLogs());
             }
             catch (Exception e)

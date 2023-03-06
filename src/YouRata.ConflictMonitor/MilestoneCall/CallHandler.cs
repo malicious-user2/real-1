@@ -11,9 +11,11 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Octokit;
 using YouRata.Common;
+using YouRata.Common.ActionReport;
 using YouRata.Common.Configurations;
 using YouRata.Common.GitHub;
 using YouRata.Common.Proto;
+using YouRata.ConflictMonitor.ActionReport;
 using YouRata.ConflictMonitor.MilestoneData;
 using YouRata.ConflictMonitor.Workflow;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
@@ -86,6 +88,15 @@ internal class CallHandler
         if (workflow.ProjectApiKey != null)
         {
             return workflow.ProjectApiKey;
+        }
+        return string.Empty;
+    }
+
+    internal string GetPreviousActionReport(YouRataConfiguration appConfig, PreviousActionReportProvider actionReportProvider)
+    {
+        if (actionReportProvider.ActionReport != null)
+        {
+            return JsonConvert.SerializeObject(actionReportProvider.ActionReport, Formatting.None);
         }
         return string.Empty;
     }

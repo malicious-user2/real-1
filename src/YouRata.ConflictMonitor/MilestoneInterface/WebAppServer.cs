@@ -17,6 +17,7 @@ using YouRata.ConflictMonitor.Workflow;
 using static YouRata.ConflictMonitor.MilestoneCall.CallManager;
 using YouRata.ConflictMonitor.MilestoneProcess;
 using YouRata.ConflictMonitor.MilestoneInterface.ConfigurationValidation;
+using YouRata.ConflictMonitor.ActionReport;
 
 namespace YouRata.ConflictMonitor.MilestoneInterface;
 
@@ -29,8 +30,9 @@ internal class WebAppServer
     private readonly GitHubEnvironmentHelper _environmentHelper;
     private readonly ConflictMonitorWorkflow _conflictMonitorWorkflow;
     private readonly MilestoneIntelligenceRegistry _milestoneIntelligence;
+    private readonly PreviousActionReportProvider _actionReportProvider;
 
-    public WebAppServer(CallHandler callHandler, InServiceLoggerProvider loggerProvider, ConfigurationHelper configurationHelper, GitHubEnvironmentHelper environmentHelper, ConflictMonitorWorkflow conflictMonitorWorkflow, MilestoneIntelligenceRegistry milestoneIntelligence)
+    public WebAppServer(CallHandler callHandler, InServiceLoggerProvider loggerProvider, ConfigurationHelper configurationHelper, GitHubEnvironmentHelper environmentHelper, ConflictMonitorWorkflow conflictMonitorWorkflow, MilestoneIntelligenceRegistry milestoneIntelligence, PreviousActionReportProvider actionReportProvider)
     {
         _callHandler = callHandler;
         _callManager = new CallManager();
@@ -39,6 +41,7 @@ internal class WebAppServer
         _environmentHelper = environmentHelper;
         _conflictMonitorWorkflow = conflictMonitorWorkflow;
         _milestoneIntelligence = milestoneIntelligence;
+        _actionReportProvider = actionReportProvider;
     }
 
     private WebApplication BuildApp()
@@ -58,6 +61,7 @@ internal class WebAppServer
         builder.Services.AddConfigurationWriter(_configurationHelper.SettingsFilePath);
         builder.Services.AddSingleton<ConflictMonitorWorkflow>(service => _conflictMonitorWorkflow);
         builder.Services.AddSingleton<MilestoneIntelligenceRegistry>(service => _milestoneIntelligence);
+        builder.Services.AddSingleton<PreviousActionReportProvider>(service => _actionReportProvider);
         builder.Services.AddSingleton<CallManager>(service => _callManager);
         WebApplication app = builder.Build();
         return app;

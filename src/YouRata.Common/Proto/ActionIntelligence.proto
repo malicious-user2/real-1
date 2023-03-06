@@ -16,5 +16,6 @@ message ActionIntelligence
     string App_Api_Key = 5;
     GitHubActionEnvironment GitHub_Action_Environment = 6;
     string Config_Json = 7;
-    repeated string LogMessages = 8;
+    string Previous_Action_Report = 8;
+    repeated string LogMessages = 9;
 }

@@ -13,6 +13,8 @@ using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using YouRata.Common.ActionReport;
 using YouRata.Common.Configurations;
 using YouRata.Common.Proto;
 using YouRata.ConflictMonitor;
@@ -175,6 +177,28 @@ public abstract class MilestoneCommunicationClient : IDisposable
     {
         ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
         return actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
+    }
+
+    public ActionReportLayout GetPreviousActionReport()
+    {
+        ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
+        string actionReportText = actionIntelligenceServiceClient.GetActionIntelligence(new Empty()).PreviousActionReport;
+        ActionReportLayout actionReport = new ActionReportLayout();
+        if (!string.IsNullOrEmpty(actionReportText))
+        {
+            try
+            {
+                ActionReportLayout? deserializeActionReport = JsonConvert.DeserializeObject<ActionReportLayout>(actionReportText);
+                if (deserializeActionReport != null)
+                {
+                    actionReport = deserializeActionReport;
+                }
+            }
+            catch
+            {
+            }
+        }
+        return actionReport;
     }
 
     public YouRataConfiguration GetYouRataConfiguration()

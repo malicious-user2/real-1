@@ -49,10 +49,6 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     {
         client.Activate();
         YouTubeQuotaHelper.FillCurrentQuota(config.YouTube, milestoneInt, previousActionReport);
-
-
-
-        Console.WriteLine(milestoneInt.CalculatedQueriesPerDayRemaining);
         GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
             ClientSecrets = new ClientSecrets

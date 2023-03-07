@@ -45,7 +45,7 @@ public static class YouTubeRetryHelper
             {
                 {
                     intelligence.CalculatedQueriesPerDayRemaining -= quotaCost;
-                    command.Invoke();
+                    returnValue = command.Invoke();
                 }
                 break;
             }

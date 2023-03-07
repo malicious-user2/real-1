@@ -38,7 +38,9 @@ internal static class YouTubeVideoHelper
         {
             videoUpdateRequest.Execute();
         });
-        YouTubeRetryHelper.RetryCommand(intelligence, 50, videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
+        bool forbidden = false;
+        YouTubeRetryHelper.RetryCommand(intelligence, 50, videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage, HttpStatusCode.Forbidden, out forbidden);
+        if (forbidden) throw new MilestoneException("YouTube API update video forbidden");
     }
 
     public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)

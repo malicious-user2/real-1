@@ -75,15 +75,8 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         {
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, milestoneInt, ytService, client);
             List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService, client);
-            int count = 0;
             foreach (Video video in videoList)
             {
-                count++;
-                if (count > 2) break;
-
-
-
-
                 if (video.ContentDetails == null) continue;
                 if (video.Snippet == null) continue;
                 string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +

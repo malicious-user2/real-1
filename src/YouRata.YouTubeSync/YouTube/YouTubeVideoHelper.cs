@@ -61,6 +61,7 @@ internal static class YouTubeVideoHelper
             if (searchResponse == null) throw new MilestoneException($"Could not get YouTube video list for channel id {searchRequest.ChannelId}");
             foreach (SearchResult searchResult in searchResponse.Items)
             {
+                if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
                 VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
                 videoRequest.Id = searchResult.Id.VideoId;

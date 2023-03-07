@@ -1,4 +1,5 @@
 using System;
+using Google.Protobuf;
 using Newtonsoft.Json;
 using YouRata.Common;
 using YouRata.Common.ActionReport;
@@ -27,8 +28,7 @@ internal static class YouTubeQuotaHelper
     {
         if (previousActionReport != null && previousActionReport.YouTubeSyncIntelligence != null)
         {
-            YouTubeSyncActionIntelligence? previousIntelligence = JsonConvert
-                .DeserializeObject<YouTubeSyncActionIntelligence>(previousActionReport.YouTubeSyncIntelligence);
+            YouTubeSyncActionIntelligence previousIntelligence = JsonParser.Default.Parse<YouTubeSyncActionIntelligence>(previousActionReport.YouTubeSyncIntelligence);
             if (previousIntelligence != null)
             {
                 DateTime lastQuery = DateTimeOffset.FromUnixTimeSeconds(previousIntelligence.LastQueryTime).Date;

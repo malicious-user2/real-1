@@ -28,6 +28,7 @@ internal static class YouTubeQuotaHelper
     {
         if (previousActionReport != null && previousActionReport.YouTubeSyncIntelligence != null)
         {
+            Console.WriteLine(previousActionReport.YouTubeSyncIntelligence);
             YouTubeSyncActionIntelligence previousIntelligence = JsonParser.Default.Parse<YouTubeSyncActionIntelligence>(previousActionReport.YouTubeSyncIntelligence);
             if (previousIntelligence != null)
             {

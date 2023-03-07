@@ -65,6 +65,7 @@ jobs:
     - name: Test3 (I:Debug T:Debug R:false)
       run: dotnet run --verbosity normal --project src/YouRata.YouTubeSync/YouRata.YouTubeSync.csproj --no-build src/YouRata.YouTubeSync/Debug/net7.0/YouRata.YouTubeSync.dll
     - name: Test4 (I:Debug T:Debug R:false)
+      if: success() || failure()
       run: dotnet run --verbosity normal --project src/YouRata.ActionReport/YouRata.ActionReport.csproj --no-build src/YouRata.ActionReport/Debug/net7.0/YouRata.ActionReport.dll
     - name: env
       run: env

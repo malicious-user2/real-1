@@ -48,7 +48,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     try
     {
         client.Activate();
-        YouTubeQuotaHelper.FillCurrentQuota(config.YouTube, milestoneInt, previousActionReport);
+        YouTubeQuotaHelper.FillPreviousActionReport(config.YouTube, milestoneInt, previousActionReport);
         GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
             ClientSecrets = new ClientSecrets
@@ -83,6 +83,14 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     $"{video.Id}.md";
                 if (!Path.Exists(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
                 {
+                    if (video.Snippet.PublishedAt == null) continue;
+                    DateTimeOffset publishTimeOffset = new DateTimeOffset(video.Snippet.PublishedAt.Value);
+                    long publishTime = publishTimeOffset.ToUnixTimeSeconds();
+                    if (milestoneInt.LastVideoPublishTime > publishTime)
+                    {
+                        client.LogVideoSkipped();
+                        continue;
+                    }
                     string ytVideoTitle = WebUtility.HtmlDecode(video.Snippet.Title);
                     string videoTitle = string.IsNullOrEmpty(ytVideoTitle) ? "Unknown Video" : ytVideoTitle;
                     TimeSpan contentDuration = XmlConvert.ToTimeSpan(video.ContentDetails.Duration);
@@ -102,7 +110,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                             YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, milestoneInt, ytService, client);
                         }
                     }
-                    client.LogVideoProcessed();
+                    client.LogVideoProcessed(publishTime);
                 }
             }
         }

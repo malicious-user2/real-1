@@ -27,6 +27,7 @@ message MilestoneActionIntelligence
         int32 Videos_Skipped = 4;
         int32 Calculated_Queries_Per_Day_Remaining = 5;
         int64 Last_Query_Time = 6;
+        int64 Last_Video_Publish_Time = 7;
     }
     message ActionReportActionIntelligence
     {

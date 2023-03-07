@@ -24,7 +24,7 @@ internal static class YouTubeQuotaHelper
         return true;
     }
 
-    public static void FillCurrentQuota(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence, ActionReportLayout previousActionReport)
+    public static void FillPreviousActionReport(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence, ActionReportLayout previousActionReport)
     {
         if (string.IsNullOrEmpty(previousActionReport.YouTubeSyncIntelligence))
         {
@@ -43,6 +43,7 @@ internal static class YouTubeQuotaHelper
             {
                 intelligence.CalculatedQueriesPerDayRemaining = previousIntelligence.CalculatedQueriesPerDayRemaining;
             }
+            intelligence.LastVideoPublishTime = previousIntelligence.LastVideoPublishTime;
         }
     }
 }

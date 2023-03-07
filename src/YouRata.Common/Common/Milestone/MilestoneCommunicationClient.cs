@@ -186,16 +186,10 @@ public abstract class MilestoneCommunicationClient : IDisposable
         ActionReportLayout actionReport = new ActionReportLayout();
         if (!string.IsNullOrEmpty(actionReportText))
         {
-            try
+            ActionReportLayout? deserializeActionReport = JsonConvert.DeserializeObject<ActionReportLayout>(actionReportText);
+            if (deserializeActionReport != null)
             {
-                ActionReportLayout? deserializeActionReport = JsonConvert.DeserializeObject<ActionReportLayout>(actionReportText);
-                if (deserializeActionReport != null)
-                {
-                    actionReport = deserializeActionReport;
-                }
-            }
-            catch
-            {
+                actionReport = deserializeActionReport;
             }
         }
         return actionReport;

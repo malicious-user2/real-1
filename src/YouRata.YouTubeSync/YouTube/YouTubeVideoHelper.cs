@@ -18,6 +18,7 @@ internal static class YouTubeVideoHelper
 {
     public static void UpdateVideoDescription(Video video, string description, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
+        if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         video.ContentDetails = null;
         video.FileDetails = null;
         video.LiveStreamingDetails = null;
@@ -42,6 +43,7 @@ internal static class YouTubeVideoHelper
 
     public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
+        if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<Video> channelVideos = new List<Video>();
         SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
         if (string.IsNullOrEmpty(channelId)) return channelVideos;

@@ -13,6 +13,7 @@ internal static class YouTubePlaylistHelper
 {
     public static List<ResourceId> GetPlaylistVideos(string[]? playlists, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
+        if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<string> videoIds = new List<string>();
         List<ResourceId> playlistResourceIds = new List<ResourceId>();
         if (playlists == null) return playlistResourceIds;

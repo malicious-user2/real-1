@@ -10,30 +10,37 @@ namespace YouRata.YouTubeSync.YouTube;
 internal static class YouTubeQuotaHelper
 {
 
+    public static bool HasRemainingCalls(YouTubeSyncActionIntelligence intelligence)
+    {
+        if (intelligence.CalculatedQueriesPerDayRemaining < 100 && intelligence.CalculatedQueriesPerDayRemaining > 0)
+        {
+            Console.WriteLine($"WARNING: Only {intelligence.CalculatedQueriesPerDayRemaining} YouTube API calls remaining");
+        }
+        if (intelligence.CalculatedQueriesPerDayRemaining < 4)
+        {
+            return false;
+        }
+        return true;
+    }
+
     public static void FillCurrentQuota(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence, ActionReportLayout previousActionReport)
     {
         if (previousActionReport != null && previousActionReport.YouTubeSyncIntelligence != null)
         {
-            try
+            YouTubeSyncActionIntelligence? previousIntelligence = JsonConvert
+                .DeserializeObject<YouTubeSyncActionIntelligence>(previousActionReport.YouTubeSyncIntelligence);
+            if (previousIntelligence != null)
             {
-                YouTubeSyncActionIntelligence? previousIntelligence = JsonConvert
-                    .DeserializeObject<YouTubeSyncActionIntelligence>(previousActionReport.YouTubeSyncIntelligence);
-                if (previousIntelligence != null)
+                DateTime lastQuery = DateTimeOffset.FromUnixTimeSeconds(previousIntelligence.LastQueryTime).Date;
+                DateTime resetTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, TimeZoneInfo.Utc.Id, YouRataConstants.PacificTimeZone).Date;
+                if (resetTime > lastQuery)
                 {
-                    DateTime lastQuery = DateTimeOffset.FromUnixTimeSeconds(previousIntelligence.LastQueryTime).Date;
-                    DateTime resetTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, TimeZoneInfo.Utc.Id, YouRataConstants.PacificTimeZone).Date;
-                    if (resetTime > lastQuery)
-                    {
-                        intelligence.CalculatedQueriesPerDayRemaining = config.QueriesPerDay;
-                    }
-                    else
-                    {
-                        intelligence.CalculatedQueriesPerDayRemaining = previousIntelligence.CalculatedQueriesPerDayRemaining;
-                    }
+                    intelligence.CalculatedQueriesPerDayRemaining = config.QueriesPerDay;
                 }
-            }
-            catch
-            {
+                else
+                {
+                    intelligence.CalculatedQueriesPerDayRemaining = previousIntelligence.CalculatedQueriesPerDayRemaining;
+                }
             }
         }
     }

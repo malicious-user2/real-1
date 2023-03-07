@@ -145,6 +145,8 @@ internal class CallHandler
         milestoneIntelligence.YouTubeSync.LastUpdate = updateTime;
         milestoneIntelligence.YouTubeSync.VideosProcessed = actionIntelligence.VideosProcessed;
         milestoneIntelligence.YouTubeSync.VideosSkipped = actionIntelligence.VideosSkipped;
+        milestoneIntelligence.YouTubeSync.CalculatedQueriesPerDayRemaining = actionIntelligence.CalculatedQueriesPerDayRemaining;
+        milestoneIntelligence.YouTubeSync.LastQueryTime = actionIntelligence.LastQueryTime;
     }
 
     internal void UpdateActionReportMilestoneIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, ActionReportActionIntelligence actionIntelligence)

@@ -26,22 +26,22 @@ internal static class YouTubeQuotaHelper
 
     public static void FillCurrentQuota(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence, ActionReportLayout previousActionReport)
     {
-        if (previousActionReport != null && previousActionReport.YouTubeSyncIntelligence != null)
+        if (string.IsNullOrEmpty(previousActionReport.YouTubeSyncIntelligence))
         {
-            Console.WriteLine(previousActionReport.YouTubeSyncIntelligence);
+            intelligence.CalculatedQueriesPerDayRemaining = config.QueriesPerDay;
+        }
+        else
+        {
             YouTubeSyncActionIntelligence previousIntelligence = JsonParser.Default.Parse<YouTubeSyncActionIntelligence>(previousActionReport.YouTubeSyncIntelligence);
-            if (previousIntelligence != null)
+            DateTime lastQuery = DateTimeOffset.FromUnixTimeSeconds(previousIntelligence.LastQueryTime).Date;
+            DateTime resetTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, TimeZoneInfo.Utc.Id, YouRataConstants.PacificTimeZone).Date;
+            if (resetTime > lastQuery)
             {
-                DateTime lastQuery = DateTimeOffset.FromUnixTimeSeconds(previousIntelligence.LastQueryTime).Date;
-                DateTime resetTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, TimeZoneInfo.Utc.Id, YouRataConstants.PacificTimeZone).Date;
-                if (resetTime > lastQuery)
-                {
-                    intelligence.CalculatedQueriesPerDayRemaining = config.QueriesPerDay;
-                }
-                else
-                {
-                    intelligence.CalculatedQueriesPerDayRemaining = previousIntelligence.CalculatedQueriesPerDayRemaining;
-                }
+                intelligence.CalculatedQueriesPerDayRemaining = config.QueriesPerDay;
+            }
+            else
+            {
+                intelligence.CalculatedQueriesPerDayRemaining = previousIntelligence.CalculatedQueriesPerDayRemaining;
             }
         }
     }

@@ -79,7 +79,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             foreach (Video video in videoList)
             {
                 count++;
-                if (count > 13) break;
+                if (count > 2) break;
 
 
 

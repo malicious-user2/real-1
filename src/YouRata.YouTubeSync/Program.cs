@@ -49,6 +49,10 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     {
         client.Activate();
         YouTubeQuotaHelper.FillCurrentQuota(config.YouTube, milestoneInt, previousActionReport);
+
+
+
+        Console.WriteLine(milestoneInt.CalculatedQueriesPerDayRemaining);
         GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
             ClientSecrets = new ClientSecrets
@@ -75,8 +79,15 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         {
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, milestoneInt, ytService, client);
             List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService, client);
+            int count = 0;
             foreach (Video video in videoList)
             {
+                count++;
+                if (count > 10) break;
+
+
+
+
                 if (video.ContentDetails == null) continue;
                 if (video.Snippet == null) continue;
                 string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +

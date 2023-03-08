@@ -61,8 +61,11 @@ internal static class YouTubeVideoHelper
             });
             SearchListResponse? searchResponse = YouTubeRetryHelper.RetryCommand(intelligence, 100, getSearchResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
             if (searchResponse == null) throw new MilestoneException($"Could not get YouTube video list for channel id {searchRequest.ChannelId}");
+            int count = 0;
             foreach (SearchResult searchResult in searchResponse.Items)
             {
+                count++;
+                if (count > 3) break;
                 if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
                 VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });

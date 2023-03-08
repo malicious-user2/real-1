@@ -107,12 +107,15 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 }
             }
         }
-        client.LogAPIQueries(milestoneInt);
     }
     catch (Exception ex)
     {
         client.SetStatus(MilestoneCondition.MilestoneFailed);
         throw new MilestoneException("YouTubeSync failed", ex);
+    }
+    finally
+    {
+        client.LogAPIQueries(milestoneInt);
     }
     client.SetStatus(MilestoneCondition.MilestoneCompleted);
 }

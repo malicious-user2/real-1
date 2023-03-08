@@ -68,7 +68,7 @@ internal static class YouTubeVideoHelper
             foreach (SearchResult searchResult in searchResponse.Items)
             {
                 if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
-                if (intelligence.CalculatedQueriesPerDayRemaining < 100) return channelVideos;
+                if (intelligence.CalculatedQueriesPerDayRemaining < 200) return channelVideos;
                 if (searchResult.Snippet.PublishedAt == null) continue;
                 DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
                 lastPublishTime = publishTimeOffset.ToUnixTimeSeconds();

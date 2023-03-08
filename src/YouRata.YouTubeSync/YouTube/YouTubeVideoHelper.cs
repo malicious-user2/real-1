@@ -67,6 +67,8 @@ internal static class YouTubeVideoHelper
                 if (searchResult.Snippet.PublishedAt == null) continue;
                 DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
                 lastPublishTime = publishTimeOffset.ToUnixTimeSeconds();
+                Console.WriteLine($"last: {intelligence.LastVideoPublishTime} {lastPublishTime}");
+                Console.WriteLine(intelligence.CalculatedQueriesPerDayRemaining);
                 if (intelligence.LastVideoPublishTime > lastPublishTime)
                 {
                     client.LogVideoSkipped();

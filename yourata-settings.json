@@ -4,7 +4,7 @@
     "ExcludePlaylists": null,
     "ErattaLinkLocation": "bottom",
     "ErrataLinkTemplate": "To see errata for this video: {0}",
-    "QueriesPerDay": 1000
+    "QueriesPerDay": 500
   },
   "ActionCutOuts": {
     "DisableConflictMonitorGitHubOperations": false,

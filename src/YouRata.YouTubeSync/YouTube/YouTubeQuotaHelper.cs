@@ -33,9 +33,10 @@ internal static class YouTubeQuotaHelper
         else
         {
             YouTubeSyncActionIntelligence previousIntelligence = JsonParser.Default.Parse<YouTubeSyncActionIntelligence>(previousActionReport.YouTubeSyncIntelligence);
-            long resetTime = ((DateTimeOffset)TimeZoneInfo
-                .ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, TimeZoneInfo.Utc.Id, YouRataConstants.PacificTimeZone).Date)
-                .ToUnixTimeSeconds();
+            TimeZoneInfo resetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(YouRataConstants.PacificTimeZone);
+            long resetDateSeconds = ((DateTimeOffset)DateTime.UtcNow.Add(resetTimeZone.BaseUtcOffset).Date).ToUnixTimeSeconds();
+            DateTime resetDateTime = DateTimeOffset.FromUnixTimeSeconds(resetDateSeconds).Subtract(resetTimeZone.BaseUtcOffset).DateTime;
+            long resetTime = ((DateTimeOffset)resetDateTime).ToUnixTimeSeconds();
             if (previousIntelligence.LastQueryTime == 0 || resetTime > previousIntelligence.LastQueryTime)
             {
                 intelligence.CalculatedQueriesPerDayRemaining = config.QueriesPerDay;

@@ -54,7 +54,7 @@ internal static class YouTubeVideoHelper
         searchRequest.ChannelId = channelId;
         searchRequest.MaxResults = 50;
         searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
-        searchRequest.PublishedAfter = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(intelligence.LastVideoPublishTime).Date);
+        searchRequest.PublishedAfter = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(intelligence.LastVideoPublishTime).DateTime);
         Console.WriteLine(searchRequest.PublishedAfter);
         bool requestNextPage = true;
         while (requestNextPage)

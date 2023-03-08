@@ -83,14 +83,6 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     $"{video.Id}.md";
                 if (!Path.Exists(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
                 {
-                    if (video.Snippet.PublishedAt == null) continue;
-                    DateTimeOffset publishTimeOffset = new DateTimeOffset(video.Snippet.PublishedAt.Value);
-                    long publishTime = publishTimeOffset.ToUnixTimeSeconds();
-                    if (milestoneInt.LastVideoPublishTime > publishTime)
-                    {
-                        client.LogVideoSkipped();
-                        continue;
-                    }
                     string ytVideoTitle = WebUtility.HtmlDecode(video.Snippet.Title);
                     string videoTitle = string.IsNullOrEmpty(ytVideoTitle) ? "Unknown Video" : ytVideoTitle;
                     TimeSpan contentDuration = XmlConvert.ToTimeSpan(video.ContentDetails.Duration);

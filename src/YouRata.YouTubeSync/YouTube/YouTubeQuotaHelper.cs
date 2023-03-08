@@ -24,7 +24,7 @@ internal static class YouTubeQuotaHelper
         return true;
     }
 
-    public static void FillPreviousActionReport(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence, ActionReportLayout previousActionReport)
+    public static void SetPreviousActionReport(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence, ActionReportLayout previousActionReport)
     {
         if (string.IsNullOrEmpty(previousActionReport.YouTubeSyncIntelligence))
         {
@@ -33,11 +33,10 @@ internal static class YouTubeQuotaHelper
         else
         {
             YouTubeSyncActionIntelligence previousIntelligence = JsonParser.Default.Parse<YouTubeSyncActionIntelligence>(previousActionReport.YouTubeSyncIntelligence);
-            
-            DateTime lastQuery = DateTimeOffset.FromUnixTimeSeconds(previousIntelligence.LastQueryTime).Date;
-            DateTime resetTime = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, TimeZoneInfo.Utc.Id, YouRataConstants.PacificTimeZone).Date;
-            Console.WriteLine($"old: {lastQuery} reset: {resetTime}");
-            if (previousIntelligence.LastQueryTime == 0 || resetTime > lastQuery)
+            long resetTime = ((DateTimeOffset)TimeZoneInfo
+                .ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, TimeZoneInfo.Utc.Id, YouRataConstants.PacificTimeZone).Date)
+                .ToUnixTimeSeconds();
+            if (previousIntelligence.LastQueryTime == 0 || resetTime > previousIntelligence.LastQueryTime)
             {
                 intelligence.CalculatedQueriesPerDayRemaining = config.QueriesPerDay;
             }

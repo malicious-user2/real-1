@@ -73,8 +73,9 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                         HttpClientInitializer = userCred
                     }))
         {
+            long lastPublishTime;
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, milestoneInt, ytService, client);
-            List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, ignoreResources, milestoneInt, ytService, client);
+            List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, out lastPublishTime, ignoreResources, milestoneInt, ytService, client);
             foreach (Video video in videoList)
             {
                 if (video.ContentDetails == null) continue;
@@ -102,7 +103,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                             YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, milestoneInt, ytService, client);
                         }
                     }
-                    client.LogVideoProcessed(publishTime);
+                    client.LogVideoProcessed(lastPublishTime);
                 }
             }
         }

@@ -43,8 +43,9 @@ internal static class YouTubeVideoHelper
         if (forbidden) throw new MilestoneException("YouTube API update video forbidden");
     }
 
-    public static List<Video> GetChannelVideos(string channelId, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static List<Video> GetChannelVideos(string channelId, out long lastPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
+        lastPublishTime = 0;
         if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<Video> channelVideos = new List<Video>();
         SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
@@ -65,8 +66,8 @@ internal static class YouTubeVideoHelper
             {
                 if (searchResult.Snippet.PublishedAt == null) continue;
                 DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
-                long publishTime = publishTimeOffset.ToUnixTimeSeconds();
-                if (intelligence.LastVideoPublishTime > publishTime)
+                lastPublishTime = publishTimeOffset.ToUnixTimeSeconds();
+                if (intelligence.LastVideoPublishTime > lastPublishTime)
                 {
                     client.LogVideoSkipped();
                     continue;

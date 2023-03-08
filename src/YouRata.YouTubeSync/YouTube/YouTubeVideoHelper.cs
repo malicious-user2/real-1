@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml;
+using Google.Apis.Util;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using YouRata.Common.Milestone;
@@ -53,6 +54,8 @@ internal static class YouTubeVideoHelper
         searchRequest.ChannelId = channelId;
         searchRequest.MaxResults = 50;
         searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
+        searchRequest.PublishedAfter = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(intelligence.LastVideoPublishTime).Date);
+        Console.WriteLine(searchRequest.PublishedAfter);
         bool requestNextPage = true;
         while (requestNextPage)
         {
@@ -67,13 +70,6 @@ internal static class YouTubeVideoHelper
                 if (searchResult.Snippet.PublishedAt == null) continue;
                 DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
                 lastPublishTime = publishTimeOffset.ToUnixTimeSeconds();
-                Console.WriteLine($"last: {intelligence.LastVideoPublishTime} {lastPublishTime}");
-                Console.WriteLine(intelligence.CalculatedQueriesPerDayRemaining);
-                if (intelligence.LastVideoPublishTime > lastPublishTime)
-                {
-                    client.LogVideoSkipped();
-                    continue;
-                }
                 if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
                 VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });

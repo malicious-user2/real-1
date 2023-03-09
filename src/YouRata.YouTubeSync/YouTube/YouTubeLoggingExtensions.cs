@@ -15,11 +15,20 @@ internal static class YouTubeLoggingExtensions
         client.SetMilestoneActionIntelligence(milestoneActionIntelligence);
     }
 
-    internal static void LogPublishTimes(this YouTubeSyncCommunicationClient client, long firstPublishTime)
+    internal static void LogFirstPublishTime(this YouTubeSyncCommunicationClient client, long firstPublishTime)
     {
         YouTubeSyncActionIntelligence? milestoneActionIntelligence = client.GetMilestoneActionIntelligence();
         if (milestoneActionIntelligence == null) return;
         milestoneActionIntelligence.FirstVideoPublishTime = firstPublishTime;
+        client.SetMilestoneActionIntelligence(milestoneActionIntelligence);
+    }
+
+    internal static void LogOutstandingVideos(this YouTubeSyncCommunicationClient client, bool hasOutstandingVideos, long outstandingPublishTime)
+    {
+        YouTubeSyncActionIntelligence? milestoneActionIntelligence = client.GetMilestoneActionIntelligence();
+        if (milestoneActionIntelligence == null) return;
+        milestoneActionIntelligence.HasOutstandingVideos = hasOutstandingVideos;
+        milestoneActionIntelligence.OutstandingVideoPublishTime = outstandingPublishTime;
         client.SetMilestoneActionIntelligence(milestoneActionIntelligence);
     }
 

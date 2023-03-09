@@ -46,12 +46,65 @@ internal static class YouTubeVideoHelper
 
     public static List<Video> GetOutstandingChannelVideos(string channelId, out long lastPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
-        intelligence.HasOutstandingVideos
+        long firstOutstandingPublishTime = intelligence.OutstandingVideoPublishTime;
+        lastPublishTime = 0;
+        if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
+        List<Video> channelVideos = new List<Video>();
+        SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
+        if (string.IsNullOrEmpty(channelId)) return channelVideos;
+        searchRequest.ChannelId = channelId;
+        searchRequest.MaxResults = 50;
+        searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
+        searchRequest.PublishedBefore = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(firstOutstandingPublishTime).DateTime);
+        Console.WriteLine(searchRequest.PublishedAfter);
+        bool requestNextPage = true;
+        while (requestNextPage)
+        {
+            Func<SearchListResponse> getSearchResponse = (() =>
+            {
+                return searchRequest.Execute();
+            });
+            SearchListResponse? searchResponse = YouTubeRetryHelper.RetryCommand(intelligence, YouTubeConstants.SearchListQuotaCost, getSearchResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
+            if (searchResponse == null) throw new MilestoneException($"Could not get YouTube video list for channel id {searchRequest.ChannelId}");
+            foreach (SearchResult searchResult in searchResponse.Items)
+            {
+                if (!YouTubeQuotaHelper.HasEnoughCallsForUpdate(intelligence, channelVideos)) return channelVideos;
+                Console.WriteLine(intelligence.CalculatedQueriesPerDayRemaining);
+                if (searchResult.Snippet.PublishedAt == null) continue;
+                if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
+                VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
+                videoRequest.Id = searchResult.Id.VideoId;
+                videoRequest.MaxResults = 1;
+                Func<VideoListResponse> getVideoResponse = (() =>
+                {
+                    return videoRequest.Execute();
+                });
+                VideoListResponse? videoResponse = YouTubeRetryHelper.RetryCommand(intelligence, YouTubeConstants.VideoListQuotaCost, getVideoResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
+                if (videoResponse == null) throw new MilestoneException($"Could not get YouTube video {videoRequest.Id}");
+                Video videoDetails = videoResponse.Items.First();
+                if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null)
+                {
+                    client.LogVideoSkipped();
+                    continue;
+                }
+                channelVideos.Add(videoDetails);
+                DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
+                if (firstOutstandingPublishTime == 0)
+                {
+                    firstOutstandingPublishTime = publishTimeOffset.ToUnixTimeSeconds();
+                }
+                lastPublishTime = publishTimeOffset.ToUnixTimeSeconds();
+            }
+            requestNextPage = !string.IsNullOrEmpty(searchResponse.NextPageToken);
+            searchRequest.PageToken = searchResponse.NextPageToken;
+        }
+        return channelVideos;
     }
 
-    public static List<Video> GetRecentChannelVideos(string channelId, out long firstPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static List<Video> GetRecentChannelVideos(string channelId, out long firstPublishTime, out long lastPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         firstPublishTime = intelligence.FirstVideoPublishTime;
+        lastPublishTime = 0;
         if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<Video> channelVideos = new List<Video>();
         SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
@@ -92,11 +145,12 @@ internal static class YouTubeVideoHelper
                     continue;
                 }
                 channelVideos.Add(videoDetails);
+                DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
                 if (firstPublishTime == 0)
                 {
-                    DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
                     firstPublishTime = publishTimeOffset.ToUnixTimeSeconds();
                 }
+                lastPublishTime = publishTimeOffset.ToUnixTimeSeconds();
             }
             requestNextPage = !string.IsNullOrEmpty(searchResponse.NextPageToken);
             searchRequest.PageToken = searchResponse.NextPageToken;

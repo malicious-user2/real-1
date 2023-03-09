@@ -115,6 +115,8 @@ internal class CallHandler
         actionIntelligence.YouTubeSync.CalculatedQueriesPerDayRemaining = milestoneIntelligence.YouTubeSync.CalculatedQueriesPerDayRemaining;
         actionIntelligence.YouTubeSync.LastQueryTime = milestoneIntelligence.YouTubeSync.LastQueryTime;
         actionIntelligence.YouTubeSync.FirstVideoPublishTime = milestoneIntelligence.YouTubeSync.FirstVideoPublishTime;
+        actionIntelligence.YouTubeSync.OutstandingVideoPublishTime = milestoneIntelligence.YouTubeSync.OutstandingVideoPublishTime;
+        actionIntelligence.YouTubeSync.HasOutstandingVideos = milestoneIntelligence.YouTubeSync.HasOutstandingVideos;
         actionIntelligence.ActionReport = new ActionReportActionIntelligence();
         actionIntelligence.ActionReport.Condition = milestoneIntelligence.ActionReport.Condition;
         actionIntelligence.ActionReport.ProcessId = milestoneIntelligence.ActionReport.ProcessId;
@@ -149,6 +151,8 @@ internal class CallHandler
         milestoneIntelligence.YouTubeSync.CalculatedQueriesPerDayRemaining = actionIntelligence.CalculatedQueriesPerDayRemaining;
         milestoneIntelligence.YouTubeSync.LastQueryTime = actionIntelligence.LastQueryTime;
         milestoneIntelligence.YouTubeSync.FirstVideoPublishTime = actionIntelligence.FirstVideoPublishTime;
+        milestoneIntelligence.YouTubeSync.OutstandingVideoPublishTime = actionIntelligence.OutstandingVideoPublishTime;
+        milestoneIntelligence.YouTubeSync.HasOutstandingVideos = actionIntelligence.HasOutstandingVideos;
     }
 
     internal void UpdateActionReportMilestoneIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, ActionReportActionIntelligence actionIntelligence)

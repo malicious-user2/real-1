@@ -74,13 +74,22 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     }))
         {
             long firstPublishTime;
-            long outstandingPublishTime;
+            long lastPublishTime;
+            long outstandingPublishTime = 0;
+            bool firstRun = false;
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, milestoneInt, ytService, client);
-            List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube.ChannelId, out firstPublishTime, ignoreResources, milestoneInt, ytService, client);
+            List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube.ChannelId, out firstPublishTime, out lastPublishTime, ignoreResources, milestoneInt, ytService, client);
+            List<Video> oustandingVideoList = new List<Video>();
+            if (milestoneInt.HasOutstandingVideos)
+            {
+                oustandingVideoList = YouTubeVideoHelper.GetOutstandingChannelVideos(config.YouTube.ChannelId, out outstandingPublishTime, ignoreResources, milestoneInt, ytService, client);
+                videoList.AddRange(oustandingVideoList);
+            }
+            else if (milestoneInt.FirstVideoPublishTime == 0 && milestoneInt.OutstandingVideoPublishTime == 0)
+            {
+                firstRun = true;
+            }
 
-            List<Video> oustandingVideoList = YouTubeVideoHelper.GetOutstandingChannelVideos(config.YouTube.ChannelId, out lastPublishTime, ignoreResources, milestoneInt, ytService, client);
-
-            videoList.AddRange(oustandingVideoList);
             foreach (Video video in videoList)
             {
                 if (video.ContentDetails == null) continue;
@@ -113,7 +122,22 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     client.LogVideoProcessed();
                 }
             }
-            client.LogPublishTimes(firstPublishTime);
+            if (firstRun)
+            {
+                client.LogOutstandingVideos(true, lastPublishTime);
+                client.LogFirstPublishTime(firstPublishTime);
+            }
+            else if (milestoneInt.HasOutstandingVideos)
+            {
+                if (oustandingVideoList.Count > 0)
+                {
+                    client.LogOutstandingVideos(true, outstandingPublishTime);
+                }
+                else
+                {
+                    client.LogOutstandingVideos(false, 0);
+                }
+            }
         }
     }
     catch (Exception ex)

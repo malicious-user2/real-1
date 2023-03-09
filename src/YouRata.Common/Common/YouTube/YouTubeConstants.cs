@@ -29,4 +29,12 @@ public static class YouTubeConstants
     public static string PrivacyStatusUnlisted = "unlisted";
 
     public static string PrivacyStatusPublic = "public";
+
+    public static int SearchListQuotaCost = 100;
+
+    public static int VideoListQuotaCost = 1;
+
+    public static int PlaylistItemListQuotaCost = 1;
+
+    public static int VideosResourceUpdateQuotaCost = 50;
 }

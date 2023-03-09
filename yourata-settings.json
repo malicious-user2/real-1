@@ -4,7 +4,7 @@
     "ExcludePlaylists": null,
     "ErattaLinkLocation": "bottom",
     "ErrataLinkTemplate": "To see errata for this video: {0}",
-    "QueriesPerDay": 500
+    "QueriesPerDay": 10000
   },
   "ActionCutOuts": {
     "DisableConflictMonitorGitHubOperations": false,
@@ -16,8 +16,8 @@
     "DisableActionReportMilestone": false
   },
   "MilestoneLifetime": {
-    "MaxUpdateDwellTime": 500,
-    "MaxRunTime": 1000
+    "MaxUpdateDwellTime": 1500,
+    "MaxRunTime": 1900
   },
   "ErrataBulletin": {
     "EmptyLinesPerMark": 3,

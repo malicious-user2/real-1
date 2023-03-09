@@ -1,10 +1,13 @@
 using System;
+using Google.Apis.YouTube.v3.Data;
+using System.Collections.Generic;
 using Google.Protobuf;
 using Newtonsoft.Json;
 using YouRata.Common;
 using YouRata.Common.ActionReport;
 using YouRata.Common.Configurations;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
+using YouRata.Common.YouTube;
 
 namespace YouRata.YouTubeSync.YouTube;
 
@@ -18,6 +21,17 @@ internal static class YouTubeQuotaHelper
             Console.WriteLine($"WARNING: Only {intelligence.CalculatedQueriesPerDayRemaining} YouTube API calls remaining");
         }
         if (intelligence.CalculatedQueriesPerDayRemaining < 4)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public static bool HasEnoughCallsForUpdate(YouTubeSyncActionIntelligence intelligence, List<Video> currentVideos)
+    {
+        int estimatedCostForUpdate = ((currentVideos.Count + 1) * YouTubeConstants.VideosResourceUpdateQuotaCost);
+        estimatedCostForUpdate += YouTubeConstants.VideoListQuotaCost;
+        if (estimatedCostForUpdate > intelligence.CalculatedQueriesPerDayRemaining)
         {
             return false;
         }

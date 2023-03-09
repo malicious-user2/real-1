@@ -76,6 +76,12 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             long lastPublishTime;
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, milestoneInt, ytService, client);
             List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, out lastPublishTime, ignoreResources, milestoneInt, ytService, client);
+            int pretendVidoeUpdates = 0;
+
+
+
+
+
             foreach (Video video in videoList)
             {
                 if (video.ContentDetails == null) continue;
@@ -102,10 +108,15 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                             string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
                             YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, milestoneInt, ytService, client);
                         }
+                        else
+                        {
+                            pretendVidoeUpdates += YouTubeConstants.VideosResourceUpdateQuotaCost;
+                        }
                     }
                     client.LogVideoProcessed(lastPublishTime);
                 }
             }
+            Console.WriteLine($"Pretend Updates: {pretendVidoeUpdates}");
         }
     }
     catch (Exception ex)

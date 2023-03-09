@@ -7,11 +7,18 @@ namespace YouRata.YouTubeSync.YouTube;
 
 internal static class YouTubeLoggingExtensions
 {
-    internal static void LogVideoProcessed(this YouTubeSyncCommunicationClient client, long lastPublishTime)
+    internal static void LogVideoProcessed(this YouTubeSyncCommunicationClient client)
     {
         YouTubeSyncActionIntelligence? milestoneActionIntelligence = client.GetMilestoneActionIntelligence();
         if (milestoneActionIntelligence == null) return;
         milestoneActionIntelligence.VideosProcessed++;
+        client.SetMilestoneActionIntelligence(milestoneActionIntelligence);
+    }
+
+    internal static void LogLastPublishTime(this YouTubeSyncCommunicationClient client, long lastPublishTime)
+    {
+        YouTubeSyncActionIntelligence? milestoneActionIntelligence = client.GetMilestoneActionIntelligence();
+        if (milestoneActionIntelligence == null) return;
         milestoneActionIntelligence.LastVideoPublishTime = lastPublishTime;
         client.SetMilestoneActionIntelligence(milestoneActionIntelligence);
     }

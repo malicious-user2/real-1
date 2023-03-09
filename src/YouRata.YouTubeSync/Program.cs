@@ -115,9 +115,10 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                             pretendVidoeUpdates += YouTubeConstants.VideosResourceUpdateQuotaCost;
                         }
                     }
+                    client.LogVideoProcessed();
                 }
             }
-            client.LogVideoProcessed(lastPublishTime);
+            client.LogLastPublishTime(lastPublishTime);
             Console.WriteLine($"Pretend Updates: {pretendVidoeUpdates}");
         }
     }

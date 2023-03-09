@@ -88,10 +88,10 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 if (video.Snippet == null) continue;
                 string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
                     $"{video.Id}.md";
+                Console.WriteLine(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath));
+                Console.WriteLine(Path.Exists(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath)));
                 if (!Path.Exists(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
                 {
-                    Console.WriteLine(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath));
-                    Console.WriteLine(Path.Exists(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath)));
                     string ytVideoTitle = WebUtility.HtmlDecode(video.Snippet.Title);
                     string videoTitle = string.IsNullOrEmpty(ytVideoTitle) ? "Unknown Video" : ytVideoTitle;
                     TimeSpan contentDuration = XmlConvert.ToTimeSpan(video.ContentDetails.Duration);

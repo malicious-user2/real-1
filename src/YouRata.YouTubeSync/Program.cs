@@ -74,7 +74,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     }))
         {
             long firstPublishTime;
-            long lastPublishTime;
+            long outstandingPublishTime;
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, milestoneInt, ytService, client);
             List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube.ChannelId, out firstPublishTime, ignoreResources, milestoneInt, ytService, client);
 

@@ -46,7 +46,7 @@ internal static class YouTubeVideoHelper
 
     public static List<Video> GetOutstandingChannelVideos(string channelId, out long lastPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
-
+        intelligence.HasOutstandingVideos
     }
 
     public static List<Video> GetRecentChannelVideos(string channelId, out long firstPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)

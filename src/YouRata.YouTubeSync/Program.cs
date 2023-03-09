@@ -132,7 +132,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             }
             else if (milestoneInt.HasOutstandingVideos)
             {
-                if (oustandingVideoList.Count > 0)
+                if (oustandingVideoList.Count > 1)
                 {
                     client.LogOutstandingVideos(true, outstandingPublishTime);
                 }

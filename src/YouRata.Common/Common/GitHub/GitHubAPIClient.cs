@@ -85,6 +85,9 @@ public static class GitHubAPIClient
         {
                 conClient.CreateFile(repository[0], repository[1], path, createFileRequest).Wait();
         });
+
+
+        Console.WriteLine(path);
         GitHubRetryHelper.RetryCommand(environment, createFile, logger);
         return true;
     }

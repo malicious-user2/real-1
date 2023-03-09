@@ -59,7 +59,9 @@ internal static class YouTubeQuotaHelper
             {
                 intelligence.CalculatedQueriesPerDayRemaining = previousIntelligence.CalculatedQueriesPerDayRemaining;
             }
-            intelligence.LastVideoPublishTime = previousIntelligence.LastVideoPublishTime;
+            intelligence.FirstVideoPublishTime = previousIntelligence.FirstVideoPublishTime;
+            intelligence.OutstandingVideoPublishTime = previousIntelligence.OutstandingVideoPublishTime;
+            intelligence.HasOutstandingVideos = previousIntelligence.HasOutstandingVideos;
         }
     }
 }

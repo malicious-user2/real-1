@@ -87,8 +87,12 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             }
             else if (milestoneInt.FirstVideoPublishTime == 0 && milestoneInt.OutstandingVideoPublishTime == 0)
             {
+                Console.WriteLine("FirstRun");
                 firstRun = true;
             }
+            Console.WriteLine(firstPublishTime);
+            Console.WriteLine(lastPublishTime);
+            Console.WriteLine(outstandingPublishTime);
 
             foreach (Video video in videoList)
             {

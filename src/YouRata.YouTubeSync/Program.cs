@@ -93,7 +93,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             Console.WriteLine(firstPublishTime);
             Console.WriteLine(lastPublishTime);
             Console.WriteLine(outstandingPublishTime);
-
+            client.LogFirstPublishTime(firstPublishTime);
             foreach (Video video in videoList)
             {
                 if (video.ContentDetails == null) continue;
@@ -129,7 +129,6 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             if (firstRun)
             {
                 client.LogOutstandingVideos(true, lastPublishTime);
-                client.LogFirstPublishTime(firstPublishTime);
             }
             else if (milestoneInt.HasOutstandingVideos)
             {

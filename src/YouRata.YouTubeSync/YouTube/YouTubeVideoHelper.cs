@@ -44,9 +44,14 @@ internal static class YouTubeVideoHelper
         if (forbidden) throw new MilestoneException("YouTube API update video forbidden");
     }
 
-    public static List<Video> GetChannelVideos(string channelId, out long lastPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static List<Video> GetOutstandingChannelVideos(string channelId, out long lastPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
-        lastPublishTime = intelligence.LastVideoPublishTime;
+
+    }
+
+    public static List<Video> GetRecentChannelVideos(string channelId, out long firstPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
+    {
+        firstPublishTime = intelligence.FirstVideoPublishTime;
         if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<Video> channelVideos = new List<Video>();
         SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
@@ -54,7 +59,7 @@ internal static class YouTubeVideoHelper
         searchRequest.ChannelId = channelId;
         searchRequest.MaxResults = 50;
         searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
-        searchRequest.PublishedAfter = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(lastPublishTime).DateTime);
+        searchRequest.PublishedAfter = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(firstPublishTime).DateTime);
         Console.WriteLine(searchRequest.PublishedAfter);
         bool requestNextPage = true;
         while (requestNextPage)
@@ -87,8 +92,11 @@ internal static class YouTubeVideoHelper
                     continue;
                 }
                 channelVideos.Add(videoDetails);
-                DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
-                lastPublishTime = publishTimeOffset.ToUnixTimeSeconds();
+                if (firstPublishTime == 0)
+                {
+                    DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
+                    firstPublishTime = publishTimeOffset.ToUnixTimeSeconds();
+                }
             }
             requestNextPage = !string.IsNullOrEmpty(searchResponse.NextPageToken);
             searchRequest.PageToken = searchResponse.NextPageToken;

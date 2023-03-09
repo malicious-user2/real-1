@@ -73,15 +73,14 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                         HttpClientInitializer = userCred
                     }))
         {
+            long firstPublishTime;
             long lastPublishTime;
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, milestoneInt, ytService, client);
-            List<Video> videoList = YouTubeVideoHelper.GetChannelVideos(config.YouTube.ChannelId, out lastPublishTime, ignoreResources, milestoneInt, ytService, client);
-            int pretendVidoeUpdates = 0;
+            List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube.ChannelId, out firstPublishTime, ignoreResources, milestoneInt, ytService, client);
 
+            List<Video> oustandingVideoList = YouTubeVideoHelper.GetOutstandingChannelVideos(config.YouTube.ChannelId, out lastPublishTime, ignoreResources, milestoneInt, ytService, client);
 
-
-
-
+            videoList.AddRange(oustandingVideoList);
             foreach (Video video in videoList)
             {
                 if (video.ContentDetails == null) continue;
@@ -110,16 +109,11 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                             string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
                             YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, milestoneInt, ytService, client);
                         }
-                        else
-                        {
-                            pretendVidoeUpdates += YouTubeConstants.VideosResourceUpdateQuotaCost;
-                        }
                     }
                     client.LogVideoProcessed();
                 }
             }
-            client.LogLastPublishTime(lastPublishTime);
-            Console.WriteLine($"Pretend Updates: {pretendVidoeUpdates}");
+            client.LogPublishTimes(firstPublishTime);
         }
     }
     catch (Exception ex)

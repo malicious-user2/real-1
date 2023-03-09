@@ -16,5 +16,9 @@ internal class YouTubeSyncMilestoneIntelligence : BaseMilestoneIntelligence
 
     public long LastQueryTime { get; set; }
 
-    public long LastVideoPublishTime { get; set; }
+    public long FirstVideoPublishTime { get; set; }
+
+    public long OutstandingVideoPublishTime { get; set; }
+
+    public bool HasOutstandingVideos { get; set; }
 }

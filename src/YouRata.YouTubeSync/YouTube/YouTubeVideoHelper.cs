@@ -46,7 +46,7 @@ internal static class YouTubeVideoHelper
 
     public static List<Video> GetChannelVideos(string channelId, out long lastPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
-        lastPublishTime = 0;
+        lastPublishTime = intelligence.LastVideoPublishTime;
         if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<Video> channelVideos = new List<Video>();
         SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
@@ -54,7 +54,7 @@ internal static class YouTubeVideoHelper
         searchRequest.ChannelId = channelId;
         searchRequest.MaxResults = 50;
         searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
-        searchRequest.PublishedAfter = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(intelligence.LastVideoPublishTime).DateTime);
+        searchRequest.PublishedAfter = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(lastPublishTime).DateTime);
         Console.WriteLine(searchRequest.PublishedAfter);
         bool requestNextPage = true;
         while (requestNextPage)
@@ -70,8 +70,6 @@ internal static class YouTubeVideoHelper
                 if (!YouTubeQuotaHelper.HasEnoughCallsForUpdate(intelligence, channelVideos)) return channelVideos;
                 Console.WriteLine(intelligence.CalculatedQueriesPerDayRemaining);
                 if (searchResult.Snippet.PublishedAt == null) continue;
-                DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
-                lastPublishTime = publishTimeOffset.ToUnixTimeSeconds();
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
                 VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
                 videoRequest.Id = searchResult.Id.VideoId;
@@ -89,6 +87,8 @@ internal static class YouTubeVideoHelper
                     continue;
                 }
                 channelVideos.Add(videoDetails);
+                DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
+                lastPublishTime = publishTimeOffset.ToUnixTimeSeconds();
             }
             requestNextPage = !string.IsNullOrEmpty(searchResponse.NextPageToken);
             searchRequest.PageToken = searchResponse.NextPageToken;

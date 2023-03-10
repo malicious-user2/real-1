@@ -23,4 +23,9 @@ public class YouTubeConfiguration : BaseValidatableConfiguration
     [Required]
     [DefaultValue(10000)]
     public int QueriesPerDay { get; set; }
+
+    [Required]
+    [DefaultValue("any")]
+    [RegularExpression(@"^(any|long|medium|short)$", ErrorMessage = "YouTubeConfiguration.VideoDurationFilter must be any, long, medium, or short")]
+    public string VideoDurationFilter { get; set; }
 }

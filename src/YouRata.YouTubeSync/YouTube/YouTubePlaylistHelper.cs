@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using YouRata.Common.Configurations;
 using YouRata.Common.Milestone;
 using YouRata.Common.YouTube;
 using YouRata.YouTubeSync.ConflictMonitor;
@@ -11,11 +12,12 @@ namespace YouRata.YouTubeSync.YouTube;
 
 internal static class YouTubePlaylistHelper
 {
-    public static List<ResourceId> GetPlaylistVideos(string[]? playlists, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static List<ResourceId> GetPlaylistVideos(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<string> videoIds = new List<string>();
         List<ResourceId> playlistResourceIds = new List<ResourceId>();
+        string[] playlists = config.ExcludePlaylists;
         if (playlists == null) return playlistResourceIds;
         foreach (string playlist in playlists)
         {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,10 +10,13 @@ using System.Xml;
 using Google.Apis.Util;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using Microsoft.Extensions.Configuration;
+using YouRata.Common.Configurations;
 using YouRata.Common.Milestone;
 using YouRata.Common.YouTube;
 using YouRata.YouTubeSync.ConflictMonitor;
 using YouRata.YouTubeSync.ErrataBulletin;
+using static Google.Apis.YouTube.v3.SearchResource.ListRequest;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.YouTubeSync.YouTube;
@@ -44,16 +48,33 @@ internal static class YouTubeVideoHelper
         if (forbidden) throw new MilestoneException("YouTube API update video forbidden");
     }
 
-    public static List<Video> GetOutstandingChannelVideos(string channelId, out long lastOutstandingPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static VideoDurationEnum GetVideoDurationFromConfig(YouTubeConfiguration config)
+    {
+        switch (config.VideoDurationFilter)
+        {
+            case "any":
+                return VideoDurationEnum.Any;
+            case "long":
+                return VideoDurationEnum.Long__;
+            case "medium":
+                return VideoDurationEnum.Medium;
+            case "short":
+                return VideoDurationEnum.Short__;
+        }
+        return VideoDurationEnum.Any;
+    }
+
+    public static List<Video> GetOutstandingChannelVideos(YouTubeConfiguration config, out long lastOutstandingPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         long firstOutstandingPublishTime = intelligence.OutstandingVideoPublishTime;
         lastOutstandingPublishTime = 0;
         if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<Video> channelVideos = new List<Video>();
         SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
-        if (string.IsNullOrEmpty(channelId)) return channelVideos;
-        searchRequest.ChannelId = channelId;
+        if (string.IsNullOrEmpty(config.ChannelId)) return channelVideos;
+        searchRequest.ChannelId = config.ChannelId;
         searchRequest.MaxResults = 50;
+        searchRequest.VideoDuration = GetVideoDurationFromConfig(config);
         searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
         searchRequest.PublishedBefore = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(firstOutstandingPublishTime - 1).DateTime);
         Console.WriteLine(searchRequest.PublishedAfter);
@@ -101,16 +122,17 @@ internal static class YouTubeVideoHelper
         return channelVideos;
     }
 
-    public static List<Video> GetRecentChannelVideos(string channelId, out long firstPublishTime, out long lastPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static List<Video> GetRecentChannelVideos(YouTubeConfiguration config, out long firstPublishTime, out long lastPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         firstPublishTime = intelligence.FirstVideoPublishTime;
         lastPublishTime = 0;
         if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<Video> channelVideos = new List<Video>();
         SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
-        if (string.IsNullOrEmpty(channelId)) return channelVideos;
-        searchRequest.ChannelId = channelId;
+        if (string.IsNullOrEmpty(config.ChannelId)) return channelVideos;
+        searchRequest.ChannelId = config.ChannelId;
         searchRequest.MaxResults = 50;
+        searchRequest.VideoDuration = GetVideoDurationFromConfig(config);
         searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
         searchRequest.PublishedAfter = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(firstPublishTime).DateTime);
         Console.WriteLine(searchRequest.PublishedAfter);

@@ -77,12 +77,12 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             long lastPublishTime;
             long outstandingPublishTime = 0;
             bool firstRun = false;
-            List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube.ExcludePlaylists, milestoneInt, ytService, client);
-            List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube.ChannelId, out firstPublishTime, out lastPublishTime, ignoreResources, milestoneInt, ytService, client);
+            List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube, milestoneInt, ytService, client);
+            List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube, out firstPublishTime, out lastPublishTime, ignoreResources, milestoneInt, ytService, client);
             List<Video> oustandingVideoList = new List<Video>();
             if (milestoneInt.HasOutstandingVideos)
             {
-                oustandingVideoList = YouTubeVideoHelper.GetOutstandingChannelVideos(config.YouTube.ChannelId, out outstandingPublishTime, ignoreResources, milestoneInt, ytService, client);
+                oustandingVideoList = YouTubeVideoHelper.GetOutstandingChannelVideos(config.YouTube, out outstandingPublishTime, ignoreResources, milestoneInt, ytService, client);
                 videoList.AddRange(oustandingVideoList);
             }
             else if (milestoneInt.FirstVideoPublishTime == 0 && milestoneInt.OutstandingVideoPublishTime == 0)

@@ -5,7 +5,8 @@
     "ErattaLinkLocation": "bottom",
     "ErrataLinkTemplate": "To see errata for this video: {0}",
     "QueriesPerDay": 10000,
-    "VideoDurationFilter": "medium"
+    "VideoDurationFilter": "any",
+    "MinVideoSeconds": 60
   },
   "ActionCutOuts": {
     "DisableConflictMonitorGitHubOperations": false,
@@ -13,7 +14,7 @@
     "DisableInitialSetupMilestone": false,
     "DisableUnsupportedGitHubAPI": false,
     "DisableYouTubeSyncMilestone": false,
-    "DisableYouTubeVideoUpdate": true,
+    "DisableYouTubeVideoUpdate": false,
     "DisableActionReportMilestone": false
   },
   "MilestoneLifetime": {

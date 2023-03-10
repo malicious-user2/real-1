@@ -28,4 +28,8 @@ public class YouTubeConfiguration : BaseValidatableConfiguration
     [DefaultValue("any")]
     [RegularExpression(@"^(any|long|medium|short)$", ErrorMessage = "YouTubeConfiguration.VideoDurationFilter must be any, long, medium, or short")]
     public string VideoDurationFilter { get; set; }
+
+    [Required]
+    [DefaultValue(60)]
+    public int MinVideoSeconds { get; set; }
 }

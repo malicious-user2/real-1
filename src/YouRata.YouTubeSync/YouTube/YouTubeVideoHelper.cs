@@ -109,6 +109,12 @@ internal static class YouTubeVideoHelper
                     client.LogVideoSkipped();
                     continue;
                 }
+                TimeSpan contentDuration = XmlConvert.ToTimeSpan(videoDetails.ContentDetails.Duration);
+                if (contentDuration.TotalSeconds < config.MinVideoSeconds)
+                {
+                    client.LogVideoSkipped();
+                    continue;
+                }
                 channelVideos.Add(videoDetails);
                 DateTimeOffset publishTimeOffset = new DateTimeOffset(searchResult.Snippet.PublishedAt.Value);
                 if (firstOutstandingPublishTime == 0)
@@ -164,6 +170,12 @@ internal static class YouTubeVideoHelper
                 if (videoResponse == null) throw new MilestoneException($"Could not get YouTube video {videoRequest.Id}");
                 Video videoDetails = videoResponse.Items.First();
                 if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null)
+                {
+                    client.LogVideoSkipped();
+                    continue;
+                }
+                TimeSpan contentDuration = XmlConvert.ToTimeSpan(videoDetails.ContentDetails.Duration);
+                if (contentDuration.TotalSeconds < config.MinVideoSeconds)
                 {
                     client.LogVideoSkipped();
                     continue;

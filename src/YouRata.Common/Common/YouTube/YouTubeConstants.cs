@@ -30,6 +30,8 @@ public static class YouTubeConstants
 
     public static string PrivacyStatusPublic = "public";
 
+    public static string VideoType = "video";
+
     public static int SearchListQuotaCost = 100;
 
     public static int VideoListQuotaCost = 1;

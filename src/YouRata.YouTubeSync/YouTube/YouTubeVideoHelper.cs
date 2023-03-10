@@ -75,6 +75,7 @@ internal static class YouTubeVideoHelper
         searchRequest.ChannelId = config.ChannelId;
         searchRequest.MaxResults = 50;
         searchRequest.VideoDuration = GetVideoDurationFromConfig(config);
+        searchRequest.Type = YouTubeConstants.VideoType;
         searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
         searchRequest.PublishedBefore = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(firstOutstandingPublishTime - 1).DateTime);
         Console.WriteLine(searchRequest.PublishedAfter);
@@ -133,6 +134,7 @@ internal static class YouTubeVideoHelper
         searchRequest.ChannelId = config.ChannelId;
         searchRequest.MaxResults = 50;
         searchRequest.VideoDuration = GetVideoDurationFromConfig(config);
+        searchRequest.Type = YouTubeConstants.VideoType;
         searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
         searchRequest.PublishedAfter = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(firstPublishTime).DateTime);
         Console.WriteLine(searchRequest.PublishedAfter);

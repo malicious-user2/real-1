@@ -94,6 +94,10 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             Console.WriteLine(lastPublishTime);
             Console.WriteLine(outstandingPublishTime);
             client.LogFirstPublishTime(firstPublishTime);
+            if (firstRun)
+            {
+                client.LogOutstandingVideos(true, lastPublishTime);
+            }
             foreach (Video video in videoList)
             {
                 if (video.ContentDetails == null) continue;
@@ -126,11 +130,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     client.LogVideoProcessed();
                 }
             }
-            if (firstRun)
-            {
-                client.LogOutstandingVideos(true, lastPublishTime);
-            }
-            else if (milestoneInt.HasOutstandingVideos)
+            if (!firstRun && milestoneInt.HasOutstandingVideos)
             {
                 if (oustandingVideoList.Count > 0)
                 {

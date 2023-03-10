@@ -44,10 +44,10 @@ internal static class YouTubeVideoHelper
         if (forbidden) throw new MilestoneException("YouTube API update video forbidden");
     }
 
-    public static List<Video> GetOutstandingChannelVideos(string channelId, out long lastPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static List<Video> GetOutstandingChannelVideos(string channelId, out long lastOutstandingPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         long firstOutstandingPublishTime = intelligence.OutstandingVideoPublishTime;
-        lastPublishTime = 0;
+        lastOutstandingPublishTime = 0;
         if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<Video> channelVideos = new List<Video>();
         SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
@@ -55,7 +55,7 @@ internal static class YouTubeVideoHelper
         searchRequest.ChannelId = channelId;
         searchRequest.MaxResults = 50;
         searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
-        searchRequest.PublishedBefore = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(firstOutstandingPublishTime).DateTime);
+        searchRequest.PublishedBefore = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(firstOutstandingPublishTime - 1).DateTime);
         Console.WriteLine(searchRequest.PublishedAfter);
         bool requestNextPage = true;
         while (requestNextPage)
@@ -93,7 +93,7 @@ internal static class YouTubeVideoHelper
                 {
                     firstOutstandingPublishTime = publishTimeOffset.ToUnixTimeSeconds();
                 }
-                lastPublishTime = publishTimeOffset.ToUnixTimeSeconds();
+                lastOutstandingPublishTime = publishTimeOffset.ToUnixTimeSeconds();
             }
             requestNextPage = !string.IsNullOrEmpty(searchResponse.NextPageToken);
             searchRequest.PageToken = searchResponse.NextPageToken;

@@ -74,11 +74,17 @@ internal static class YouTubeVideoHelper
         if (string.IsNullOrEmpty(config.ChannelId)) return channelVideos;
         searchRequest.ChannelId = config.ChannelId;
         searchRequest.MaxResults = 50;
-        searchRequest.VideoDuration = GetVideoDurationFromConfig(config);
+        if (config.UseForMine)
+        {
+            searchRequest.ForMine = true;
+        }
+        else
+        {
+            searchRequest.VideoDuration = GetVideoDurationFromConfig(config);
+        }
         searchRequest.Type = YouTubeConstants.VideoType;
-        searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
+        searchRequest.Order = OrderEnum.Date;
         searchRequest.PublishedBefore = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(firstOutstandingPublishTime - 1).DateTime);
-        Console.WriteLine(searchRequest.PublishedAfter);
         bool requestNextPage = true;
         while (requestNextPage)
         {
@@ -139,7 +145,14 @@ internal static class YouTubeVideoHelper
         if (string.IsNullOrEmpty(config.ChannelId)) return channelVideos;
         searchRequest.ChannelId = config.ChannelId;
         searchRequest.MaxResults = 50;
-        searchRequest.VideoDuration = GetVideoDurationFromConfig(config);
+        if (config.UseForMine)
+        {
+            searchRequest.ForMine = true;
+        }
+        else
+        {
+            searchRequest.VideoDuration = GetVideoDurationFromConfig(config);
+        }
         searchRequest.Type = YouTubeConstants.VideoType;
         searchRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
         searchRequest.PublishedAfter = Utilities.GetStringFromDateTime(DateTimeOffset.FromUnixTimeSeconds(firstPublishTime).DateTime);

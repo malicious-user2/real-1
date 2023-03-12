@@ -32,4 +32,7 @@ public class YouTubeConfiguration : BaseValidatableConfiguration
     [Required]
     [DefaultValue(60)]
     public int MinVideoSeconds { get; set; }
+
+    [Required]
+    public bool UseForMine { get; set; }
 }

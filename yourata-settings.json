@@ -1,13 +1,13 @@
 {
   "YouTube": {
-    "ChannelId": "UC_Ftxa2jwg8R4IWDw48uyBw",
+    "ChannelId": "UCEvt5rd7Mvh2slOs1vHYezg",
     "ExcludePlaylists": null,
     "ErattaLinkLocation": "bottom",
     "ErrataLinkTemplate": "To see errata for this video: {0}",
     "QueriesPerDay": 10000,
     "VideoDurationFilter": "any",
-    "MinVideoSeconds": 60,
-    "UseForMine": false
+    "MinVideoSeconds": 1,
+    "UseForMine": true
   },
   "ActionCutOuts": {
     "DisableConflictMonitorGitHubOperations": false,

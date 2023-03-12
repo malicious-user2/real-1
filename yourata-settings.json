@@ -7,7 +7,7 @@
     "QueriesPerDay": 10000,
     "VideoDurationFilter": "any",
     "MinVideoSeconds": 1,
-    "UseForMine": true
+    "UseForMine": false
   },
   "ActionCutOuts": {
     "DisableConflictMonitorGitHubOperations": false,

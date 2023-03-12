@@ -6,7 +6,8 @@
     "ErrataLinkTemplate": "To see errata for this video: {0}",
     "QueriesPerDay": 10000,
     "VideoDurationFilter": "any",
-    "MinVideoSeconds": 60
+    "MinVideoSeconds": 60,
+    "UseForMine": false
   },
   "ActionCutOuts": {
     "DisableConflictMonitorGitHubOperations": false,
@@ -19,10 +20,10 @@
   },
   "MilestoneLifetime": {
     "MaxUpdateDwellTime": 1500,
-    "MaxRunTime": 1900
+    "MaxRunTime": 1700
   },
   "ErrataBulletin": {
-    "EmptyLinesPerMark": 3,
+    "EmptyLinesPerMark": 4,
     "SecondsPerMark": 30,
     "TitleLocation": "top",
     "Instructions": "Enter your errata here"

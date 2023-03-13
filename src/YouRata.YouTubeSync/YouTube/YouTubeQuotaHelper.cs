@@ -43,6 +43,7 @@ internal static class YouTubeQuotaHelper
     {
         YouTubeSyncActionIntelligence? newIntelligence = client.GetMilestoneActionIntelligence();
         intelligence = newIntelligence ?? intelligence;
+        Console.WriteLine(previousActionReport.YouTubeSyncIntelligence);
         if (string.IsNullOrEmpty(previousActionReport.YouTubeSyncIntelligence))
         {
             intelligence.CalculatedQueriesPerDayRemaining = config.QueriesPerDay;

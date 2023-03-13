@@ -8,6 +8,7 @@ using YouRata.Common.ActionReport;
 using YouRata.Common.Configurations;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 using YouRata.Common.YouTube;
+using YouRata.YouTubeSync.ConflictMonitor;
 
 namespace YouRata.YouTubeSync.YouTube;
 
@@ -38,7 +39,7 @@ internal static class YouTubeQuotaHelper
         return true;
     }
 
-    public static void SetPreviousActionReport(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence, ActionReportLayout previousActionReport)
+    public static void SetPreviousActionReport(YouTubeConfiguration config, YouTubeSyncCommunicationClient client, YouTubeSyncActionIntelligence intelligence, ActionReportLayout previousActionReport)
     {
         if (string.IsNullOrEmpty(previousActionReport.YouTubeSyncIntelligence))
         {
@@ -63,5 +64,7 @@ internal static class YouTubeQuotaHelper
             intelligence.OutstandingVideoPublishTime = previousIntelligence.OutstandingVideoPublishTime;
             intelligence.HasOutstandingVideos = previousIntelligence.HasOutstandingVideos;
         }
+        Console.WriteLine(intelligence.ToString());
+        client.SetMilestoneActionIntelligence(intelligence);
     }
 }

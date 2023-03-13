@@ -73,6 +73,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
 
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When(HttpMethod.Put, "https://youtube.googleapis.com/youtube/v3/videos*").Respond(HttpStatusCode.OK);
+        mockHttp.Fallback.Respond(new HttpClient());
 
         using (YouTubeService ytService
                 = new YouTubeService(

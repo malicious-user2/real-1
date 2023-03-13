@@ -118,13 +118,13 @@ internal static class YouTubeVideoHelper
                 Video videoDetails = videoResponse.Items.First();
                 if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null)
                 {
-                    client.LogVideoSkipped();
+                    intelligence.VideosSkipped++;
                     continue;
                 }
                 TimeSpan contentDuration = XmlConvert.ToTimeSpan(videoDetails.ContentDetails.Duration);
                 if (contentDuration.TotalSeconds < config.MinVideoSeconds)
                 {
-                    client.LogVideoSkipped();
+                    intelligence.VideosSkipped++;
                     continue;
                 }
                 channelVideos.Add(videoDetails);

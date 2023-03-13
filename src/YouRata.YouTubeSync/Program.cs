@@ -123,7 +123,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                             YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, milestoneInt, ytService, client);
                         }
                     }
-                    client.LogVideoProcessed();
+                    milestoneInt.VideosProcessed++;
                 }
             }
             milestoneInt.HasOutstandingVideos = (oustandingVideoList.Count > 0 || milestoneInt.LastQueryTime == 0);

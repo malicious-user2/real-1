@@ -46,7 +46,6 @@ internal static class YouTubeQuotaHelper
         if (string.IsNullOrEmpty(previousActionReport.YouTubeSyncIntelligence))
         {
             intelligence.CalculatedQueriesPerDayRemaining = config.QueriesPerDay;
-            Console.WriteLine(intelligence.CalculatedQueriesPerDayRemaining);
         }
         else
         {

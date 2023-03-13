@@ -23,9 +23,21 @@ public static class YouTubeRetryHelper
         {
             try
             {
+                try
                 {
                     intelligence.CalculatedQueriesPerDayRemaining -= quotaCost;
                     command.Invoke();
+                }
+                catch (GoogleApiException unavailableEx) when (unavailableEx.HttpStatusCode == HttpStatusCode.ServiceUnavailable)
+                {
+                    retryCount++;
+                    intelligence.CalculatedQueriesPerDayRemaining += quotaCost;
+                    if (retryCount > 2)
+                    {
+                        throw;
+                    }
+                    Thread.Sleep(maxRetry);
+                    continue;
                 }
                 break;
             }
@@ -73,9 +85,21 @@ public static class YouTubeRetryHelper
         {
             try
             {
+                try
                 {
                     intelligence.CalculatedQueriesPerDayRemaining -= quotaCost;
                     returnValue = command.Invoke();
+                }
+                catch (GoogleApiException unavailableEx) when (unavailableEx.HttpStatusCode == HttpStatusCode.ServiceUnavailable)
+                {
+                    retryCount++;
+                    intelligence.CalculatedQueriesPerDayRemaining += quotaCost;
+                    if (retryCount > 2)
+                    {
+                        throw;
+                    }
+                    Thread.Sleep(maxRetry);
+                    continue;
                 }
                 break;
             }

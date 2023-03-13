@@ -88,7 +88,6 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             ytService.HttpClient.Timeout = YouTubeConstants.RequestTimeout;
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube, milestoneInt, ytService, client);
             List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube, ignoreResources, milestoneInt, ytService, client);
-            Console.WriteLine(milestoneInt.OutstandingVideoPublishTime);
             List<Video> oustandingVideoList = new List<Video>();
             if (milestoneInt.HasOutstandingVideos)
             {

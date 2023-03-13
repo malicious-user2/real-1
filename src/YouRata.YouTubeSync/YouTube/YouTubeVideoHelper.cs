@@ -139,7 +139,7 @@ internal static class YouTubeVideoHelper
 
     public static List<Video> GetOutstandingChannelVideos(YouTubeConfiguration config, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
-        long firstOutstandingPublishTime = intelligence.OutstandingVideoPublishTime;
+        long firstOutstandingPublishTime = (intelligence.OutstandingVideoPublishTime - 1);
         long? lastPublishTime;
         List<Video> outstandingChannelVideos = GetChannelVideos(config, firstOutstandingPublishTime, null, out lastPublishTime, excludeVideos, intelligence, service, client);
         if (lastPublishTime.HasValue)

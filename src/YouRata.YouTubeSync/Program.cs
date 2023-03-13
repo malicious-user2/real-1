@@ -126,6 +126,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     milestoneInt.VideosProcessed++;
                 }
             }
+            Console.WriteLine(oustandingVideoList.Count);
             milestoneInt.HasOutstandingVideos = (oustandingVideoList.Count > 0 || milestoneInt.LastQueryTime == 0);
             milestoneInt.LastQueryTime = DateTimeOffset.Now.ToUnixTimeSeconds();
             client.SetMilestoneActionIntelligence(milestoneInt);

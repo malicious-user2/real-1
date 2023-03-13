@@ -73,7 +73,6 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
 
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://youtube.googleapis.com/youtube/v3/search*").Respond(async () => { Console.WriteLine("trigger");  await Task.Delay(2000).ConfigureAwait(true); return null; });
-        mockHttp.
 
         using (YouTubeService ytService
                 = new YouTubeService(

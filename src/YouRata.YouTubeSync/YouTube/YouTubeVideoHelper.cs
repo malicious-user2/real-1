@@ -137,25 +137,26 @@ internal static class YouTubeVideoHelper
         return channelVideos;
     }
 
-    public static List<Video> GetOutstandingChannelVideos(YouTubeConfiguration config, out long lastOutstandingPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static List<Video> GetOutstandingChannelVideos(YouTubeConfiguration config, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         long firstOutstandingPublishTime = intelligence.OutstandingVideoPublishTime;
         long? lastPublishTime;
         List<Video> outstandingChannelVideos = GetChannelVideos(config, firstOutstandingPublishTime, null, out lastPublishTime, excludeVideos, intelligence, service, client);
         if (lastPublishTime.HasValue)
         {
-            lastOutstandingPublishTime = lastPublishTime.Value;
+            intelligence.OutstandingVideoPublishTime = lastPublishTime.Value;
         }
         else
         {
-            lastOutstandingPublishTime = 0;
+            intelligence.OutstandingVideoPublishTime = 0;
         }
         return outstandingChannelVideos;
     }
 
-    public static List<Video> GetRecentChannelVideos(YouTubeConfiguration config, out long firstRecentPublishTime, out long lastRecentPublishTime, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static List<Video> GetRecentChannelVideos(YouTubeConfiguration config, List<ResourceId> excludeVideos, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
-        firstRecentPublishTime = intelligence.FirstVideoPublishTime;
+        long firstRecentPublishTime = intelligence.FirstVideoPublishTime;
+        long lastRecentPublishTime;
         long? lastPublishTime;
         List<Video> recentChannelVideos = GetChannelVideos(config, null, firstRecentPublishTime, out lastPublishTime, excludeVideos, intelligence, service, client);
         if (lastPublishTime.HasValue)
@@ -173,8 +174,10 @@ internal static class YouTubeVideoHelper
             {
                 DateTimeOffset publishTimeOffset = new DateTimeOffset(firstPublishDateTime.Value);
                 firstRecentPublishTime = publishTimeOffset.ToUnixTimeSeconds();
+                intelligence.OutstandingVideoPublishTime = lastRecentPublishTime;
             }
         }
+        intelligence.FirstVideoPublishTime = firstRecentPublishTime;
         return recentChannelVideos;
     }
 }

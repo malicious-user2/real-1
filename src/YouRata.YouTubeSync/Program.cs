@@ -51,7 +51,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     ActionReportLayout previousActionReport = client.GetPreviousActionReport();
     try
     {
-        client.Activate();
+        client.Activate(milestoneInt);
         YouTubeQuotaHelper.SetPreviousActionReport(config.YouTube, client, milestoneInt, previousActionReport);
         GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
@@ -86,31 +86,13 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     }))
         {
             ytService.HttpClient.Timeout = YouTubeConstants.RequestTimeout;
-            long firstPublishTime;
-            long lastPublishTime;
-            long outstandingPublishTime = 0;
-            bool firstRun = false;
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube, milestoneInt, ytService, client);
-            List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube, out firstPublishTime, out lastPublishTime, ignoreResources, milestoneInt, ytService, client);
+            List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube, ignoreResources, milestoneInt, ytService, client);
             List<Video> oustandingVideoList = new List<Video>();
             if (milestoneInt.HasOutstandingVideos)
             {
-                oustandingVideoList = YouTubeVideoHelper.GetOutstandingChannelVideos(config.YouTube, out outstandingPublishTime, ignoreResources, milestoneInt, ytService, client);
+                oustandingVideoList = YouTubeVideoHelper.GetOutstandingChannelVideos(config.YouTube, ignoreResources, milestoneInt, ytService, client);
                 videoList.AddRange(oustandingVideoList);
-            }
-            else if (milestoneInt.FirstVideoPublishTime == 0 && milestoneInt.OutstandingVideoPublishTime == 0)
-            {
-                Console.WriteLine("FirstRun");
-                firstRun = true;
-            }
-            Console.WriteLine(firstPublishTime);
-            Console.WriteLine(lastPublishTime);
-            Console.WriteLine(outstandingPublishTime);
-            Console.WriteLine(milestoneInt.ProcessId);
-            client.LogFirstPublishTime(firstPublishTime);
-            if (firstRun)
-            {
-                client.LogOutstandingVideos(true, lastPublishTime);
             }
             foreach (Video video in videoList)
             {
@@ -144,17 +126,9 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                     client.LogVideoProcessed();
                 }
             }
-            if (!firstRun && milestoneInt.HasOutstandingVideos)
-            {
-                if (oustandingVideoList.Count > 0)
-                {
-                    client.LogOutstandingVideos(true, outstandingPublishTime);
-                }
-                else
-                {
-                    client.LogOutstandingVideos(false, 0);
-                }
-            }
+            milestoneInt.HasOutstandingVideos = (oustandingVideoList.Count > 0 || milestoneInt.LastQueryTime == 0);
+            milestoneInt.LastQueryTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+            client.SetMilestoneActionIntelligence(milestoneInt);
         }
     }
     catch (Exception ex)
@@ -163,7 +137,6 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         client.SetStatus(MilestoneCondition.MilestoneFailed);
         throw new MilestoneException("YouTubeSync failed", ex);
     }
-    client.LogAPIQueries(milestoneInt);
     client.SetStatus(MilestoneCondition.MilestoneCompleted);
 }
 

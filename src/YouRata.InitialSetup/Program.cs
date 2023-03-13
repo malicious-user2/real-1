@@ -36,7 +36,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out actionInt, out config, out actionEnvironment);
     try
     {
-        client.Activate();
+        milestoneInt = client.Activate();
         bool canContinue = true;
         if (string.IsNullOrEmpty(actionEnvironment.ApiToken))
         {

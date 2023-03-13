@@ -14,13 +14,14 @@ internal class ActionReportCommunicationClient : MilestoneCommunicationClient
     {
     }
 
-    public void Activate()
+    public void Activate(ActionReportActionIntelligence intelligence)
     {
         ActionReportActionIntelligence milestoneActionIntelligence = new ActionReportActionIntelligence();
         milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;
         milestoneActionIntelligence.Condition = MilestoneCondition.MilestoneRunning;
         SetMilestoneActionIntelligence(milestoneActionIntelligence);
         Console.WriteLine($"Entering {_milestoneName}");
+        intelligence = milestoneActionIntelligence;
     }
 
     public void SetStatus(MilestoneCondition status)

@@ -106,6 +106,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             Console.WriteLine(firstPublishTime);
             Console.WriteLine(lastPublishTime);
             Console.WriteLine(outstandingPublishTime);
+            Console.WriteLine(milestoneInt.ProcessId);
             client.LogFirstPublishTime(firstPublishTime);
             if (firstRun)
             {

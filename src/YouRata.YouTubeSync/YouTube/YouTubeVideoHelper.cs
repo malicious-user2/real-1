@@ -167,7 +167,7 @@ internal static class YouTubeVideoHelper
         {
             lastRecentPublishTime = 0;
         }
-        if (firstRecentPublishTime == 0 || recentChannelVideos.Count > 0)
+        if (firstRecentPublishTime == 0 && recentChannelVideos.Count > 0)
         {
             DateTime? firstPublishDateTime = recentChannelVideos.First().Snippet.PublishedAt;
             if (firstPublishDateTime.HasValue)

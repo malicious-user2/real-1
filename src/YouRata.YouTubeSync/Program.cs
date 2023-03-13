@@ -84,6 +84,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                         HttpClientFactory = new MockHttpClientFactory(mockHttp)
                     }))
         {
+            ytService.HttpClient.Timeout = TimeSpan.FromSeconds(10);
             long firstPublishTime;
             long lastPublishTime;
             long outstandingPublishTime = 0;

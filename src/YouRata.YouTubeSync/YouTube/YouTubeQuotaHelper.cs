@@ -64,7 +64,6 @@ internal static class YouTubeQuotaHelper
             intelligence.OutstandingVideoPublishTime = previousIntelligence.OutstandingVideoPublishTime;
             intelligence.HasOutstandingVideos = previousIntelligence.HasOutstandingVideos;
         }
-        Console.WriteLine(intelligence.ToString());
         client.SetMilestoneActionIntelligence(intelligence);
     }
 }

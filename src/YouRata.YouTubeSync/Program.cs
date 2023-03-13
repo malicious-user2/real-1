@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
@@ -71,7 +72,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
 
 
         var mockHttp = new MockHttpMessageHandler();
-        mockHttp.When("https://youtube.googleapis.com/youtube/v3/search*").Respond(HttpStatusCode.Unauthorized);
+        mockHttp.When("https://youtube.googleapis.com/youtube/v3/search*").Respond(async () => { await Task.Delay(2000).ConfigureAwait(true); return null; });
 
         using (YouTubeService ytService
                 = new YouTubeService(

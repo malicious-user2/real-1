@@ -5,11 +5,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Xml;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
+using Google.Apis.Http;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
@@ -18,6 +20,7 @@ using Google.Protobuf.Collections;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Octokit;
+using RichardSzalay.MockHttp;
 using YouRata.Common.ActionReport;
 using YouRata.Common.Configurations;
 using YouRata.Common.GitHub;
@@ -64,13 +67,20 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
         }
         UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);
+
+
+
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp.When("https://youtube.googleapis.com/youtube/v3/search*").Respond(HttpStatusCode.Unauthorized);
+
         using (YouTubeService ytService
                 = new YouTubeService(
                     new BaseClientService.Initializer()
                     {
                         ApiKey = actionInt.AppApiKey,
                         ApplicationName = YouTubeConstants.RequestApplicationName,
-                        HttpClientInitializer = userCred
+                        HttpClientInitializer = userCred,
+                        HttpClientFactory = new MockHttpClientFactory(mockHttp)
                     }))
         {
             long firstPublishTime;
@@ -151,4 +161,19 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     }
     client.LogAPIQueries(milestoneInt);
     client.SetStatus(MilestoneCondition.MilestoneCompleted);
+}
+
+public class MockHttpClientFactory : HttpClientFactory
+{
+    private HttpMessageHandler Handler { get; set; }
+
+    public MockHttpClientFactory(HttpMessageHandler handler)
+    {
+        Handler = handler;
+    }
+
+    protected override HttpMessageHandler CreateHandler(CreateHttpClientArgs args)
+    {
+        return Handler;
+    }
 }

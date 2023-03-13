@@ -39,4 +39,6 @@ public static class YouTubeConstants
     public static int PlaylistItemListQuotaCost = 1;
 
     public static int VideosResourceUpdateQuotaCost = 50;
+
+    public static readonly TimeSpan RequestTimeout = TimeSpan.FromMilliseconds(1000 * 45);
 }

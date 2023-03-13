@@ -72,7 +72,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
 
 
         var mockHttp = new MockHttpMessageHandler();
-        mockHttp.When("https://youtube.googleapis.com/youtube/v3/search*").Respond(async () => { Console.WriteLine("trigger");  await Task.Delay(2000).ConfigureAwait(true); return null; });
+        mockHttp.When(HttpMethod.Put, "https://youtube.googleapis.com/youtube/v3/videos*").Respond(HttpStatusCode.OK);
 
         using (YouTubeService ytService
                 = new YouTubeService(
@@ -84,7 +84,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                         HttpClientFactory = new MockHttpClientFactory(mockHttp)
                     }))
         {
-            ytService.HttpClient.Timeout = TimeSpan.FromSeconds(10);
+            ytService.HttpClient.Timeout = YouTubeConstants.RequestTimeout;
             long firstPublishTime;
             long lastPublishTime;
             long outstandingPublishTime = 0;

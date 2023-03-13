@@ -49,7 +49,7 @@ public static class YouTubeRetryHelper
             catch (Exception)
             {
                 retryCount++;
-                if (retryCount > 1)
+                if (retryCount > 2)
                 {
                     throw;
                 }
@@ -99,7 +99,7 @@ public static class YouTubeRetryHelper
             catch (Exception)
             {
                 retryCount++;
-                if (retryCount > 1)
+                if (retryCount > 2)
                 {
                     throw;
                 }

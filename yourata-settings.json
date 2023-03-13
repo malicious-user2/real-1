@@ -15,7 +15,7 @@
     "DisableInitialSetupMilestone": false,
     "DisableUnsupportedGitHubAPI": false,
     "DisableYouTubeSyncMilestone": false,
-    "DisableYouTubeVideoUpdate": true,
+    "DisableYouTubeVideoUpdate": false,
     "DisableActionReportMilestone": false
   },
   "MilestoneLifetime": {

@@ -18,7 +18,7 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
     GitHubActionEnvironment actionEnvironment;
     YouRataConfiguration config;
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out actionInt, out config, out actionEnvironment);
-    client.Activate(milestoneInt);
+    client.Activate(ref milestoneInt);
     ActionReportFileBuilder builder = new ActionReportFileBuilder(client.GetActionIntelligence());
 
     Console.WriteLine(client.GetPreviousActionReport().ActionReportIntelligence.ToString());

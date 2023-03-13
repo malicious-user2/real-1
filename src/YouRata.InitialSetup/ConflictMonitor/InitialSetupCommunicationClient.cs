@@ -14,7 +14,7 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
     {
     }
 
-    public void Activate(InitialSetupActionIntelligence intelligence)
+    public void Activate(ref InitialSetupActionIntelligence intelligence)
     {
         InitialSetupActionIntelligence milestoneActionIntelligence = new InitialSetupActionIntelligence();
         milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;

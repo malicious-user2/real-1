@@ -51,7 +51,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     ActionReportLayout previousActionReport = client.GetPreviousActionReport();
     try
     {
-        client.Activate(milestoneInt);
+        client.Activate(ref milestoneInt);
         YouTubeQuotaHelper.SetPreviousActionReport(config.YouTube, client, milestoneInt, previousActionReport);
         GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {

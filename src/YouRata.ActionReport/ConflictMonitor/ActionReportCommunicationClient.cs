@@ -14,7 +14,7 @@ internal class ActionReportCommunicationClient : MilestoneCommunicationClient
     {
     }
 
-    public void Activate(ActionReportActionIntelligence intelligence)
+    public void Activate(ref ActionReportActionIntelligence intelligence)
     {
         ActionReportActionIntelligence milestoneActionIntelligence = new ActionReportActionIntelligence();
         milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;

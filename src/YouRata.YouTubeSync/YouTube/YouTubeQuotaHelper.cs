@@ -63,6 +63,7 @@ internal static class YouTubeQuotaHelper
             intelligence.FirstVideoPublishTime = previousIntelligence.FirstVideoPublishTime;
             intelligence.OutstandingVideoPublishTime = previousIntelligence.OutstandingVideoPublishTime;
             intelligence.HasOutstandingVideos = previousIntelligence.HasOutstandingVideos;
+            intelligence.LastQueryTime = previousIntelligence.LastQueryTime;
         }
         client.SetMilestoneActionIntelligence(intelligence);
     }

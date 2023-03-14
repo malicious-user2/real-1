@@ -69,7 +69,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             if (milestoneInt.HasOutstandingVideos)
             {
                 oustandingVideoList = YouTubeVideoHelper.GetOutstandingChannelVideos(config.YouTube, ignoreResources, milestoneInt, ytService, client);
-                videoList.AddRange(oustandingVideoList);
+                videoList.AddRange(oustandingVideoList.Where(outVideo => videoList.FirstOrDefault(recentVideo => recentVideo.Id == outVideo.Id) == null).ToList());
             }
             foreach (Video video in videoList)
             {

@@ -61,6 +61,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
         }
         UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);
+        List<string> completedVideos = new List<string>();
         using (YouTubeService ytService = YouTubeServiceHelper.GetService(actionInt, userCred))
         {
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube, milestoneInt, ytService, client);
@@ -75,6 +76,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             {
                 if (video.ContentDetails == null) continue;
                 if (video.Snippet == null) continue;
+                if (completedVideos.Contains(video.Id)) continue;
                 string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
                     $"{video.Id}.md";
                 Console.WriteLine(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath));
@@ -100,6 +102,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                             YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, milestoneInt, ytService, client);
                         }
                     }
+                    completedVideos.Add(video.Id);
                     milestoneInt.VideosProcessed++;
                 }
             }

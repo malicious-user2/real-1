@@ -52,50 +52,17 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     ActionReportLayout previousActionReport = client.GetPreviousActionReport();
     try
     {
-
-        var mockHttp = new MockHttpMessageHandler();
-        mockHttp.When(HttpMethod.Put, "https://youtube.googleapis.com/youtube/v3/videos*").Respond(HttpStatusCode.OK);
-        mockHttp.Fallback.Respond(HttpStatusCode.ServiceUnavailable);
-        //mockHttp.Fallback.Respond(new HttpClient());
-
-
-
-
-
-
-
         client.Activate(ref milestoneInt);
         YouTubeQuotaHelper.SetPreviousActionReport(config.YouTube, client, milestoneInt, previousActionReport);
-        GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
-        {
-            ClientSecrets = new ClientSecrets
-            {
-                ClientId = actionInt.AppClientId,
-                ClientSecret = actionInt.AppClientSecret,
-            },
-            HttpClientFactory = new MockHttpClientFactory(mockHttp),
-            Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
-        });
-        authFlow.HttpClient.Timeout = YouTubeConstants.RequestTimeout;
+        GoogleAuthorizationCodeFlow authFlow = YouTubeAuthorizationHelper.GetFlow(actionInt);
         if (savedTokenResponse.IsExpired(authFlow.Clock))
         {
             savedTokenResponse = YouTubeAuthorizationHelper.RefreshToken(authFlow, savedTokenResponse.RefreshToken, client);
             YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
         }
         UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);
-
-
-        using (YouTubeService ytService
-                = new YouTubeService(
-                    new BaseClientService.Initializer()
-                    {
-                        ApiKey = actionInt.AppApiKey,
-                        ApplicationName = YouTubeConstants.RequestApplicationName,
-                        HttpClientInitializer = userCred,
-                        HttpClientFactory = new MockHttpClientFactory(mockHttp)
-                    }))
+        using (YouTubeService ytService = YouTubeServiceHelper.GetService(actionInt, userCred))
         {
-            ytService.HttpClient.Timeout = YouTubeConstants.RequestTimeout;
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube, milestoneInt, ytService, client);
             List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube, ignoreResources, milestoneInt, ytService, client);
             List<Video> oustandingVideoList = new List<Video>();
@@ -149,19 +116,4 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         throw new MilestoneException("YouTubeSync failed", ex);
     }
     client.SetStatus(MilestoneCondition.MilestoneCompleted);
-}
-
-public class MockHttpClientFactory : HttpClientFactory
-{
-    private HttpMessageHandler Handler { get; set; }
-
-    public MockHttpClientFactory(HttpMessageHandler handler)
-    {
-        Handler = handler;
-    }
-
-    protected override HttpMessageHandler CreateHandler(CreateHttpClientArgs args)
-    {
-        return Handler;
-    }
 }

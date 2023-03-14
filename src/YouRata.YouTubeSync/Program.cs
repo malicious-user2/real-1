@@ -79,10 +79,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         authFlow.HttpClient.Timeout = YouTubeConstants.RequestTimeout;
         if (savedTokenResponse.IsExpired(authFlow.Clock))
         {
-            Task<TokenResponse> savedTokenResponseTask = authFlow.RefreshTokenAsync(null, savedTokenResponse.RefreshToken, CancellationToken.None);
-            savedTokenResponseTask.Wait();
-            Console.WriteLine(savedTokenResponseTask.IsFaulted);
-            savedTokenResponse = savedTokenResponseTask.Result;
+            savedTokenResponse = YouTubeAuthorizationHelper.RefreshToken(authFlow, savedTokenResponse.RefreshToken, client);
             YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
         }
         UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);

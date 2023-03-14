@@ -81,6 +81,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         {
             Task<TokenResponse> savedTokenResponseTask = authFlow.RefreshTokenAsync(null, savedTokenResponse.RefreshToken, CancellationToken.None);
             savedTokenResponseTask.Wait();
+            Console.WriteLine(savedTokenResponseTask.IsFaulted);
             savedTokenResponse = savedTokenResponseTask.Result;
             YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
         }

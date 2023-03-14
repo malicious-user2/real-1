@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Requests;
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Http;
 using Google.Apis.Services;
@@ -78,13 +79,12 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         authFlow.HttpClient.Timeout = YouTubeConstants.RequestTimeout;
         if (savedTokenResponse.IsExpired(authFlow.Clock))
         {
-            savedTokenResponse = authFlow.RefreshTokenAsync(null, savedTokenResponse.RefreshToken, CancellationToken.None).Result;
+            Task<TokenResponse> savedTokenResponseTask = authFlow.RefreshTokenAsync(null, savedTokenResponse.RefreshToken, CancellationToken.None);
+            savedTokenResponseTask.Wait();
+            savedTokenResponse = savedTokenResponseTask.Result;
             YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
         }
         UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);
-
-
-
 
 
         using (YouTubeService ytService

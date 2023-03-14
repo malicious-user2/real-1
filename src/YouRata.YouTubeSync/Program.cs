@@ -51,6 +51,18 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     ActionReportLayout previousActionReport = client.GetPreviousActionReport();
     try
     {
+
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp.When(HttpMethod.Put, "https://youtube.googleapis.com/youtube/v3/videos*").Respond(HttpStatusCode.OK);
+        mockHttp.Fallback.Respond(HttpStatusCode.ServiceUnavailable);
+        //mockHttp.Fallback.Respond(new HttpClient());
+
+
+
+
+
+
+
         client.Activate(ref milestoneInt);
         YouTubeQuotaHelper.SetPreviousActionReport(config.YouTube, client, milestoneInt, previousActionReport);
         GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
@@ -58,10 +70,12 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             ClientSecrets = new ClientSecrets
             {
                 ClientId = actionInt.AppClientId,
-                ClientSecret = actionInt.AppClientSecret
+                ClientSecret = actionInt.AppClientSecret,
             },
+            HttpClientFactory = new MockHttpClientFactory(mockHttp),
             Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
         });
+        authFlow.HttpClient.Timeout = YouTubeConstants.RequestTimeout;
         if (savedTokenResponse.IsExpired(authFlow.Clock))
         {
             savedTokenResponse = authFlow.RefreshTokenAsync(null, savedTokenResponse.RefreshToken, CancellationToken.None).Result;
@@ -71,9 +85,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
 
 
 
-        var mockHttp = new MockHttpMessageHandler();
-        mockHttp.When(HttpMethod.Put, "https://youtube.googleapis.com/youtube/v3/videos*").Respond(HttpStatusCode.OK);
-        mockHttp.Fallback.Respond(new HttpClient());
+
 
         using (YouTubeService ytService
                 = new YouTubeService(

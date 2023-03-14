@@ -11,4 +11,6 @@ public static class YouRataConstants
     public static readonly string ActionReportFileName = "action-report.json";
 
     public static readonly string PacificTimeZone = "US/Pacific";
+
+    public static readonly string ActionReportMessage = "ActionReport update";
 }

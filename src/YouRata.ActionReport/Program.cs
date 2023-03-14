@@ -18,12 +18,17 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
     GitHubActionEnvironment actionEnvironment;
     YouRataConfiguration config;
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out actionInt, out config, out actionEnvironment);
-    client.Activate(ref milestoneInt);
-    ActionReportFileBuilder builder = new ActionReportFileBuilder(client.GetActionIntelligence());
+    try
+    {
+        client.Activate(ref milestoneInt);
+        ActionReportFileBuilder builder = new ActionReportFileBuilder(client.GetActionIntelligence());
 
-    Console.WriteLine(client.GetPreviousActionReport().ActionReportIntelligence.ToString());
-
-
-    GitHubAPIClient.UpdateContentFile(actionEnvironment.OverrideRateLimit(), "update this", builder.Build(), YouRataConstants.ActionReportFileName, client.LogMessage);
-
+        GitHubAPIClient.UpdateContentFile(actionEnvironment.OverrideRateLimit(), YouRataConstants.ActionReportMessage, builder.Build(), YouRataConstants.ActionReportFileName, client.LogMessage);
+    }
+    catch (Exception ex)
+    {
+        client.SetStatus(MilestoneCondition.MilestoneFailed);
+        throw new MilestoneException("ActionReport failed", ex);
+    }
+    client.SetStatus(MilestoneCondition.MilestoneCompleted);
 }

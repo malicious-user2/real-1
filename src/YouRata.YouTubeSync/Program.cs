@@ -22,7 +22,6 @@ using Google.Protobuf.Collections;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Octokit;
-using RichardSzalay.MockHttp;
 using YouRata.Common.ActionReport;
 using YouRata.Common.Configurations;
 using YouRata.Common.GitHub;

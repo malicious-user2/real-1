@@ -32,3 +32,4 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
     }
     client.SetStatus(MilestoneCondition.MilestoneCompleted);
 }
+System.Threading.Thread.Sleep(1000);

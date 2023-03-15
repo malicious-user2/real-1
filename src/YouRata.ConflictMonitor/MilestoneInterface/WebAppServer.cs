@@ -83,21 +83,18 @@ internal class WebAppServer
             while (true)
             {
                 _callManager.ActionReady.WaitOne();
+                while (!_callManager.ActionCallbacks.IsEmpty)
+                {
+                    _callManager.ActionCallbacks.TryDequeue(out ConflictMonitorCall? call);
+                    if (call != null)
+                    {
+                        call(_callHandler);
+                    }
+                }
                 if (_callManager.ActionStop.WaitOne(0))
                 {
                     await webApp.StopAsync().ConfigureAwait(false);
                     break;
-                }
-                else
-                {
-                    while (!_callManager.ActionCallbacks.IsEmpty)
-                    {
-                        _callManager.ActionCallbacks.TryDequeue(out ConflictMonitorCall? call);
-                        if (call != null)
-                        {
-                            call(_callHandler);
-                        }
-                    }
                 }
             }
         }

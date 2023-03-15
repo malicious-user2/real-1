@@ -75,10 +75,6 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
             try
             {
                 callHandler.UpdateActionReportMilestoneIntelligence(_configuration.Value, _milestoneIntelligence, request);
-                if (request.Condition == MilestoneCondition.MilestoneCompleted)
-                {
-                    _callManager.ActionStop.Set();
-                }
             }
             catch (Exception e)
             {
@@ -86,6 +82,10 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
             }
             emptyResult.SetResult(new Empty());
         });
+        if (request.Condition == MilestoneCondition.MilestoneCompleted)
+        {
+            _callManager.ActionStop.Set();
+        }
         _callManager.ActionReady.Set();
         return emptyResult.Task;
     }

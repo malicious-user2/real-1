@@ -16,9 +16,11 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
 
     public void Activate(ref InitialSetupActionIntelligence intelligence)
     {
-        InitialSetupActionIntelligence milestoneActionIntelligence = new InitialSetupActionIntelligence();
-        milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;
-        milestoneActionIntelligence.Condition = MilestoneCondition.MilestoneRunning;
+        InitialSetupActionIntelligence milestoneActionIntelligence = new InitialSetupActionIntelligence
+        {
+            ProcessId = Process.GetCurrentProcess().Id,
+            Condition = MilestoneCondition.MilestoneRunning
+        };
         SetMilestoneActionIntelligence(milestoneActionIntelligence);
         Console.WriteLine($"Entering {_milestoneName}");
         intelligence = milestoneActionIntelligence;

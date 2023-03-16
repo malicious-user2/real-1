@@ -29,7 +29,7 @@ public static class GitHubRetryHelper
             }
             catch (Exception ex) when (trapInnerException != null)
             {
-                if (ex.InnerException != null && ex.InnerException.GetType().Equals(trapInnerException))
+                if (ex.InnerException != null && ex.InnerException.GetType() == trapInnerException)
                 {
                     logger.Invoke($"GitHub API: {ex.Message}");
                     trapped = true;
@@ -79,7 +79,7 @@ public static class GitHubRetryHelper
             }
             catch (Exception ex) when (trapInnerException != null)
             {
-                if (ex.InnerException != null && ex.InnerException.GetType().Equals(trapInnerException))
+                if (ex.InnerException != null && ex.InnerException.GetType() == trapInnerException)
                 {
                     logger.Invoke($"GitHub API: {ex.Message}");
                     trapped = true;

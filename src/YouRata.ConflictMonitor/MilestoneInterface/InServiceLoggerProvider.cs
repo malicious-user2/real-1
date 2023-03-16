@@ -56,7 +56,7 @@ internal class InServiceLoggerProvider : ILoggerProvider
         {
             if (!IsEnabled(logLevel)) return;
             string message = formatter(state, exception);
-            Func<TState, Exception, string> defaultFormatter = (state, exception) =>
+            Func<TState, Exception, string> defaultFormatter = (fnState, fnException) =>
             {
                 StringBuilder lineBuilder = new StringBuilder();
                 lineBuilder.Append("[");

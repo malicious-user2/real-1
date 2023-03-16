@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using Google.Protobuf;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using YouRata.Common;
 using YouRata.Common.ActionReport;
 using YouRata.Common.Proto;

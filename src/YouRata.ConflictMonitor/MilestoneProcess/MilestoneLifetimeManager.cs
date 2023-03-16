@@ -85,7 +85,7 @@ internal class MilestoneLifetimeManager : IDisposable
                             runTime > config.MaxRunTime)
                         {
                             Process milestoneProcess = Process.GetProcessById(milestoneIntelligence.ProcessId);
-                            if (milestoneProcess != null && !milestoneProcess.HasExited)
+                            if (!milestoneProcess.HasExited)
                             {
                                 milestoneProcess.Kill();
                                 logger.LogWarning($"Milestone {milestoneIntelligence.GetType().Name} was forcefully killed");

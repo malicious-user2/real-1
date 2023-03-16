@@ -55,7 +55,7 @@ public class GitHubEnvironment
             {
                 continue;
             }
-            if (environmentProp.Name == null)
+            if (string.IsNullOrEmpty(environmentProp.Name))
             {
                 continue;
             }

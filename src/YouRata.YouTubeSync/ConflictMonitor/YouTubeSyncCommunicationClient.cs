@@ -16,9 +16,11 @@ internal class YouTubeSyncCommunicationClient : MilestoneCommunicationClient
 
     public void Activate(ref YouTubeSyncActionIntelligence intelligence)
     {
-        YouTubeSyncActionIntelligence milestoneActionIntelligence = new YouTubeSyncActionIntelligence();
-        milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;
-        milestoneActionIntelligence.Condition = MilestoneCondition.MilestoneRunning;
+        YouTubeSyncActionIntelligence milestoneActionIntelligence = new YouTubeSyncActionIntelligence
+        {
+            ProcessId = Process.GetCurrentProcess().Id,
+            Condition = MilestoneCondition.MilestoneRunning
+        };
         SetMilestoneActionIntelligence(milestoneActionIntelligence);
         Console.WriteLine($"Entering {_milestoneName}");
         intelligence = milestoneActionIntelligence;

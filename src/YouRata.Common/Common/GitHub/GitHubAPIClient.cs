@@ -37,7 +37,7 @@ public static class GitHubAPIClient
 
     public static bool HasRemainingCalls(GitHubActionEnvironment environment)
     {
-        if (environment.RateLimitCoreRemaining < 100 && environment.RateLimitCoreRemaining > 0)
+        if (environment.RateLimitCoreRemaining is > 0 and < 100)
         {
             Console.WriteLine($"WARNING: Only {environment.RateLimitCoreRemaining} GitHub API calls remaining");
         }

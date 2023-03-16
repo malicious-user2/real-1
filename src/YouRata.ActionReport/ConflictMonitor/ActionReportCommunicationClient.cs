@@ -16,9 +16,11 @@ internal class ActionReportCommunicationClient : MilestoneCommunicationClient
 
     public void Activate(ref ActionReportActionIntelligence intelligence)
     {
-        ActionReportActionIntelligence milestoneActionIntelligence = new ActionReportActionIntelligence();
-        milestoneActionIntelligence.ProcessId = Process.GetCurrentProcess().Id;
-        milestoneActionIntelligence.Condition = MilestoneCondition.MilestoneRunning;
+        ActionReportActionIntelligence milestoneActionIntelligence = new ActionReportActionIntelligence
+        {
+            ProcessId = Process.GetCurrentProcess().Id,
+            Condition = MilestoneCondition.MilestoneRunning
+        };
         SetMilestoneActionIntelligence(milestoneActionIntelligence);
         Console.WriteLine($"Entering {_milestoneName}");
         intelligence = milestoneActionIntelligence;

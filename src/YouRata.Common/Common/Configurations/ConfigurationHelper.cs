@@ -21,19 +21,15 @@ public sealed class ConfigurationHelper
     {
         DirectoryInfo startingDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
         DirectoryInfo searchingDirectory = startingDirectory;
-        while (searchingDirectory != null && !searchingDirectory.GetFiles("*.sln").Any())
+        while (!searchingDirectory.GetFiles("*.sln").Any())
         {
-            if (searchingDirectory.Parent == null)
-            {
-                throw new FileNotFoundException("Solution file could not be found in any parent directory");
-            }
-            searchingDirectory = searchingDirectory.Parent;
+            searchingDirectory = searchingDirectory.Parent ?? throw new FileNotFoundException("Solution file could not be found in any parent directory"); ;
         }
-        if (searchingDirectory != null && searchingDirectory.Parent != null)
+        if (searchingDirectory?.Parent != null)
         {
             _settingsPath = Path.Combine(searchingDirectory.Parent.FullName, _settingsFileName);
         }
-        else if (startingDirectory != null)
+        else
         {
             _settingsPath = Path.Combine(startingDirectory.FullName, _settingsFileName);
         }

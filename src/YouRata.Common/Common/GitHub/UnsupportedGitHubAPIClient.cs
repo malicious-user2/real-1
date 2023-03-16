@@ -41,7 +41,7 @@ public static class UnsupportedGitHubAPIClient
 
     public static bool HasRemainingCalls(GitHubActionEnvironment environment)
     {
-        if (environment.RateLimitCoreRemaining < 100 && environment.RateLimitCoreRemaining > 0)
+        if (environment.RateLimitCoreRemaining is > 0 and < 100)
         {
             Console.WriteLine($"WARNING: Only {environment.RateLimitCoreRemaining} GitHub API calls remaining");
         }
@@ -67,7 +67,7 @@ public static class UnsupportedGitHubAPIClient
                 client.DefaultRequestHeaders.Add("User-Agent", GitHubConstants.ProductHeaderName);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", environment.ApiToken);
-                RepositoryVariable variable = new RepositoryVariable();
+                RepositoryVariable variable = new RepositoryVariable { Name = variableName, Value = variableValue };
                 variable.Name = variableName;
                 variable.Value = variableValue;
                 string contentData = JsonConvert.SerializeObject(variable);
@@ -76,7 +76,7 @@ public static class UnsupportedGitHubAPIClient
             }
         });
         RetryCommand(environment, createVariable, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), logger);
-        if (response != null && response.IsSuccessStatusCode) return true;
+        if (response?.IsSuccessStatusCode == true) return true;
         return false;
     }
 

@@ -42,7 +42,7 @@ public static class YouTubeAPIHelper
     {
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
-            ClientSecrets = new Google.Apis.Auth.OAuth2.ClientSecrets
+            ClientSecrets = new ClientSecrets
             {
                 ClientId = clientId,
                 ClientSecret = clientSecret

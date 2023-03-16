@@ -48,7 +48,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
     public virtual void LogMessage(string message, string milestone)
     {
         MilestoneLogServiceClient milestoneLogServiceClient = new MilestoneLogServiceClient(_conflictMonitorChannel);
-        MilestoneLog milestoneLog = new MilestoneLog();
+        MilestoneLog milestoneLog = new MilestoneLog { Message = message, Milestone = milestone };
         milestoneLog.Message = message;
         milestoneLog.Milestone = milestone;
         milestoneLogServiceClient.WriteLogMessage(milestoneLog);
@@ -93,7 +93,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
                 .GetParameters().Length == 4 && method
                 .Name == $"Update{milestoneIntelligenceName}ActionIntelligence")
             .ToList();
-        if (clientMethods != null && clientMethods.Count > 0)
+        if (clientMethods?.Count > 0)
         {
             MethodInfo clientMethod = clientMethods.First();
             clientMethod.Invoke(milestoneActionIntelligenceServiceClient, new object?[] { milestoneActionIntelligence, null, null, default(CancellationToken) });
@@ -131,7 +131,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
             .GetProperties()
             .Where(prop => prop.PropertyType == milestoneIntelligenceType)
             .ToList();
-        if (milestoneIntelligenceProperties != null && milestoneIntelligenceProperties.Count > 0)
+        if (milestoneIntelligenceProperties?.Count > 0)
         {
             PropertyInfo milestoneIntelligenceProperty = milestoneIntelligenceProperties.First();
             object? milestoneIntelligenceObject = milestoneIntelligenceProperty.GetValue(actionIntelligence.MilestoneIntelligence);
@@ -152,7 +152,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
             .GetProperties()
             .Where(prop => prop.PropertyType.Name.Contains("ActionIntelligence"))
             .ToList();
-        if (milestoneIntelligenceProperties != null && milestoneIntelligenceProperties.Count > 0)
+        if (milestoneIntelligenceProperties?.Count > 0)
         {
             foreach (PropertyInfo milestoneIntelligenceProperty in milestoneIntelligenceProperties)
             {
@@ -167,7 +167,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
                         continue;
                     }
                     Object? conditionCurrentValue = conditionProperty.GetValue(milestoneIntelligenceObject);
-                    if (conditionCurrentValue != null && conditionCurrentValue is MilestoneCondition)
+                    if (conditionCurrentValue?.GetType() == typeof(MilestoneCondition))
                     {
                         MilestoneCondition currentCondition = (MilestoneCondition)conditionCurrentValue;
                         if (currentCondition == MilestoneCondition.MilestoneCompleted ||

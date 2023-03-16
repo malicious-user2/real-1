@@ -34,7 +34,7 @@ internal class CallHandler
     internal GitHubActionEnvironment GetGithubActionEnvironment(YouRataConfiguration appConfig, GitHubEnvironment environment, ConflictMonitorWorkflow workflow)
     {
         GitHubActionEnvironment actionEnvironment = environment.GetActionEnvironment();
-        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GitHubToken != null && workflow.ApiToken != null)
+        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GitHubToken?.Length > 0 && workflow.ApiToken?.Length > 0)
         {
             ResourceRateLimit? ghRateLimit = default;
             Func<ResourceRateLimit> getResourceRateLimit = (() =>
@@ -103,23 +103,32 @@ internal class CallHandler
 
     internal MilestoneActionIntelligence GetMilestoneActionIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence)
     {
-        MilestoneActionIntelligence actionIntelligence = new MilestoneActionIntelligence();
-        actionIntelligence.InitialSetup = new InitialSetupActionIntelligence();
-        actionIntelligence.InitialSetup.Condition = milestoneIntelligence.InitialSetup.Condition;
-        actionIntelligence.InitialSetup.ProcessId = milestoneIntelligence.InitialSetup.ProcessId;
-        actionIntelligence.YouTubeSync = new YouTubeSyncActionIntelligence();
-        actionIntelligence.YouTubeSync.Condition = milestoneIntelligence.YouTubeSync.Condition;
-        actionIntelligence.YouTubeSync.ProcessId = milestoneIntelligence.YouTubeSync.ProcessId;
-        actionIntelligence.YouTubeSync.VideosProcessed = milestoneIntelligence.YouTubeSync.VideosProcessed;
-        actionIntelligence.YouTubeSync.VideosSkipped = milestoneIntelligence.YouTubeSync.VideosSkipped;
-        actionIntelligence.YouTubeSync.CalculatedQueriesPerDayRemaining = milestoneIntelligence.YouTubeSync.CalculatedQueriesPerDayRemaining;
-        actionIntelligence.YouTubeSync.LastQueryTime = milestoneIntelligence.YouTubeSync.LastQueryTime;
-        actionIntelligence.YouTubeSync.FirstVideoPublishTime = milestoneIntelligence.YouTubeSync.FirstVideoPublishTime;
-        actionIntelligence.YouTubeSync.OutstandingVideoPublishTime = milestoneIntelligence.YouTubeSync.OutstandingVideoPublishTime;
-        actionIntelligence.YouTubeSync.HasOutstandingVideos = milestoneIntelligence.YouTubeSync.HasOutstandingVideos;
-        actionIntelligence.ActionReport = new ActionReportActionIntelligence();
-        actionIntelligence.ActionReport.Condition = milestoneIntelligence.ActionReport.Condition;
-        actionIntelligence.ActionReport.ProcessId = milestoneIntelligence.ActionReport.ProcessId;
+        MilestoneActionIntelligence actionIntelligence = new MilestoneActionIntelligence
+        {
+            InitialSetup = new InitialSetupActionIntelligence
+            {
+                Condition = milestoneIntelligence.InitialSetup.Condition,
+                ProcessId = milestoneIntelligence.InitialSetup.ProcessId
+            },
+            YouTubeSync = new YouTubeSyncActionIntelligence
+            {
+                Condition = milestoneIntelligence.YouTubeSync.Condition,
+                ProcessId = milestoneIntelligence.YouTubeSync.ProcessId,
+                VideosProcessed = milestoneIntelligence.YouTubeSync.VideosProcessed,
+                VideosSkipped = milestoneIntelligence.YouTubeSync.VideosSkipped,
+                CalculatedQueriesPerDayRemaining =
+                    milestoneIntelligence.YouTubeSync.CalculatedQueriesPerDayRemaining,
+                LastQueryTime = milestoneIntelligence.YouTubeSync.LastQueryTime,
+                FirstVideoPublishTime = milestoneIntelligence.YouTubeSync.FirstVideoPublishTime,
+                OutstandingVideoPublishTime = milestoneIntelligence.YouTubeSync.OutstandingVideoPublishTime,
+                HasOutstandingVideos = milestoneIntelligence.YouTubeSync.HasOutstandingVideos
+            },
+            ActionReport = new ActionReportActionIntelligence
+            {
+                Condition = milestoneIntelligence.ActionReport.Condition,
+                ProcessId = milestoneIntelligence.ActionReport.ProcessId
+            }
+        };
 
         return actionIntelligence;
     }

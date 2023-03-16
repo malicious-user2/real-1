@@ -2,7 +2,6 @@ using System;
 using Google.Apis.YouTube.v3.Data;
 using System.Collections.Generic;
 using Google.Protobuf;
-using Newtonsoft.Json;
 using YouRata.Common;
 using YouRata.Common.ActionReport;
 using YouRata.Common.Configurations;
@@ -17,7 +16,7 @@ internal static class YouTubeQuotaHelper
 
     public static bool HasRemainingCalls(YouTubeSyncActionIntelligence intelligence)
     {
-        if (intelligence.CalculatedQueriesPerDayRemaining < 100 && intelligence.CalculatedQueriesPerDayRemaining > 0)
+        if (intelligence.CalculatedQueriesPerDayRemaining is > 0 and < 100)
         {
             Console.WriteLine($"WARNING: Only {intelligence.CalculatedQueriesPerDayRemaining} YouTube API calls remaining");
         }

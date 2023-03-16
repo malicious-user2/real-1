@@ -30,10 +30,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
     if (milestoneInt == null) return;
     if (milestoneInt.Condition == MilestoneCondition.MilestoneBlocked) return;
     InitialSetupWorkflow workflow = new InitialSetupWorkflow();
-    ActionIntelligence actionInt;
-    GitHubActionEnvironment actionEnvironment;
-    YouRataConfiguration config;
-    MilestoneVariablesHelper.CreateRuntimeVariables(client, out actionInt, out config, out actionEnvironment);
+    MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
     try
     {
         client.Activate(ref milestoneInt);

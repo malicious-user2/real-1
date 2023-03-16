@@ -14,10 +14,7 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableActionReportMilestone) return;
     if (milestoneInt == null) return;
     if (milestoneInt.Condition == MilestoneCondition.MilestoneBlocked) return;
-    ActionIntelligence actionInt;
-    GitHubActionEnvironment actionEnvironment;
-    YouRataConfiguration config;
-    MilestoneVariablesHelper.CreateRuntimeVariables(client, out actionInt, out config, out actionEnvironment);
+    MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
     try
     {
         client.Activate(ref milestoneInt);

@@ -39,10 +39,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableYouTubeSyncMilestone) return;
     if (milestoneInt == null) return;
     if (milestoneInt.Condition == MilestoneCondition.MilestoneBlocked) return;
-    ActionIntelligence actionInt;
-    GitHubActionEnvironment actionEnvironment;
-    YouRataConfiguration config;
-    MilestoneVariablesHelper.CreateRuntimeVariables(client, out actionInt, out config, out actionEnvironment);
+    MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
     if (!YouTubeAPIHelper.IsValidTokenResponse(actionInt.TokenResponse)) return;
     TokenResponse? savedTokenResponse = JsonConvert.DeserializeObject<TokenResponse>(actionInt.TokenResponse);
     if (savedTokenResponse == null) return;

@@ -268,7 +268,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
 
         internal ValueTask<Stream> PlaintextFilter(SocketsHttpPlaintextStreamFilterContext filterContext, CancellationToken cancellationToken = default)
         {
-            return new ValueTask<Stream>(Task.Run<Stream>(() => filterContext.PlaintextStream));
+            return new ValueTask<Stream>(Task.Run<Stream>(() => filterContext.PlaintextStream, cancellationToken));
         }
     }
 }

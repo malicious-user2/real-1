@@ -1,15 +1,9 @@
 using System;
 using System.Threading.Tasks;
-using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using YouRata.Common.Configurations;
-using YouRata.Common.GitHub;
 using YouRata.Common.Proto;
-using YouRata.ConflictMonitor.MilestoneData;
-using YouRata.ConflictMonitor.Workflow;
 
 namespace YouRata.ConflictMonitor.MilestoneCall.Messages;
 
@@ -27,7 +21,7 @@ internal class MilestoneLogMessage : MilestoneLogService.MilestoneLogServiceBase
     public override Task<Empty> WriteLogMessage(MilestoneLog request, ServerCallContext context)
     {
         TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
-        _callManager.ActionCallbacks.Enqueue((CallHandler callHandler) =>
+        _callManager.ActionCallbacks.Enqueue((callHandler) =>
         {
             try
             {

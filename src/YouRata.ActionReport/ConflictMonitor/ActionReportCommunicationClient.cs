@@ -31,11 +31,6 @@ internal class ActionReportCommunicationClient : MilestoneCommunicationClient
         base.SetStatus(status, _milestoneType, _milestoneName);
     }
 
-    public MilestoneCondition GetStatus()
-    {
-        return base.GetStatus(_milestoneType);
-    }
-
     public void SetMilestoneActionIntelligence(ActionReportActionIntelligence initialSetupActionIntelligence)
     {
         base.SetMilestoneActionIntelligence(initialSetupActionIntelligence, _milestoneType, _milestoneName);

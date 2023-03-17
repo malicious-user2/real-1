@@ -1,5 +1,4 @@
 using System;
-using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using YouRata.Common.Configurations;
 

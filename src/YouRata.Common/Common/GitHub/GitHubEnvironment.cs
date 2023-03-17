@@ -80,8 +80,6 @@ public class GitHubEnvironment
 
     public string Action_Repository { get; set; }
 
-    public bool Actions { get; set; }
-
     public string Actor { get; set; }
 
     public string Actor_Id { get; set; }

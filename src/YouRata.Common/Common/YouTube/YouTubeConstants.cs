@@ -14,8 +14,6 @@ public static class YouTubeConstants
 
     public static string RequestApplicationName = "YouRata";
 
-    public static string RequestIdPart = "id";
-
     public static string RequestSnippetPart = "snippet";
 
     public static string RequestStatusPart = "status";
@@ -25,10 +23,6 @@ public static class YouTubeConstants
     public static string VideoKind = "youtube#video";
 
     public static string PrivacyStatusPrivate = "private";
-
-    public static string PrivacyStatusUnlisted = "unlisted";
-
-    public static string PrivacyStatusPublic = "public";
 
     public static string VideoType = "video";
 

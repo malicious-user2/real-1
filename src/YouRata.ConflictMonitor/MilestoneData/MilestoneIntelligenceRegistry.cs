@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Microsoft.Extensions.Configuration.Ini;
-using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.ConflictMonitor.MilestoneData;
 

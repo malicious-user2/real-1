@@ -1,6 +1,4 @@
 using System;
-using YouRata.Common.GitHub;
-using YouRata.Common;
 using YouRata.Common.YouTube;
 
 namespace YouRata.InitialSetup.Workflow;

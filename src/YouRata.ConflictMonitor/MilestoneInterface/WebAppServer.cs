@@ -1,23 +1,21 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using YouRata.Common.Configurations;
 using YouRata.Common.GitHub;
-using YouRata.ConflictMonitor.MilestoneData;
+using YouRata.ConflictMonitor.ActionReport;
 using YouRata.ConflictMonitor.MilestoneCall;
 using YouRata.ConflictMonitor.MilestoneCall.Messages;
+using YouRata.ConflictMonitor.MilestoneData;
+using YouRata.ConflictMonitor.MilestoneInterface.ConfigurationValidation;
 using YouRata.ConflictMonitor.MilestoneInterface.Services;
 using YouRata.ConflictMonitor.MilestoneInterface.WebHost;
+using YouRata.ConflictMonitor.MilestoneProcess;
 using YouRata.ConflictMonitor.Workflow;
 using static YouRata.ConflictMonitor.MilestoneCall.CallManager;
-using YouRata.ConflictMonitor.MilestoneProcess;
-using YouRata.ConflictMonitor.MilestoneInterface.ConfigurationValidation;
-using YouRata.ConflictMonitor.ActionReport;
 
 namespace YouRata.ConflictMonitor.MilestoneInterface;
 
@@ -80,6 +78,7 @@ internal class WebAppServer
 
         using (MilestoneLifetimeManager lifetimeManager = new MilestoneLifetimeManager(webApp, _milestoneIntelligence))
         {
+            lifetimeManager.StartLoop();
             while (true)
             {
                 _callManager.ActionReady.WaitOne();

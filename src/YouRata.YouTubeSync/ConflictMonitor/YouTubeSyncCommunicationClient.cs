@@ -31,11 +31,6 @@ internal class YouTubeSyncCommunicationClient : MilestoneCommunicationClient
         base.SetStatus(status, _milestoneType, _milestoneName);
     }
 
-    public MilestoneCondition GetStatus()
-    {
-        return base.GetStatus(_milestoneType);
-    }
-
     public void SetMilestoneActionIntelligence(YouTubeSyncActionIntelligence youTubeSyncActionIntelligence)
     {
         base.SetMilestoneActionIntelligence(youTubeSyncActionIntelligence, _milestoneType, _milestoneName);

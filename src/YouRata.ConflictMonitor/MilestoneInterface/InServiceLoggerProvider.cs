@@ -55,7 +55,6 @@ internal class InServiceLoggerProvider : ILoggerProvider
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception?, string> formatter)
         {
             if (!IsEnabled(logLevel)) return;
-            string message = formatter(state, exception);
             Func<TState, Exception, string> defaultFormatter = (fnState, fnException) =>
             {
                 StringBuilder lineBuilder = new StringBuilder();

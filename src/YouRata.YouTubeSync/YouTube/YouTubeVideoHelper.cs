@@ -1,21 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Reflection.PortableExecutable;
 using System.Xml;
 using Google.Apis.Util;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
-using Microsoft.Extensions.Configuration;
 using YouRata.Common.Configurations;
 using YouRata.Common.Milestone;
 using YouRata.Common.YouTube;
 using YouRata.YouTubeSync.ConflictMonitor;
-using YouRata.YouTubeSync.ErrataBulletin;
 using static Google.Apis.YouTube.v3.SearchResource.ListRequest;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
@@ -29,7 +24,7 @@ internal static class YouTubeVideoHelper
         if (video.Snippet == null) return;
         foreach (PropertyInfo videoProperty in video.GetType().GetProperties())
         {
-            if (videoProperty != null && videoProperty.CanWrite && videoProperty.PropertyType.IsClass)
+            if (videoProperty.CanWrite && videoProperty.PropertyType.IsClass)
             {
                 if (!videoProperty.Name.Equals("Id") && !videoProperty.Name.Equals("Snippet"))
                 {
@@ -38,13 +33,12 @@ internal static class YouTubeVideoHelper
             }
         }
         video.Snippet.Description = description;
-        VideosResource.UpdateRequest videoUpdateRequest = new VideosResource.UpdateRequest(service, video, new string[] { YouTubeConstants.RequestSnippetPart });
+        VideosResource.UpdateRequest videoUpdateRequest = new VideosResource.UpdateRequest(service, video, new [] { YouTubeConstants.RequestSnippetPart });
         Action videoUpdate = (() =>
         {
             videoUpdateRequest.Execute();
         });
-        bool forbidden = false;
-        YouTubeRetryHelper.RetryCommand(intelligence, YouTubeConstants.VideosResourceUpdateQuotaCost, videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage, HttpStatusCode.Forbidden, out forbidden);
+        YouTubeRetryHelper.RetryCommand(intelligence, YouTubeConstants.VideosResourceUpdateQuotaCost, videoUpdate, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage, HttpStatusCode.Forbidden, out bool forbidden);
         if (forbidden) throw new MilestoneException("YouTube API update video forbidden");
     }
 
@@ -69,7 +63,7 @@ internal static class YouTubeVideoHelper
         List<Video> channelVideos = new List<Video>();
         lastPublishTime = null;
         if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
-        SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart });
+        SearchResource.ListRequest searchRequest = new SearchResource.ListRequest(service, new [] { YouTubeConstants.RequestSnippetPart });
         if (string.IsNullOrEmpty(config.ChannelId)) return channelVideos;
         searchRequest.ChannelId = config.ChannelId;
         searchRequest.MaxResults = 50;
@@ -106,7 +100,7 @@ internal static class YouTubeVideoHelper
                 Console.WriteLine(intelligence.CalculatedQueriesPerDayRemaining);
                 if (searchResult.Snippet.PublishedAt == null) continue;
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
-                VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new string[] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
+                VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new [] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
                 videoRequest.Id = searchResult.Id.VideoId;
                 videoRequest.MaxResults = 1;
                 Func<VideoListResponse> getVideoResponse = (() =>

@@ -204,9 +204,4 @@ internal class CallHandler
     {
         return _logBuilder;
     }
-
-    internal void ClearLogs()
-    {
-        _logBuilder.Clear();
-    }
 }

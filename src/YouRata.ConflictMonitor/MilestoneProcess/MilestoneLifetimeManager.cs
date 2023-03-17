@@ -17,7 +17,7 @@ internal class MilestoneLifetimeManager : IDisposable
 {
     private readonly WebApplication _webApp;
     private readonly MilestoneIntelligenceRegistry _milestoneIntelligence;
-    private readonly object _lock = new object();
+    private readonly object _lock = new ();
     private bool _disposed;
     private readonly CancellationTokenSource _stopTokenSource;
 
@@ -26,7 +26,6 @@ internal class MilestoneLifetimeManager : IDisposable
         _webApp = webApp;
         _milestoneIntelligence = milestoneIntelligence;
         _stopTokenSource = new CancellationTokenSource();
-        StartLoop();
     }
 
     public void Dispose()
@@ -41,7 +40,7 @@ internal class MilestoneLifetimeManager : IDisposable
         }
     }
 
-    private void StartLoop()
+    internal void StartLoop()
     {
         lock (_lock)
         {

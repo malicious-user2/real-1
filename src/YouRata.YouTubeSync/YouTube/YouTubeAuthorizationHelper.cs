@@ -4,7 +4,6 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.YouTube.v3;
-using Google.Apis.YouTube.v3.Data;
 using YouRata.Common.Milestone;
 using YouRata.Common.Proto;
 using YouRata.Common.YouTube;

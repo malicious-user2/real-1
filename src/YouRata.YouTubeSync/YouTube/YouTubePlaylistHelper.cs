@@ -22,7 +22,7 @@ internal static class YouTubePlaylistHelper
         foreach (string playlist in playlists)
         {
             if (playlist == null) continue;
-            PlaylistItemsResource.ListRequest playlistRequest = new PlaylistItemsResource.ListRequest(service, new string[] { YouTubeConstants.RequestSnippetPart, YouTubeConstants.RequestStatusPart });
+            PlaylistItemsResource.ListRequest playlistRequest = new PlaylistItemsResource.ListRequest(service, new [] { YouTubeConstants.RequestSnippetPart, YouTubeConstants.RequestStatusPart });
             playlistRequest.PlaylistId = playlist;
             playlistRequest.MaxResults = 50;
             bool requestNextPage = true;

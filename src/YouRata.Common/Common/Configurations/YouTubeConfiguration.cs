@@ -11,6 +11,8 @@ public class YouTubeConfiguration : BaseValidatableConfiguration
 
     public string[] ExcludePlaylists { get; set; }
 
+    public string[] ExcludeVideos { get; set; }
+
     [Required]
     [DefaultValue("bottom")]
     [RegularExpression(@"^(top|bottom)$", ErrorMessage = "YouTubeConfiguration.ErattaLinkLocation must be top or bottom")]
@@ -33,6 +35,5 @@ public class YouTubeConfiguration : BaseValidatableConfiguration
     [DefaultValue(60)]
     public int MinVideoSeconds { get; set; }
 
-    [Required]
-    public bool UseForMine { get; set; }
+
 }

@@ -67,14 +67,7 @@ internal static class YouTubeVideoHelper
         if (string.IsNullOrEmpty(config.ChannelId)) return channelVideos;
         searchRequest.ChannelId = config.ChannelId;
         searchRequest.MaxResults = 50;
-        if (config.UseForMine)
-        {
-            searchRequest.ForMine = true;
-        }
-        else
-        {
-            searchRequest.VideoDuration = GetVideoDurationFromConfig(config);
-        }
+        searchRequest.VideoDuration = GetVideoDurationFromConfig(config);
         searchRequest.Type = YouTubeConstants.VideoType;
         searchRequest.Order = OrderEnum.Date;
         if (publishedBefore != null)
@@ -100,6 +93,7 @@ internal static class YouTubeVideoHelper
                 Console.WriteLine(intelligence.CalculatedQueriesPerDayRemaining);
                 if (searchResult.Snippet.PublishedAt == null) continue;
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
+                if (config.ExcludeVideos.Contains(searchResult.Id.VideoId)) continue;
                 VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new [] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
                 videoRequest.Id = searchResult.Id.VideoId;
                 videoRequest.MaxResults = 1;

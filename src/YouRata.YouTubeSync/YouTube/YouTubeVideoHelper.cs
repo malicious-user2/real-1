@@ -93,7 +93,7 @@ internal static class YouTubeVideoHelper
                 Console.WriteLine(intelligence.CalculatedQueriesPerDayRemaining);
                 if (searchResult.Snippet.PublishedAt == null) continue;
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
-                if (config.ExcludeVideos?.Contains(searchResult.Id.VideoId)) continue;
+                if (config.ExcludeVideos?.Contains(searchResult.Id.VideoId) == true) continue;
                 VideosResource.ListRequest videoRequest = new VideosResource.ListRequest(service, new [] { YouTubeConstants.RequestContentDetailsPart, YouTubeConstants.RequestSnippetPart });
                 videoRequest.Id = searchResult.Id.VideoId;
                 videoRequest.MaxResults = 1;

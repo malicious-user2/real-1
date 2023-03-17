@@ -2,7 +2,7 @@
   "YouTube": {
     "ChannelId": "UC-KjfvkW6CjNDGw9L9iQkcA",
     "ExcludePlaylists": null,
-    "ExcludeVideos": "DhsPmpxfroA",
+    "ExcludeVideos": [ "DhsPmpxfroA" ],
     "ErattaLinkLocation": "bottom",
     "ErrataLinkTemplate": "To see errata for this video: {0}",
     "QueriesPerDay": 10000,

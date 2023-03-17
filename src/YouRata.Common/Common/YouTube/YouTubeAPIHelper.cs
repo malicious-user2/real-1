@@ -17,7 +17,7 @@ namespace YouRata.Common.YouTube;
 
 public static class YouTubeAPIHelper
 {
-    public static bool IsValidTokenResponse(string response)
+    private static bool IsValidTokenResponse(string response)
     {
         if (string.IsNullOrEmpty(response)) return false;
         JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
@@ -63,6 +63,22 @@ public static class YouTubeAPIHelper
             ClientSecret = clientSecret
         };
         return authorizationCodeTokenRequest;
+    }
+
+    public static bool GetTokenResponse(string response, out TokenResponse savedTokenResponse)
+    {
+        savedTokenResponse = new TokenResponse();
+        if (IsValidTokenResponse(response))
+        {
+            TokenResponse? deserializedTokenResponse = JsonConvert.DeserializeObject<TokenResponse>(response);
+            if (deserializedTokenResponse == null) return false;
+            savedTokenResponse = deserializedTokenResponse;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public static void SaveTokenResponse(TokenResponse response, GitHubActionEnvironment actionEnvironment, Action<string> logger)

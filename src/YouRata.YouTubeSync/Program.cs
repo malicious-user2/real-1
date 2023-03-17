@@ -10,7 +10,6 @@ using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
-using Newtonsoft.Json;
 using YouRata.Common.ActionReport;
 using YouRata.Common.Configurations;
 using YouRata.Common.GitHub;
@@ -19,25 +18,22 @@ using YouRata.Common.Proto;
 using YouRata.Common.YouTube;
 using YouRata.YouTubeSync.ConflictMonitor;
 using YouRata.YouTubeSync.ErrataBulletin;
+using YouRata.YouTubeSync.Workflow;
 using YouRata.YouTubeSync.YouTube;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClient())
 {
-    YouTubeSyncActionIntelligence? milestoneInt = client.GetMilestoneActionIntelligence();
+    if (!client.Activate(out YouTubeSyncActionIntelligence milestoneInt)) return;
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableYouTubeSyncMilestone) return;
-    if (milestoneInt == null) return;
-    if (milestoneInt.Condition == MilestoneCondition.MilestoneBlocked) return;
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
-    if (!YouTubeAPIHelper.IsValidTokenResponse(actionInt.TokenResponse)) return;
-    TokenResponse? savedTokenResponse = JsonConvert.DeserializeObject<TokenResponse>(actionInt.TokenResponse);
-    if (savedTokenResponse == null) return;
-    string? workspace = Environment.GetEnvironmentVariable(GitHubConstants.GitHubWorkspaceVariable);
-    if (workspace == null) return;
+    if (!YouTubeAPIHelper.GetTokenResponse(actionInt.TokenResponse, out TokenResponse savedTokenResponse)) return;
+    YouTubeSyncWorkflow workflow = new YouTubeSyncWorkflow();
+
+
     ActionReportLayout previousActionReport = client.GetPreviousActionReport();
     try
     {
-        client.Activate(ref milestoneInt);
         YouTubeQuotaHelper.SetPreviousActionReport(config.YouTube, client, milestoneInt, previousActionReport);
         GoogleAuthorizationCodeFlow authFlow = YouTubeAuthorizationHelper.GetFlow(actionInt);
         if (savedTokenResponse.IsExpired(authFlow.Clock))
@@ -64,9 +60,9 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 if (completedVideos.Contains(video.Id)) continue;
                 string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
                     $"{video.Id}.md";
-                Console.WriteLine(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath));
-                Console.WriteLine(Path.Exists(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath)));
-                if (!Path.Exists(Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
+                Console.WriteLine(Path.Combine(workflow.Workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath));
+                Console.WriteLine(Path.Exists(Path.Combine(workflow.Workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath)));
+                if (!Path.Exists(Path.Combine(workflow.Workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
                 {
                     string ytVideoTitle = WebUtility.HtmlDecode(video.Snippet.Title);
                     string videoTitle = string.IsNullOrEmpty(ytVideoTitle) ? "Unknown Video" : ytVideoTitle;

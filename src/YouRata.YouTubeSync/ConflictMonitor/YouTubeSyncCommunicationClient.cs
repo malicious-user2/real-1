@@ -14,7 +14,7 @@ internal class YouTubeSyncCommunicationClient : MilestoneCommunicationClient
     {
     }
 
-    public void Activate(ref YouTubeSyncActionIntelligence intelligence)
+    public bool Activate(out YouTubeSyncActionIntelligence intelligence)
     {
         YouTubeSyncActionIntelligence milestoneActionIntelligence = new YouTubeSyncActionIntelligence
         {
@@ -22,8 +22,16 @@ internal class YouTubeSyncCommunicationClient : MilestoneCommunicationClient
             Condition = MilestoneCondition.MilestoneRunning
         };
         SetMilestoneActionIntelligence(milestoneActionIntelligence);
-        Console.WriteLine($"Entering {_milestoneName}");
         intelligence = milestoneActionIntelligence;
+        if (intelligence.Condition != MilestoneCondition.MilestoneBlocked)
+        {
+            Console.WriteLine($"Entering {_milestoneName}");
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void SetStatus(MilestoneCondition status)

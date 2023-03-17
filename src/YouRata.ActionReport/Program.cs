@@ -10,14 +10,14 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 using (ActionReportCommunicationClient client = new ActionReportCommunicationClient())
 {
-    ActionReportActionIntelligence? milestoneInt = client.GetMilestoneActionIntelligence();
+    if (!client.Activate(out ActionReportActionIntelligence milestoneInt)) return;
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableActionReportMilestone) return;
-    if (milestoneInt == null) return;
-    if (milestoneInt.Condition == MilestoneCondition.MilestoneBlocked) return;
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
+
+
+
     try
     {
-        client.Activate(ref milestoneInt);
         ActionReportFileBuilder builder = new ActionReportFileBuilder(client.GetActionIntelligence());
 
         GitHubAPIClient.UpdateContentFile(actionEnvironment.OverrideRateLimit(), YouRataConstants.ActionReportMessage, builder.Build(), YouRataConstants.ActionReportFileName, client.LogMessage);

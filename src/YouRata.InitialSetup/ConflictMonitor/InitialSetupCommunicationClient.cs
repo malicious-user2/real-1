@@ -14,7 +14,7 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
     {
     }
 
-    public void Activate(ref InitialSetupActionIntelligence intelligence)
+    public bool Activate(out InitialSetupActionIntelligence intelligence)
     {
         InitialSetupActionIntelligence milestoneActionIntelligence = new InitialSetupActionIntelligence
         {
@@ -22,8 +22,16 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
             Condition = MilestoneCondition.MilestoneRunning
         };
         SetMilestoneActionIntelligence(milestoneActionIntelligence);
-        Console.WriteLine($"Entering {_milestoneName}");
         intelligence = milestoneActionIntelligence;
+        if (intelligence.Condition != MilestoneCondition.MilestoneBlocked)
+        {
+            Console.WriteLine($"Entering {_milestoneName}");
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void SetStatus(MilestoneCondition status)

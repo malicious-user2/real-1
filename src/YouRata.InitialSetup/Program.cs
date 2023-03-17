@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2.Requests;
 using Google.Apis.Auth.OAuth2.Responses;
 using YouRata.Common;
 using YouRata.Common.Configurations;
@@ -16,15 +17,13 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 using (InitialSetupCommunicationClient client = new InitialSetupCommunicationClient())
 {
-    InitialSetupActionIntelligence? milestoneInt = client.GetMilestoneActionIntelligence();
+    if (!client.Activate(out InitialSetupActionIntelligence milestoneInt)) return;
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableInitialSetupMilestone) return;
-    if (milestoneInt == null) return;
-    if (milestoneInt.Condition == MilestoneCondition.MilestoneBlocked) return;
-    InitialSetupWorkflow workflow = new InitialSetupWorkflow();
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
+    InitialSetupWorkflow workflow = new InitialSetupWorkflow();
+    
     try
     {
-        client.Activate(ref milestoneInt);
         bool canContinue = true;
         if (string.IsNullOrEmpty(actionEnvironment.ApiToken))
         {
@@ -62,16 +61,16 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             Console.WriteLine($"Paste Google API key in action secret {YouTubeConstants.ProjectApiKeyVariable}");
             canContinue = false;
         }
-        if (canContinue && (!YouTubeAPIHelper.IsValidTokenResponse(actionInt.TokenResponse)))
+        if (canContinue && (!YouTubeAPIHelper.GetTokenResponse(actionInt.TokenResponse, out _)))
         {
             Console.WriteLine("Entering Google API stored token response section");
             GoogleAuthorizationCodeFlow flow = YouTubeAPIHelper.GetFlow(actionInt.AppClientId, actionInt.AppClientSecret);
-            if (!string.IsNullOrEmpty(workflow.RedirectCode) && (!workflow.RedirectCode.Equals("empty")))
+            if (!string.IsNullOrEmpty(workflow.RedirectCode) && workflow.RedirectCode != "empty")
             {
                 using (HttpClient tokenHttpClient = new HttpClient())
                 {
                     string redirectTokenCode = workflow.RedirectCode.Trim().Replace("=", "").Replace("&", "");
-                    var authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(redirectTokenCode, actionInt.AppClientId, actionInt.AppClientSecret);
+                    AuthorizationCodeTokenRequest authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(redirectTokenCode, actionInt.AppClientId, actionInt.AppClientSecret);
                     TokenResponse? authorizationCodeTokenResponse = YouTubeAPIHelper.ExchangeAuthorizationCode(authorizationCodeTokenRequest, flow);
                     if (authorizationCodeTokenResponse != null)
                     {

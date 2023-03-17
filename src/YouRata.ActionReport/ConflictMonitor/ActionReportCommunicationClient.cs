@@ -14,7 +14,7 @@ internal class ActionReportCommunicationClient : MilestoneCommunicationClient
     {
     }
 
-    public void Activate(ref ActionReportActionIntelligence intelligence)
+    public bool Activate(out ActionReportActionIntelligence intelligence)
     {
         ActionReportActionIntelligence milestoneActionIntelligence = new ActionReportActionIntelligence
         {
@@ -22,8 +22,16 @@ internal class ActionReportCommunicationClient : MilestoneCommunicationClient
             Condition = MilestoneCondition.MilestoneRunning
         };
         SetMilestoneActionIntelligence(milestoneActionIntelligence);
-        Console.WriteLine($"Entering {_milestoneName}");
         intelligence = milestoneActionIntelligence;
+        if (intelligence.Condition != MilestoneCondition.MilestoneBlocked)
+        {
+            Console.WriteLine($"Entering {_milestoneName}");
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void SetStatus(MilestoneCondition status)

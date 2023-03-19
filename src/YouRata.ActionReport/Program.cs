@@ -18,8 +18,8 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
 
     try
     {
-        ActionReportBuilder builder = new ActionReportBuilder(client.GetActionIntelligence());
-
+        string logMessages = client.GetLogMessages();
+        ActionReportBuilder builder = new ActionReportBuilder(client.GetActionIntelligence(), logMessages);
         GitHubAPIClient.UpdateContentFile(actionEnvironment.OverrideRateLimit(), YouRataConstants.ActionReportMessage, builder.Build(), YouRataConstants.ActionReportFileName, client.LogMessage);
     }
     catch (Exception ex)

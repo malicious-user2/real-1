@@ -70,7 +70,7 @@ internal class WebAppServer
         WebApplication webApp = BuildApp();
         webApp.MapGrpcService<ActionIntelligenceMessage>();
         webApp.MapGrpcService<MilestoneActionIntelligenceMessage>();
-        webApp.MapGrpcService<MilestoneLogMessage>();
+        webApp.MapGrpcService<LogMessage>();
 
         await webApp.ValidateConfigurationAsync().ConfigureAwait(false);
 

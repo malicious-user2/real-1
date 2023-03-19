@@ -13,5 +13,4 @@ message ActionIntelligence
     GitHubActionEnvironment GitHub_Action_Environment = 2;
     string Config_Json = 3;
     string Previous_Action_Report = 4;
-    repeated string LogMessages = 5;
 }

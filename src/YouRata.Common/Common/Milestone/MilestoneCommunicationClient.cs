@@ -21,7 +21,7 @@ using YouRata.ConflictMonitor;
 using static YouRata.Common.Proto.ActionIntelligenceService;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 using static YouRata.Common.Proto.MilestoneActionIntelligenceService;
-using static YouRata.Common.Proto.MilestoneLogService;
+using static YouRata.Common.Proto.LogService;
 
 namespace YouRata.Common.Milestone;
 
@@ -45,13 +45,19 @@ public abstract class MilestoneCommunicationClient : IDisposable
         return true;
     }
 
+    public string GetLogMessages()
+    {
+        LogServiceClient logServiceClient = new LogServiceClient(_conflictMonitorChannel);
+        return logServiceClient.GetLogMessages(new Empty()).Messages.ToString();
+    }
+
     public virtual void LogMessage(string message, string milestone)
     {
-        MilestoneLogServiceClient milestoneLogServiceClient = new MilestoneLogServiceClient(_conflictMonitorChannel);
+        LogServiceClient logServiceClient = new LogServiceClient(_conflictMonitorChannel);
         MilestoneLog milestoneLog = new MilestoneLog { Message = message, Milestone = milestone };
         milestoneLog.Message = message;
         milestoneLog.Milestone = milestone;
-        milestoneLogServiceClient.WriteLogMessage(milestoneLog);
+        logServiceClient.WriteLogMessage(milestoneLog);
     }
 
     public virtual void SetStatus(MilestoneCondition milestoneCondition, System.Type milestoneIntelligenceType, string milestoneIntelligenceName)

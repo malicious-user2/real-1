@@ -7,14 +7,14 @@ using YouRata.Common.Proto;
 
 namespace YouRata.ConflictMonitor.MilestoneCall.Messages;
 
-internal class MilestoneLogMessage : MilestoneLogService.MilestoneLogServiceBase
+internal class LogMessage : LogService.LogServiceBase
 {
-    private readonly ILogger<MilestoneLogMessage> _logger;
+    private readonly ILogger<LogMessage> _logger;
     private readonly CallManager _callManager;
 
-    public MilestoneLogMessage(ILoggerFactory loggerFactory, CallManager callManager)
+    public LogMessage(ILoggerFactory loggerFactory, CallManager callManager)
     {
-        _logger = loggerFactory.CreateLogger<MilestoneLogMessage>();
+        _logger = loggerFactory.CreateLogger<LogMessage>();
         _callManager = callManager;
     }
 
@@ -35,5 +35,25 @@ internal class MilestoneLogMessage : MilestoneLogService.MilestoneLogServiceBase
         });
         _callManager.ActionReady.Set();
         return emptyResult.Task;
+    }
+
+    public override Task<LogMessages> GetLogMessages(Empty request, ServerCallContext context)
+    {
+        TaskCompletionSource<LogMessages> logMessagesResult = new TaskCompletionSource<LogMessages>();
+        _callManager.ActionCallbacks.Enqueue((callHandler) =>
+        {
+            LogMessages logMessages = new LogMessages();
+            try
+            {
+                logMessages.Messages.AddRange(callHandler.GetLogs());
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error on GetLogMessages: {e.Message}");
+            }
+            logMessagesResult.SetResult(logMessages);
+        });
+        _callManager.ActionReady.Set();
+        return logMessagesResult.Task;
     }
 }

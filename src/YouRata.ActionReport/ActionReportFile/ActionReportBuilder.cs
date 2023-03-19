@@ -12,10 +12,12 @@ namespace YouRata.ActionReport.ActionReportFile;
 internal class ActionReportBuilder
 {
     private readonly ActionIntelligence _actionIntelligence;
+    private readonly string _logMessages;
 
-    internal ActionReportBuilder(ActionIntelligence actionIntelligence)
+    internal ActionReportBuilder(ActionIntelligence actionIntelligence, string logMessages)
     {
         _actionIntelligence = actionIntelligence;
+        _logMessages = logMessages;
     }
 
     public string Build()
@@ -45,7 +47,7 @@ internal class ActionReportBuilder
             InitialSetupIntelligence = intelligenceFormatter.Format(milestoneInt.InitialSetup),
             YouTubeSyncIntelligence = intelligenceFormatter.Format(milestoneInt.YouTubeSync),
             ActionReportIntelligence = intelligenceFormatter.Format(milestoneInt.ActionReport),
-            Logs = _actionIntelligence.LogMessages.ToString()
+            Logs = _logMessages
         };
 
         ActionReportRoot actionReportRoot = new ActionReportRoot

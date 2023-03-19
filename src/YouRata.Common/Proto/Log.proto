@@ -9,3 +9,7 @@ message MilestoneLog
     string Message = 1;
     string Milestone = 2;
 }
+message LogMessages
+{
+    repeated string Messages = 1;
+}

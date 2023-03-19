@@ -1,14 +1,15 @@
 syntax = "proto3";
 
-import "Proto/MilestoneLog.proto";
+import "Proto/Log.proto";
 import "google/protobuf/empty.proto";
 
 option csharp_namespace = "YouRata.Common.Proto";
 
 package conflict_monitor_message;
 
-service MilestoneLogService
+service LogService
 {
     rpc WriteLogMessage (MilestoneLog) returns (google.protobuf.Empty);
+    rpc GetLogMessages (google.protobuf.Empty) returns (LogMessages);
 }
 

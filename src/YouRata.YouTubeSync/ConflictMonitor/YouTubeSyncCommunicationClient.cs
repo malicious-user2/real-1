@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
+using YouRata.Common;
 using YouRata.Common.Milestone;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
@@ -21,17 +23,32 @@ internal class YouTubeSyncCommunicationClient : MilestoneCommunicationClient
             ProcessId = Process.GetCurrentProcess().Id,
             Condition = MilestoneCondition.MilestoneRunning
         };
-        SetMilestoneActionIntelligence(milestoneActionIntelligence);
+        int retryCount = 0;
+        while (retryCount < 3)
+        {
+            try
+            {
+                SetMilestoneActionIntelligence(milestoneActionIntelligence);
+                break;
+            }
+            catch (Grpc.Core.RpcException ex)
+            {
+                retryCount++;
+                if (retryCount > 1)
+                {
+                    throw new MilestoneException("Failed to connect to ConflictMonitor", ex);
+                }
+            }
+            TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+            Thread.Sleep(backOff);
+        }
         intelligence = milestoneActionIntelligence;
         if (intelligence.Condition != MilestoneCondition.MilestoneBlocked)
         {
             Console.WriteLine($"Entering {_milestoneName}");
             return true;
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
     public void SetStatus(MilestoneCondition status)

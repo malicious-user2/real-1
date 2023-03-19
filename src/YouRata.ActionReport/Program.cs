@@ -18,7 +18,7 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
 
     try
     {
-        ActionReportFileBuilder builder = new ActionReportFileBuilder(client.GetActionIntelligence());
+        ActionReportBuilder builder = new ActionReportBuilder(client.GetActionIntelligence());
 
         GitHubAPIClient.UpdateContentFile(actionEnvironment.OverrideRateLimit(), YouRataConstants.ActionReportMessage, builder.Build(), YouRataConstants.ActionReportFileName, client.LogMessage);
     }
@@ -29,4 +29,3 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
     }
     client.SetStatus(MilestoneCondition.MilestoneCompleted);
 }
-System.Threading.Thread.Sleep(1000);

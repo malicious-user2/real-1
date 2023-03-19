@@ -44,12 +44,8 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
             try
             {
                 actionIntelligence.GitHubActionEnvironment = callHandler.GetGithubActionEnvironment(_configuration.Value, _environment.Value, _conflictMonitorWorkflow);
-                actionIntelligence.TokenResponse = callHandler.GetStoredTokenResponse(_configuration.Value, _conflictMonitorWorkflow);
                 actionIntelligence.MilestoneIntelligence = callHandler.GetMilestoneActionIntelligence(_configuration.Value, _milestoneIntelligence);
                 actionIntelligence.ConfigJson = callHandler.GetConfigJson(_configuration.Value);
-                actionIntelligence.AppClientId = callHandler.GetAppClientId(_configuration.Value, _conflictMonitorWorkflow);
-                actionIntelligence.AppClientSecret = callHandler.GetAppClientSecret(_configuration.Value, _conflictMonitorWorkflow);
-                actionIntelligence.AppApiKey = callHandler.GetAppApiKey(_configuration.Value, _conflictMonitorWorkflow);
                 actionIntelligence.PreviousActionReport = callHandler.GetPreviousActionReport(_configuration.Value, _previousActionReport);
                 actionIntelligence.LogMessages.AddRange(callHandler.GetLogs());
             }

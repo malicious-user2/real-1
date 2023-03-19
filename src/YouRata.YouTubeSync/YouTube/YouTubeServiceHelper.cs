@@ -4,17 +4,18 @@ using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using YouRata.Common.Proto;
 using YouRata.Common.YouTube;
+using YouRata.YouTubeSync.Workflow;
 
 namespace YouRata.YouTubeSync.YouTube;
 
 internal static class YouTubeServiceHelper
 {
-    public static YouTubeService GetService(ActionIntelligence actionInt, UserCredential userCred)
+    public static YouTubeService GetService(YouTubeSyncWorkflow workflow, UserCredential userCred)
     {
         YouTubeService ytService = new YouTubeService(
                     new BaseClientService.Initializer()
                     {
-                        ApiKey = actionInt.AppApiKey,
+                        ApiKey = workflow.ProjectApiKey,
                         ApplicationName = YouTubeConstants.RequestApplicationName,
                         HttpClientInitializer = userCred
                     });

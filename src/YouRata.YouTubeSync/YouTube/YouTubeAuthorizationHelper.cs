@@ -5,23 +5,23 @@ using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.YouTube.v3;
 using YouRata.Common.Milestone;
-using YouRata.Common.Proto;
 using YouRata.Common.YouTube;
 using YouRata.YouTubeSync.ConflictMonitor;
+using YouRata.YouTubeSync.Workflow;
 
 namespace YouRata.YouTubeSync.YouTube;
 
 internal static class YouTubeAuthorizationHelper
 {
 
-    public static GoogleAuthorizationCodeFlow GetFlow(ActionIntelligence actionInt)
+    public static GoogleAuthorizationCodeFlow GetFlow(YouTubeSyncWorkflow workflow)
     {
         GoogleAuthorizationCodeFlow authFlow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
             ClientSecrets = new ClientSecrets
             {
-                ClientId = actionInt.AppClientId,
-                ClientSecret = actionInt.AppClientSecret,
+                ClientId = workflow.ProjectClientId,
+                ClientSecret = workflow.ProjectClientSecret,
             },
             Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
         });

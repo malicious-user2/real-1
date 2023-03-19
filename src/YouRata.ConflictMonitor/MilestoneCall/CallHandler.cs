@@ -56,42 +56,6 @@ internal class CallHandler
         return actionEnvironment;
     }
 
-    internal string GetStoredTokenResponse(YouRataConfiguration appConfig, ConflictMonitorWorkflow workflow)
-    {
-        if (!appConfig.ActionCutOuts.DisableStoredTokenResponseDiscovery && workflow.StoredTokenResponse != null)
-        {
-            return workflow.StoredTokenResponse;
-        }
-        return string.Empty;
-    }
-
-    internal string GetAppClientId(YouRataConfiguration appConfig, ConflictMonitorWorkflow workflow)
-    {
-        if (workflow.ProjectClientId != null)
-        {
-            return workflow.ProjectClientId;
-        }
-        return string.Empty;
-    }
-
-    internal string GetAppClientSecret(YouRataConfiguration appConfig, ConflictMonitorWorkflow workflow)
-    {
-        if (workflow.ProjectClientSecret != null)
-        {
-            return workflow.ProjectClientSecret;
-        }
-        return string.Empty;
-    }
-
-    internal string GetAppApiKey(YouRataConfiguration appConfig, ConflictMonitorWorkflow workflow)
-    {
-        if (workflow.ProjectApiKey != null)
-        {
-            return workflow.ProjectApiKey;
-        }
-        return string.Empty;
-    }
-
     internal string GetPreviousActionReport(YouRataConfiguration appConfig, PreviousActionReportProvider actionReportProvider)
     {
         if (actionReportProvider.ActionReport != null)

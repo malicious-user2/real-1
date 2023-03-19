@@ -27,15 +27,16 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     if (!client.Activate(out YouTubeSyncActionIntelligence milestoneInt)) return;
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableYouTubeSyncMilestone) return;
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
-    if (!YouTubeAPIHelper.GetTokenResponse(actionInt.TokenResponse, out TokenResponse savedTokenResponse)) return;
     YouTubeSyncWorkflow workflow = new YouTubeSyncWorkflow();
+    if (!YouTubeAPIHelper.GetTokenResponse(workflow.StoredTokenResponse, out TokenResponse savedTokenResponse)) return;
+
 
 
     ActionReportLayout previousActionReport = client.GetPreviousActionReport();
     try
     {
         YouTubeQuotaHelper.SetPreviousActionReport(config.YouTube, client, milestoneInt, previousActionReport);
-        GoogleAuthorizationCodeFlow authFlow = YouTubeAuthorizationHelper.GetFlow(actionInt);
+        GoogleAuthorizationCodeFlow authFlow = YouTubeAuthorizationHelper.GetFlow(workflow);
         if (savedTokenResponse.IsExpired(authFlow.Clock))
         {
             savedTokenResponse = YouTubeAuthorizationHelper.RefreshToken(authFlow, savedTokenResponse.RefreshToken, client);
@@ -43,7 +44,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         }
         UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);
         List<string> completedVideos = new List<string>();
-        using (YouTubeService ytService = YouTubeServiceHelper.GetService(actionInt, userCred))
+        using (YouTubeService ytService = YouTubeServiceHelper.GetService(workflow, userCred))
         {
             List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube, milestoneInt, ytService, client);
             List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube, ignoreResources, milestoneInt, ytService, client);

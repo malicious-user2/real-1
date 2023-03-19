@@ -15,7 +15,7 @@ GitHubEnvironmentHelper environmentHelper = new GitHubEnvironmentHelper();
 ConflictMonitorWorkflow conflictMonitorWorkflow = new ConflictMonitorWorkflow();
 MilestoneIntelligenceRegistry milestoneIntelligence = new MilestoneIntelligenceRegistry();
 PreviousActionReportProvider actionReportProvider = new PreviousActionReportProvider();
-if (YouTubeAPIHelper.IsValidTokenResponse(conflictMonitorWorkflow.StoredTokenResponse))
+if (YouTubeAPIHelper.GetTokenResponse(conflictMonitorWorkflow.StoredTokenResponse, out _))
 {
     conflictMonitorWorkflow.InitialSetupComplete = true;
 }

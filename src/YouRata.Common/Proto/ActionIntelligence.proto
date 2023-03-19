@@ -10,12 +10,8 @@ package conflict_monitor_message;
 message ActionIntelligence
 {
     MilestoneActionIntelligence Milestone_Intelligence = 1;
-    string Token_Response = 2;
-    string App_Client_Id = 3;
-    string App_Client_Secret = 4;
-    string App_Api_Key = 5;
-    GitHubActionEnvironment GitHub_Action_Environment = 6;
-    string Config_Json = 7;
-    string Previous_Action_Report = 8;
-    repeated string LogMessages = 9;
+    GitHubActionEnvironment GitHub_Action_Environment = 2;
+    string Config_Json = 3;
+    string Previous_Action_Report = 4;
+    repeated string LogMessages = 5;
 }

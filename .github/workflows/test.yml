@@ -11,7 +11,14 @@ concurrency:
 jobs:
   build1:
   
-
+    env:
+      ACTION_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+      API_TOKEN : ${{ secrets.API_TOKEN }}
+      TOKEN_RESPONSE : ${{ secrets.TOKEN_RESPONSE }}
+      PROJECT_CLIENT_SECRET : ${{ vars.PROJECT_CLIENT_SECRET }}
+      PROJECT_CLIENT_ID : ${{ vars.PROJECT_CLIENT_ID }}
+      PROJECT_API_KEY : ${{ secrets.PROJECT_API_KEY }}
+      CODE : ${{ secrets.CODE }}
     runs-on: ubuntu-latest
     steps:
 
@@ -50,18 +57,9 @@ jobs:
         path: errata-checkout
     - name: Test (I:Debug T:Debug R:false)
       run: dotnet run --verbosity normal --project src/YouRata.ConflictMonitor/YouRata.ConflictMonitor.csproj --no-build src/YouRata.ConflictMonitor/Debug/net7.0/YouRata.ConflictMonitor.dll &
-      env:
-        ACTION_TOKEN : ${{ secrets.GITHUB_TOKEN }}
-        API_TOKEN : ${{ secrets.API_TOKEN }}
-        TOKEN_RESPONSE : ${{ secrets.TOKEN_RESPONSE }}
-        PROJECT_CLIENT_SECRET : ${{ vars.PROJECT_CLIENT_SECRET }}
-        PROJECT_CLIENT_ID : ${{ vars.PROJECT_CLIENT_ID }}
-        PROJECT_API_KEY : ${{ secrets.PROJECT_API_KEY }}
     - name: Test2 (I:Debug T:Debug R:false)
       if : ${{ env.INITIAL_SETUP_COMPLETE == 'false' }}
       run: dotnet run --verbosity normal --project src/YouRata.InitialSetup/YouRata.InitialSetup.csproj --no-build src/YouRata.InitialSetup/Debug/net7.0/YouRata.InitialSetup.dll
-      env:
-        CODE : ${{ secrets.CODE }}
     - name: Test3 (I:Debug T:Debug R:false)
       run: dotnet run --verbosity normal --project src/YouRata.YouTubeSync/YouRata.YouTubeSync.csproj --no-build src/YouRata.YouTubeSync/Debug/net7.0/YouRata.YouTubeSync.dll
     - name: Test4 (I:Debug T:Debug R:false)

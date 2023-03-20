@@ -21,7 +21,6 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableInitialSetupMilestone) return;
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
     InitialSetupWorkflow workflow = new InitialSetupWorkflow();
-    
     try
     {
         bool canContinue = true;

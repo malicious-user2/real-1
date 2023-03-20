@@ -86,5 +86,7 @@ internal class ErrataBulletinBuilder
         return errataBulletin;
     }
 
+    public string SnippetTitle => _snippetTitle;
+
     private string GitHubNewLine => "  " + Environment.NewLine;
 }

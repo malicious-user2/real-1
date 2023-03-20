@@ -29,12 +29,9 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
     YouTubeSyncWorkflow workflow = new YouTubeSyncWorkflow();
     if (!YouTubeAPIHelper.GetTokenResponse(workflow.StoredTokenResponse, out TokenResponse savedTokenResponse)) return;
-
-
-
-    ActionReportLayout previousActionReport = client.GetPreviousActionReport();
     try
     {
+        ActionReportLayout previousActionReport = client.GetPreviousActionReport();
         YouTubeQuotaHelper.SetPreviousActionReport(config.YouTube, client, milestoneInt, previousActionReport);
         GoogleAuthorizationCodeFlow authFlow = YouTubeAuthorizationHelper.GetFlow(workflow);
         if (savedTokenResponse.IsExpired(authFlow.Clock))
@@ -43,22 +40,22 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
             YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
         }
         UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);
-        List<string> completedVideos = new List<string>();
+        List<string> processedVideos = new List<string>();
         using (YouTubeService ytService = YouTubeServiceHelper.GetService(workflow, userCred))
         {
-            List<ResourceId> ignoreResources = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube, milestoneInt, ytService, client);
-            List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube, ignoreResources, milestoneInt, ytService, client);
+            List<ResourceId> ignoreVideos = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube, milestoneInt, ytService, client);
+            List<Video> videoList = YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube, ignoreVideos, milestoneInt, ytService, client);
             List<Video> oustandingVideoList = new List<Video>();
             if (milestoneInt.HasOutstandingVideos)
             {
-                oustandingVideoList = YouTubeVideoHelper.GetOutstandingChannelVideos(config.YouTube, ignoreResources, milestoneInt, ytService, client);
+                oustandingVideoList = YouTubeVideoHelper.GetOutstandingChannelVideos(config.YouTube, ignoreVideos, milestoneInt, ytService, client);
                 videoList.AddRange(oustandingVideoList.Where(outVideo => videoList.FirstOrDefault(recentVideo => recentVideo.Id == outVideo.Id) == null).ToList());
             }
             foreach (Video video in videoList)
             {
                 if (video.ContentDetails == null) continue;
                 if (video.Snippet == null) continue;
-                if (completedVideos.Contains(video.Id)) continue;
+                if (processedVideos.Contains(video.Id)) continue;
                 string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
                     $"{video.Id}.md";
                 Console.WriteLine(Path.Combine(workflow.Workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath));
@@ -84,7 +81,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                             YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, milestoneInt, ytService, client);
                         }
                     }
-                    completedVideos.Add(video.Id);
+                    processedVideos.Add(video.Id);
                     milestoneInt.VideosProcessed++;
                 }
             }

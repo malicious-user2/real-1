@@ -91,6 +91,5 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     }
     client.SetStatus(MilestoneCondition.MilestoneCompleted);
 }
-Console.ForegroundColor = ConsoleColor.Red;
-Console.WriteLine("This should be color");
-Console.ResetColor();
+Microsoft.Extensions.Logging.Console
+https://github.com/aspnet/Logging/blob/release/2.2/src/Microsoft.Extensions.Logging.Console/Internal/AnsiLogConsole.cs

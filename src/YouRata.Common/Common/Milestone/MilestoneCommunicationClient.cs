@@ -22,6 +22,7 @@ using static YouRata.Common.Proto.ActionIntelligenceService;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 using static YouRata.Common.Proto.MilestoneActionIntelligenceService;
 using static YouRata.Common.Proto.LogService;
+using System.Diagnostics;
 
 namespace YouRata.Common.Milestone;
 
@@ -38,10 +39,10 @@ public abstract class MilestoneCommunicationClient : IDisposable
         });
     }
 
-    private bool IsValidMilestoneIntelligenceType(System.Type milestoneIntelligence)
+    private bool IsValidMilestoneIntelligenceType(System.Type milestoneIntelligenceType)
     {
         System.Type[] milestoneTypes = typeof(MilestoneActionIntelligence.Types).GetNestedTypes();
-        if (!milestoneTypes.Contains(milestoneIntelligence)) return false;
+        if (!milestoneTypes.Contains(milestoneIntelligenceType)) return false;
         return true;
     }
 
@@ -58,6 +59,42 @@ public abstract class MilestoneCommunicationClient : IDisposable
         milestoneLog.Message = message;
         milestoneLog.Milestone = milestone;
         logServiceClient.WriteLogMessage(milestoneLog);
+    }
+
+    public virtual bool IsBlocked(System.Type milestoneIntelligenceType)
+    {
+        MilestoneCondition milestoneCondition = new MilestoneCondition();
+        int retryCount = 0;
+        while (retryCount < 3)
+        {
+            try
+            {
+                milestoneCondition = GetStatus(milestoneIntelligenceType);
+                break;
+            }
+            catch (Grpc.Core.RpcException ex)
+            {
+                retryCount++;
+                if (retryCount > 1)
+                {
+                    throw new MilestoneException("Failed to connect to ConflictMonitor", ex);
+                }
+            }
+            TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+            Thread.Sleep(backOff);
+        }
+        return (milestoneCondition == MilestoneCondition.MilestoneBlocked);
+    }
+
+    public virtual T Activate<T>(System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
+    {
+        T? milestoneActionIntelligence = (T?)Activator.CreateInstance(milestoneIntelligenceType);
+        if (milestoneActionIntelligence == null) throw new MilestoneException("Invalid milestone type to activate");
+        milestoneActionIntelligence.GetType().GetProperty("ProcessId")?.SetValue(milestoneActionIntelligence, Process.GetCurrentProcess().Id);
+        milestoneActionIntelligence.GetType().GetProperty("Condition")?.SetValue(milestoneActionIntelligence, MilestoneCondition.MilestoneRunning);
+        SetMilestoneActionIntelligence(milestoneActionIntelligence, milestoneIntelligenceType, milestoneIntelligenceName);
+        Console.WriteLine($"Entering {milestoneIntelligenceName}");
+        return milestoneActionIntelligence;
     }
 
     public virtual void SetStatus(MilestoneCondition milestoneCondition, System.Type milestoneIntelligenceType, string milestoneIntelligenceName)

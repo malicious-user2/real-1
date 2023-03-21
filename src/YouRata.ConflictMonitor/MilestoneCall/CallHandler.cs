@@ -109,6 +109,12 @@ internal class CallHandler
         milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
     }
 
+    internal void KeepaliveInitialSetup(MilestoneIntelligenceRegistry milestoneIntelligence)
+    {
+        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+        milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
+    }
+
     internal void UpdateYouTubeSyncActionIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, YouTubeSyncActionIntelligence actionIntelligence)
     {
         long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
@@ -128,6 +134,12 @@ internal class CallHandler
         milestoneIntelligence.YouTubeSync.HasOutstandingVideos = actionIntelligence.HasOutstandingVideos;
     }
 
+    internal void KeepaliveYouTubeSync(MilestoneIntelligenceRegistry milestoneIntelligence)
+    {
+        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+        milestoneIntelligence.YouTubeSync.LastUpdate = updateTime;
+    }
+
     internal void UpdateActionReportMilestoneIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, ActionReportActionIntelligence actionIntelligence)
     {
         long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
@@ -137,6 +149,12 @@ internal class CallHandler
         {
             milestoneIntelligence.ActionReport.StartTime = updateTime;
         }
+        milestoneIntelligence.ActionReport.LastUpdate = updateTime;
+    }
+
+    internal void KeepaliveActionReport(MilestoneIntelligenceRegistry milestoneIntelligence)
+    {
+        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
         milestoneIntelligence.ActionReport.LastUpdate = updateTime;
     }
 

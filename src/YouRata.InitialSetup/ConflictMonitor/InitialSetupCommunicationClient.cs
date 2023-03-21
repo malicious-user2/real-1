@@ -49,4 +49,9 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
     {
         base.LogMessage(message, _milestoneName);
     }
+
+    public void Keepalive()
+    {
+        base.Keepalive(_milestoneType, _milestoneName);
+    }
 }

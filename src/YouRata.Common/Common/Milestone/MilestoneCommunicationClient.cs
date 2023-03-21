@@ -143,6 +143,24 @@ public abstract class MilestoneCommunicationClient : IDisposable
         }
     }
 
+    public virtual void Keepalive(System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
+    {
+        if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;
+        MilestoneActionIntelligenceServiceClient milestoneActionIntelligenceServiceClient = new MilestoneActionIntelligenceServiceClient(_conflictMonitorChannel);
+        List<MethodInfo> clientMethods = milestoneActionIntelligenceServiceClient
+            .GetType()
+            .GetMethods()
+            .Where(method => method
+                .GetParameters().Length == 4 && method
+                .Name == $"Keepalive{milestoneIntelligenceName}")
+            .ToList();
+        if (clientMethods?.Count > 0)
+        {
+            MethodInfo clientMethod = clientMethods.First();
+            clientMethod.Invoke(milestoneActionIntelligenceServiceClient, new object?[] { new Empty(), null, null, default(CancellationToken) });
+        }
+    }
+
     public virtual object? GetMilestoneActionIntelligence(System.Type milestoneIntelligenceType)
     {
         object? milestoneActionIntelligence = null;
@@ -190,7 +208,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
                     {
                         continue;
                     }
-                    Object? conditionCurrentValue = conditionProperty.GetValue(milestoneIntelligenceObject);
+                    object? conditionCurrentValue = conditionProperty.GetValue(milestoneIntelligenceObject);
                     if (conditionCurrentValue?.GetType() == typeof(MilestoneCondition))
                     {
                         MilestoneCondition currentCondition = (MilestoneCondition)conditionCurrentValue;

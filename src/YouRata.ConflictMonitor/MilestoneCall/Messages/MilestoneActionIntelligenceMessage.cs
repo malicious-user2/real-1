@@ -48,6 +48,25 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         return emptyResult.Task;
     }
 
+    public override Task<Empty> KeepaliveInitialSetup(Empty request, ServerCallContext context)
+    {
+        TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
+        _callManager.ActionCallbacks.Enqueue((callHandler) =>
+        {
+            try
+            {
+                callHandler.KeepaliveInitialSetup(_milestoneIntelligence);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error on KeepaliveInitialSetup: {e.Message}");
+            }
+            emptyResult.SetResult(new Empty());
+        });
+        _callManager.ActionReady.Set();
+        return emptyResult.Task;
+    }
+
     public override Task<Empty> UpdateYouTubeSyncActionIntelligence(YouTubeSyncActionIntelligence request, ServerCallContext context)
     {
         TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
@@ -60,6 +79,25 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
             catch (Exception e)
             {
                 _logger.LogError($"Error on UpdateYouTubeSyncActionIntelligence: {e.Message}");
+            }
+            emptyResult.SetResult(new Empty());
+        });
+        _callManager.ActionReady.Set();
+        return emptyResult.Task;
+    }
+
+    public override Task<Empty> KeepaliveYouTubeSync(Empty request, ServerCallContext context)
+    {
+        TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
+        _callManager.ActionCallbacks.Enqueue((callHandler) =>
+        {
+            try
+            {
+                callHandler.KeepaliveYouTubeSync(_milestoneIntelligence);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error on KeepaliveYouTubeSync: {e.Message}");
             }
             emptyResult.SetResult(new Empty());
         });
@@ -86,6 +124,25 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         {
             _callManager.ActionStop.Set();
         }
+        _callManager.ActionReady.Set();
+        return emptyResult.Task;
+    }
+
+    public override Task<Empty> KeepaliveActionReport(Empty request, ServerCallContext context)
+    {
+        TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
+        _callManager.ActionCallbacks.Enqueue((callHandler) =>
+        {
+            try
+            {
+                callHandler.KeepaliveActionReport(_milestoneIntelligence);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error on KeepaliveActionReport: {e.Message}");
+            }
+            emptyResult.SetResult(new Empty());
+        });
         _callManager.ActionReady.Set();
         return emptyResult.Task;
     }

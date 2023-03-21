@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Requests;
@@ -95,9 +96,9 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                 authorizeInstructions.AppendLine("When finished it is normal that the site can't be reached");
                 authorizeInstructions.AppendLine("===============================================================");
                 authorizeInstructions.AppendLine("Copy everything in the website URL between |code=| and |&|");
-                authorizeInstructions.Append($"Paste this value in action secret ");
+                authorizeInstructions.Append("Paste this value in action secret ");
                 authorizeInstructions.AppendLine(YouTubeConstants.RedirectCodeVariable);
-                Console.WriteLine(authorizeInstructions.ToString());
+                Console.WriteLine(HttpUtility.UrlEncode(authorizeInstructions.ToString()));
                 canContinue = false;
             }
             else

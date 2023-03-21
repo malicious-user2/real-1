@@ -111,5 +111,3 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     }
     client.SetStatus(MilestoneCondition.MilestoneCompleted);
 }
-Microsoft.Extensions.Logging.Console
-https://github.com/aspnet/Logging/blob/release/2.2/src/Microsoft.Extensions.Logging.Console/Internal/AnsiLogConsole.cs

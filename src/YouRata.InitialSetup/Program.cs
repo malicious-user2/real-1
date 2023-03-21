@@ -45,7 +45,9 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             if (!config.ActionCutOuts.DisableUnsupportedGitHubAPI)
             {
                 UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ProjectClientIdVariable, "empty", client.LogMessage);
+                client.Keepalive();
                 UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ProjectClientSecretsVariable, "empty", client.LogMessage);
+                client.Keepalive();
                 Console.WriteLine($"{GitHubConstants.NoticeAnnotation}Fill repository variables and run action again");
             }
             else
@@ -59,6 +61,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         {
             Console.WriteLine("Entering Google API key section");
             GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.ProjectApiKeyVariable, "empty", client.LogMessage);
+            client.Keepalive();
             Console.WriteLine($"{GitHubConstants.NoticeAnnotation}Paste Google API key in action secret {YouTubeConstants.ProjectApiKeyVariable}");
             canContinue = false;
         }
@@ -73,9 +76,11 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                     string redirectTokenCode = workflow.RedirectCode.Trim().Replace("=", "").Replace("&", "");
                     AuthorizationCodeTokenRequest authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(redirectTokenCode, workflow.ProjectClientId, workflow.ProjectClientSecret);
                     TokenResponse? authorizationCodeTokenResponse = YouTubeAPIHelper.ExchangeAuthorizationCode(authorizationCodeTokenRequest, flow);
+                    client.Keepalive();
                     if (authorizationCodeTokenResponse != null)
                     {
                         YouTubeAPIHelper.SaveTokenResponse(authorizationCodeTokenResponse, actionEnvironment, client.LogMessage);
+                        client.Keepalive();
                         Console.WriteLine($"Google API stored token response has been saved to {YouRataConstants.StoredTokenResponseVariable}");
                     }
                     else
@@ -87,8 +92,10 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             }
             else if (GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRataConstants.StoredTokenResponseVariable, "empty", client.LogMessage))
             {
+                client.Keepalive();
                 Uri url = flow.CreateAuthorizationCodeRequest(GoogleAuthConsts.LocalhostRedirectUri).Build();
                 GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, "empty", client.LogMessage);
+                client.Keepalive();
                 StringBuilder authorizeInstructions = new StringBuilder();
                 authorizeInstructions.Append(GitHubConstants.NoticeAnnotation);
                 authorizeInstructions.Append("Follow this link to authorize this GitHub application");
@@ -108,6 +115,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             }
             else
             {
+                client.Keepalive();
                 Console.WriteLine($"{GitHubConstants.ErrorAnnotation}Failed to create repository secrets");
                 canContinue = false;
             }

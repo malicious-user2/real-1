@@ -86,11 +86,11 @@ internal static class YouTubeVideoHelper
                 return searchRequest.Execute();
             });
             SearchListResponse? searchResponse = YouTubeRetryHelper.RetryCommand(intelligence, YouTubeConstants.SearchListQuotaCost, getSearchResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
+            client.Keepalive();
             if (searchResponse == null) throw new MilestoneException($"Could not get YouTube video list for channel id {searchRequest.ChannelId}");
             foreach (SearchResult searchResult in searchResponse.Items)
             {
                 if (!YouTubeQuotaHelper.HasEnoughCallsForUpdate(intelligence, channelVideos)) return channelVideos;
-                Console.WriteLine(intelligence.CalculatedQueriesPerDayRemaining);
                 if (searchResult.Snippet.PublishedAt == null) continue;
                 if (searchResult.Id.Kind != YouTubeConstants.VideoKind) continue;
                 if (config.ExcludeVideos?.Contains(searchResult.Id.VideoId) == true) continue;
@@ -102,6 +102,7 @@ internal static class YouTubeVideoHelper
                     return videoRequest.Execute();
                 });
                 VideoListResponse? videoResponse = YouTubeRetryHelper.RetryCommand(intelligence, YouTubeConstants.VideoListQuotaCost, getVideoResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
+                client.Keepalive();
                 if (videoResponse == null) throw new MilestoneException($"Could not get YouTube video {videoRequest.Id}");
                 Video videoDetails = videoResponse.Items.First();
                 if (excludeVideos != null && excludeVideos.Find(resourceId => resourceId.VideoId == videoDetails.Id) != null)

@@ -13,14 +13,12 @@ using (ActionReportCommunicationClient client = new ActionReportCommunicationCli
     if (!client.Activate(out ActionReportActionIntelligence milestoneInt)) return;
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableActionReportMilestone) return;
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
-
-
-
     try
     {
         string logMessages = client.GetLogMessages();
         ActionReportBuilder builder = new ActionReportBuilder(client.GetActionIntelligence(), logMessages);
         GitHubAPIClient.UpdateContentFile(actionEnvironment.OverrideRateLimit(), YouRataConstants.ActionReportMessage, builder.Build(), YouRataConstants.ActionReportFileName, client.LogMessage);
+        client.Keepalive();
     }
     catch (Exception ex)
     {

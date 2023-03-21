@@ -39,7 +39,9 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         if (savedTokenResponse.IsExpired(authFlow.Clock))
         {
             savedTokenResponse = YouTubeAuthorizationHelper.RefreshToken(authFlow, savedTokenResponse.RefreshToken, client);
+            client.Keepalive();
             YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
+            client.Keepalive();
         }
         UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);
         List<string> processedVideos = new List<string>();
@@ -69,11 +71,13 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                         errataBulletinPath,
                         client.LogMessage))
                     {
+                        client.Keepalive();
                         if (!config.ActionCutOuts.DisableYouTubeVideoUpdate)
                         {
                             string erattaLink = YouTubeDescriptionErattaPublisher.GetErrataLink(actionEnvironment, errataBulletinPath);
                             string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
                             YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, milestoneInt, ytService, client);
+                            client.Keepalive();
                         }
                     }
                     processedVideos.Add(video.Id);

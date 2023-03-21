@@ -33,6 +33,7 @@ internal static class YouTubePlaylistHelper
                     return playlistRequest.Execute();
                 });
                 PlaylistItemListResponse? playlistResponse = YouTubeRetryHelper.RetryCommand(intelligence, YouTubeConstants.PlaylistItemListQuotaCost, getPlaylistResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
+                client.Keepalive();
                 if (playlistResponse == null) throw new MilestoneException("Could not get YouTube playlist items");
                 foreach (PlaylistItem playlistItem in playlistResponse.Items)
                 {

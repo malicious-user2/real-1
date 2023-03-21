@@ -41,9 +41,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
 
     string[] repository = actionEnvironment.EnvGitHubRepository.Split("/");
 
-    CheckRun run = ghClient.Check.Run.Get(actionEnvironment.EnvGitHubRepositoryId, actionEnvironment.EnvGitHubRunId).Result;
-
-    Console.WriteLine(run.Name);
+    Console.WriteLine("::notice::This is a notice");
 
 
 

@@ -91,14 +91,19 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                 GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, "empty", client.LogMessage);
                 StringBuilder authorizeInstructions = new StringBuilder();
                 authorizeInstructions.Append(GitHubConstants.NoticeAnnotation);
-                authorizeInstructions.AppendLine("Follow this link to authorize this GitHub application");
-                authorizeInstructions.AppendLine(url.ToString());
-                authorizeInstructions.AppendLine("When finished it is normal that the site can't be reached");
-                authorizeInstructions.AppendLine("===============================================================");
-                authorizeInstructions.AppendLine("Copy everything in the website URL between |code=| and |&|");
+                authorizeInstructions.Append("Follow this link to authorize this GitHub application");
+                authorizeInstructions.Append(HttpUtility.UrlEncode(Environment.NewLine));
+                authorizeInstructions.Append(url.ToString());
+                authorizeInstructions.Append(HttpUtility.UrlEncode(Environment.NewLine));
+                authorizeInstructions.Append("When finished it is normal that the site can't be reached");
+                authorizeInstructions.Append(HttpUtility.UrlEncode(Environment.NewLine));
+                authorizeInstructions.Append("===============================================================");
+                authorizeInstructions.Append(HttpUtility.UrlEncode(Environment.NewLine));
+                authorizeInstructions.Append("Copy everything in the website URL between |code=| and |&|");
+                authorizeInstructions.Append(HttpUtility.UrlEncode(Environment.NewLine));
                 authorizeInstructions.Append("Paste this value in action secret ");
-                authorizeInstructions.AppendLine(YouTubeConstants.RedirectCodeVariable);
-                Console.WriteLine(HttpUtility.UrlEncode(authorizeInstructions.ToString()));
+                authorizeInstructions.Append(YouTubeConstants.RedirectCodeVariable);
+                Console.WriteLine(authorizeInstructions.ToString());
                 canContinue = false;
             }
             else

@@ -30,22 +30,6 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableYouTubeSyncMilestone) return;
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
     YouTubeSyncWorkflow workflow = new YouTubeSyncWorkflow();
-
-    GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
-    {
-        Credentials = new Credentials(actionEnvironment.ApiToken, AuthenticationType.Bearer)
-    };
-    ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
-
-    IApiConnection apiCon = new ApiConnection(ghClient.Connection);
-
-    string[] repository = actionEnvironment.EnvGitHubRepository.Split("/");
-
-    Console.WriteLine("::notice::This is a notice");
-
-
-
-    return;
     if (!YouTubeAPIHelper.GetTokenResponse(workflow.StoredTokenResponse, out TokenResponse savedTokenResponse)) return;
     try
     {

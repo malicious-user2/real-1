@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Text;
 using System.Text.RegularExpressions;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
@@ -27,13 +28,13 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         if (string.IsNullOrEmpty(actionEnvironment.ApiToken))
         {
             Console.WriteLine("Entering actions secrets section");
-            Console.WriteLine($"Create an action secret {GitHubConstants.ApiTokenVariable} to store GitHub personal access token");
+            Console.WriteLine($"{GitHubConstants.NoticeAnnotation}Create an action secret {GitHubConstants.ApiTokenVariable} to store GitHub personal access token");
             canContinue = false;
         }
         if (canContinue && (!Regex.IsMatch(actionEnvironment.ApiToken, @"^ghp_[a-zA-Z0-9]{36}$")))
         {
             Console.WriteLine("Entering actions secrets verify section");
-            Console.WriteLine($"Action secret {GitHubConstants.ApiTokenVariable} is not a GitHub personal access token");
+            Console.WriteLine($"{GitHubConstants.ErrorAnnotation} secret {GitHubConstants.ApiTokenVariable} is not a GitHub personal access token");
             canContinue = false;
         }
         if (canContinue && ((string.IsNullOrEmpty(workflow.ProjectClientSecret) || string.IsNullOrEmpty(workflow.ProjectClientId)) ||
@@ -44,12 +45,12 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             {
                 UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ProjectClientIdVariable, "empty", client.LogMessage);
                 UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ProjectClientSecretsVariable, "empty", client.LogMessage);
-                Console.WriteLine("Fill repository variables and run action again");
+                Console.WriteLine($"{GitHubConstants.NoticeAnnotation}Fill repository variables and run action again");
             }
             else
             {
-                Console.WriteLine($"Create an action variable {YouTubeConstants.ProjectClientIdVariable} to store Google API client ID");
-                Console.WriteLine($"Create an action variable {YouTubeConstants.ProjectClientSecretsVariable} to store Google API client secrets");
+                Console.WriteLine($"{GitHubConstants.NoticeAnnotation}Create an action variable {YouTubeConstants.ProjectClientIdVariable} to store Google API client ID");
+                Console.WriteLine($"{GitHubConstants.NoticeAnnotation}Create an action variable {YouTubeConstants.ProjectClientSecretsVariable} to store Google API client secrets");
             }
             canContinue = false;
         }
@@ -57,7 +58,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         {
             Console.WriteLine("Entering Google API key section");
             GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.ProjectApiKeyVariable, "empty", client.LogMessage);
-            Console.WriteLine($"Paste Google API key in action secret {YouTubeConstants.ProjectApiKeyVariable}");
+            Console.WriteLine($"{GitHubConstants.NoticeAnnotation}Paste Google API key in action secret {YouTubeConstants.ProjectApiKeyVariable}");
             canContinue = false;
         }
         if (canContinue && (!YouTubeAPIHelper.GetTokenResponse(workflow.StoredTokenResponse, out _)))
@@ -78,7 +79,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                     }
                     else
                     {
-                        Console.WriteLine("Could not exchange authorization code");
+                        Console.WriteLine($"{GitHubConstants.ErrorAnnotation}Could not exchange authorization code");
                         canContinue = false;
                     }
                 }
@@ -87,17 +88,21 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             {
                 Uri url = flow.CreateAuthorizationCodeRequest(GoogleAuthConsts.LocalhostRedirectUri).Build();
                 GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, "empty", client.LogMessage);
-                Console.WriteLine("Follow this link to authorize this GitHub application");
-                Console.WriteLine(url);
-                Console.WriteLine("When finished it is normal that the site can't be reached");
-                Console.WriteLine("===============================================================");
-                Console.WriteLine("Copy everything in the website URL between |code=| and |&|");
-                Console.WriteLine($"Paste this value in action secret {YouTubeConstants.RedirectCodeVariable}");
+                StringBuilder authorizeInstructions = new StringBuilder();
+                authorizeInstructions.Append(GitHubConstants.NoticeAnnotation);
+                authorizeInstructions.AppendLine("Follow this link to authorize this GitHub application");
+                authorizeInstructions.AppendLine(url.ToString());
+                authorizeInstructions.AppendLine("When finished it is normal that the site can't be reached");
+                authorizeInstructions.AppendLine("===============================================================");
+                authorizeInstructions.AppendLine("Copy everything in the website URL between |code=| and |&|");
+                authorizeInstructions.Append($"Paste this value in action secret ");
+                authorizeInstructions.AppendLine(YouTubeConstants.RedirectCodeVariable);
+                Console.WriteLine(authorizeInstructions.ToString());
                 canContinue = false;
             }
             else
             {
-                Console.WriteLine("Failed to create repository secrets");
+                Console.WriteLine($"{GitHubConstants.ErrorAnnotation}Failed to create repository secrets");
                 canContinue = false;
             }
         }

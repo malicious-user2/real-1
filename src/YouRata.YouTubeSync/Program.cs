@@ -10,6 +10,8 @@ using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using Newtonsoft.Json.Linq;
+using Octokit;
 using YouRata.Common.ActionReport;
 using YouRata.Common.Configurations;
 using YouRata.Common.GitHub;
@@ -28,6 +30,24 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableYouTubeSyncMilestone) return;
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config, out GitHubActionEnvironment actionEnvironment);
     YouTubeSyncWorkflow workflow = new YouTubeSyncWorkflow();
+
+    GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
+    {
+        Credentials = new Credentials(actionEnvironment.ApiToken, AuthenticationType.Bearer)
+    };
+    ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
+
+    IApiConnection apiCon = new ApiConnection(ghClient.Connection);
+
+    string[] repository = actionEnvironment.EnvGitHubRepository.Split("/");
+
+    CheckRun run = ghClient.Check.Run.Get(actionEnvironment.EnvGitHubRepositoryId, actionEnvironment.EnvGitHubRunId).Result;
+
+    Console.WriteLine(run.Name);
+
+
+
+    return;
     if (!YouTubeAPIHelper.GetTokenResponse(workflow.StoredTokenResponse, out TokenResponse savedTokenResponse)) return;
     try
     {

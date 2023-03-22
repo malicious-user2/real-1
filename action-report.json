@@ -1,0 +1,9 @@
+{
+  "ActionReport": {
+    "Status": "Last Run 2023-03-22 1837Z",
+    "InitialSetupIntelligence": "{ \"Condition\": \"MILESTONE_PENDING\", \"ProcessId\": 0 }",
+    "YouTubeSyncIntelligence": "{ \"Condition\": \"MILESTONE_COMPLETED\", \"ProcessId\": 2300, \"VideosProcessed\": 188, \"VideosSkipped\": 4, \"CalculatedQueriesPerDayRemaining\": 9407, \"LastQueryTime\": \"1679510233\", \"FirstVideoPublishTime\": \"1679035609\", \"OutstandingVideoPublishTime\": \"1579993437\", \"HasOutstandingVideos\": true }",
+    "ActionReportIntelligence": "{ \"Condition\": \"MILESTONE_RUNNING\", \"ProcessId\": 2439 }",
+    "Logs": "[ \"[2023-03-22 1835Z] [Warning] (Microsoft.AspNetCore.Server.Kestrel) Overriding address(es) 'https://localhost:7040'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.\\n\", \"[2023-03-22 1835Z] [Information] (Microsoft.Hosting.Lifetime) Now listening on: http://unix:/tmp/yourata.sock\\n\", \"[2023-03-22 1835Z] [Information] (Microsoft.Hosting.Lifetime) Application started. Press Ctrl+C to shut down.\\n\", \"[2023-03-22 1835Z] [Information] (Microsoft.Hosting.Lifetime) Hosting environment: Development\\n\", \"[2023-03-22 1835Z] [Information] (Microsoft.Hosting.Lifetime) Content root path: /home/runner/work/real/real/src/YouRata.ConflictMonitor\\n\" ]"
+  }
+}

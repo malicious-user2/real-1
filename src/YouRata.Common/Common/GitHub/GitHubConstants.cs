@@ -20,8 +20,4 @@ public static class GitHubConstants
     public static readonly string ErrataBranch = "errata";
 
     public static readonly string ErrataCheckoutPath = "errata-checkout";
-
-    public static readonly string NoticeAnnotation = "::notice::";
-
-    public static readonly string ErrorAnnotation = "::error::";
 }

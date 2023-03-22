@@ -1,0 +1,46 @@
+# Syntax: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+# .NET CLI: https://docs.microsoft.com/dotnet/core/tools/
+# Description: The purpose of this workflow is to compile and run YouRata so it can commit new errata reports.
+
+name: Run YouRata
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '10 * * * *' # run every day at 16:20 UTC / 8:20 PST
+
+jobs:
+  build-and-run:
+
+    runs-on: ubuntu-latest
+    
+    env:
+      ACTION_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+      API_TOKEN : ${{ secrets.API_TOKEN }}
+      TOKEN_RESPONSE : ${{ secrets.TOKEN_RESPONSE }}
+      PROJECT_CLIENT_SECRET : ${{ vars.PROJECT_CLIENT_SECRET }}
+      PROJECT_CLIENT_ID : ${{ vars.PROJECT_CLIENT_ID }}
+      PROJECT_API_KEY : ${{ secrets.PROJECT_API_KEY }}
+      CODE : ${{ secrets.CODE }}
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: main
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+    - name: Restore dependencies
+      run: dotnet restore ./src/YouRata.sln
+    - name: Build
+      run: dotnet build ./src/YouRata.sln --configuration Release --no-restore
+    - name: Start ConflictMonitor
+      run: dotnet run --verbosity detailed --configuration Release --project ./src/YouRata.ConflictMonitor/YouRata.ConflictMonitor.csproj &
+    - name: Run InitialSetup
+      if : ${{ env.INITIAL_SETUP_COMPLETE == 'false' }}
+      run: dotnet run --verbosity detailed --project ./src/YouRata.InitialSetup/YouRata.InitialSetup.csproj
+    - name: Run YouTubeSync
+      run: dotnet run --verbosity detailed --project ./src/YouRata.YouTubeSync/YouRata.YouTubeSync.csproj
+    - name: Run ActionReport
+      run: dotnet run --verbosity detailed --project ./src/YouRata.ActionReport/YouRata.ActionReport.csproj

@@ -15,10 +15,15 @@ GitHubEnvironmentHelper environmentHelper = new GitHubEnvironmentHelper();
 ConflictMonitorWorkflow conflictMonitorWorkflow = new ConflictMonitorWorkflow();
 MilestoneIntelligenceRegistry milestoneIntelligence = new MilestoneIntelligenceRegistry();
 PreviousActionReportProvider actionReportProvider = new PreviousActionReportProvider();
+
+
+
+
+WebAppServer appServer = new WebAppServer(callHandler, logProvider, configurationHelper, environmentHelper, conflictMonitorWorkflow, milestoneIntelligence, actionReportProvider);
 if (YouTubeAPIHelper.GetTokenResponse(conflictMonitorWorkflow.StoredTokenResponse, out _))
 {
     conflictMonitorWorkflow.InitialSetupComplete = true;
 }
 
-WebAppServer appServer = new WebAppServer(callHandler, logProvider, configurationHelper, environmentHelper, conflictMonitorWorkflow, milestoneIntelligence, actionReportProvider);
+
 appServer.RunAsync().Wait();

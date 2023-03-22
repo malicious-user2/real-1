@@ -62,7 +62,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 if (processedVideos.Contains(video.Id)) continue;
                 string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
                     $"{video.Id}.md";
-                if (!Path.Exists(Path.Combine(workflow.Workspace, GitHubConstants.ErrataCheckoutPath, errataBulletinPath)))
+                if (!Path.Exists(Path.Combine(workflow.Workspace, errataBulletinPath)))
                 {
                     ErrataBulletinBuilder errataBulletinBuilder = ErrataBulletin.CreateBuilder(video, config.ErrataBulletin);
                     if (GitHubAPIClient.CreateContentFile(actionEnvironment,

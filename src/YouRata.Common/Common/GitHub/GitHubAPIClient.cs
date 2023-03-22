@@ -79,15 +79,12 @@ public static class GitHubAPIClient
         IApiConnection apiCon = GetApiConnection(environment.ApiToken);
 
         string[] repository = environment.EnvGitHubRepository.Split("/");
-        CreateFileRequest createFileRequest = new CreateFileRequest(message, content, GitHubConstants.ErrataBranch);
+        CreateFileRequest createFileRequest = new CreateFileRequest(message, content);
         RepositoryContentsClient conClient = new RepositoryContentsClient(apiCon);
         Action createFile = (() =>
         {
                 conClient.CreateFile(repository[0], repository[1], path, createFileRequest).Wait();
         });
-
-
-        Console.WriteLine(path);
         GitHubRetryHelper.RetryCommand(environment, createFile, logger);
         return true;
     }
@@ -99,10 +96,10 @@ public static class GitHubAPIClient
 
         string[] repository = environment.EnvGitHubRepository.Split("/");
         RepositoryContentsClient conClient = new RepositoryContentsClient(apiCon);
-        CreateFileRequest createFileRequest = new CreateFileRequest(message, content, GitHubConstants.ErrataBranch);
+        CreateFileRequest createFileRequest = new CreateFileRequest(message, content);
         Func<IReadOnlyList<RepositoryContent>> getContents = (() =>
         {
-            return conClient.GetAllContentsByRef(repository[0], repository[1], path, GitHubConstants.ErrataBranch).Result;
+            return conClient.GetAllContentsByRef(repository[0], repository[1], path, environment.EnvGitHubRefName).Result;
         });
         bool noContentsFound = false;
         IReadOnlyList<RepositoryContent>? foundContent = GitHubRetryHelper.RetryCommand(environment, getContents, logger, typeof(NotFoundException), out noContentsFound);
@@ -117,7 +114,7 @@ public static class GitHubAPIClient
         }
         if (foundContent == null || foundContent.Count == 0) throw new MilestoneException($"Could not find any content at {path} to update in GitHub");
         RepositoryContent oldContent = foundContent.First();
-        UpdateFileRequest updateFileRequest = new UpdateFileRequest(message, content, oldContent.Sha, GitHubConstants.ErrataBranch);
+        UpdateFileRequest updateFileRequest = new UpdateFileRequest(message, content, oldContent.Sha, environment.EnvGitHubRefName);
         Action updateFile = (() =>
         {
                 conClient.UpdateFile(repository[0], repository[1], path, updateFileRequest).Wait();

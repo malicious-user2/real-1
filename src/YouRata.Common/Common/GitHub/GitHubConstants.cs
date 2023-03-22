@@ -16,8 +16,4 @@ public static class GitHubConstants
     public static string GitHubWorkspaceVariable = "GITHUB_WORKSPACE";
 
     public static readonly string ApiTokenVariable = "API_TOKEN";
-
-    public static readonly string ErrataBranch = "errata";
-
-    public static readonly string ErrataCheckoutPath = "errata-checkout";
 }

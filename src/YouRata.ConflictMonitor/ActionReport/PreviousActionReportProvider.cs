@@ -18,7 +18,7 @@ internal class PreviousActionReportProvider
         string? workspace = Environment.GetEnvironmentVariable(GitHubConstants.GitHubWorkspaceVariable);
         if (workspace != null)
         {
-            string fileName = Path.Combine(workspace, GitHubConstants.ErrataCheckoutPath, YouRataConstants.ActionReportFileName);
+            string fileName = Path.Combine(workspace, YouRataConstants.ActionReportFileName);
             try
             {
                 ActionReportRoot? deserializeActionReportRoot = JsonConvert.DeserializeObject<ActionReportRoot>(File.ReadAllText(fileName));

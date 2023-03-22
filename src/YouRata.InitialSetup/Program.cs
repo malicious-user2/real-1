@@ -29,6 +29,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         {
             Console.WriteLine("Entering actions secrets section");
             Announce($"Create an action secret {GitHubConstants.ApiTokenVariable} to store GitHub personal access token");
+            GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/secrets/actions\n");
             canContinue = false;
         }
         if (canContinue && (!Regex.IsMatch(actionEnvironment.ApiToken, @"^ghp_[a-zA-Z0-9]{36}$")))
@@ -54,6 +55,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             {
                 Announce($"Create an action variable {YouTubeConstants.ProjectClientIdVariable} to store Google API client ID");
                 Announce($"Create an action variable {YouTubeConstants.ProjectClientSecretsVariable} to store Google API client secrets");
+                GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/variables/actions\n");
             }
             canContinue = false;
         }
@@ -63,6 +65,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.ProjectApiKeyVariable, "empty", client.LogMessage);
             client.Keepalive();
             Announce($"Paste Google API key in action secret {YouTubeConstants.ProjectApiKeyVariable}");
+            GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/secrets/actions/{YouTubeConstants.ProjectApiKeyVariable}\n");
             canContinue = false;
         }
         if (canContinue && (!YouTubeAPIHelper.GetTokenResponse(workflow.StoredTokenResponse, out _)))
@@ -102,6 +105,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                 Announce("===============================================================");
                 Announce("Copy everything in the website URL between |code=| and |&|");
                 Announce($"Paste this value in action secret {YouTubeConstants.RedirectCodeVariable}");
+                GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/secrets/actions/{YouTubeConstants.RedirectCodeVariable}\n");
                 canContinue = false;
             }
             else

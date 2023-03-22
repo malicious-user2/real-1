@@ -50,11 +50,6 @@ jobs:
       run: dotnet restore src/YouRata.ActionReport/
     - name: Build Test5
       run: dotnet build src/YouRata.ActionReport/ --no-restore
-    - name: Checkout errata repo
-      uses: actions/checkout@v3
-      with:
-        ref: errata
-        path: errata-checkout
     - name: Test (I:Debug T:Debug R:false)
       run: dotnet run --verbosity normal --project src/YouRata.ConflictMonitor/YouRata.ConflictMonitor.csproj --no-build src/YouRata.ConflictMonitor/Debug/net7.0/YouRata.ConflictMonitor.dll &
     - name: Test2 (I:Debug T:Debug R:false)

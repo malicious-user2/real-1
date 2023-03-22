@@ -28,7 +28,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         if (string.IsNullOrEmpty(actionEnvironment.ApiToken))
         {
             Console.WriteLine("Entering actions secrets section");
-            Announce($"Create an action secret {GitHubConstants.ApiTokenVariable} to store GitHub personal access token"););
+            Announce($"Create an action secret {GitHubConstants.ApiTokenVariable} to store GitHub personal access token");
             canContinue = false;
         }
         if (canContinue && (!Regex.IsMatch(actionEnvironment.ApiToken, @"^ghp_[a-zA-Z0-9]{36}$")))

@@ -48,6 +48,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                 UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ProjectClientSecretsVariable, "empty", client.LogMessage);
                 client.Keepalive();
                 Announce("Fill repository variables and run action again");
+                GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/variables/actions\n");
             }
             else
             {

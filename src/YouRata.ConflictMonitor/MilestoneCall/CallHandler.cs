@@ -58,7 +58,7 @@ internal class CallHandler
 
     internal string GetPreviousActionReport(YouRataConfiguration appConfig, PreviousActionReportProvider actionReportProvider)
     {
-        if (actionReportProvider.ActionReport != null)
+        if (actionReportProvider.ActionReport != null && !actionReportProvider.IsMissing)
         {
             return JsonConvert.SerializeObject(actionReportProvider.ActionReport, Formatting.None);
         }

@@ -10,6 +10,7 @@ namespace YouRata.ConflictMonitor.ActionReport;
 internal class PreviousActionReportProvider
 {
     private readonly ActionReportRoot _actionReportRoot;
+    private readonly bool _missingActionReport;
 
     public PreviousActionReportProvider()
     {
@@ -28,9 +29,12 @@ internal class PreviousActionReportProvider
             }
             catch
             {
+                _missingActionReport = true;
             }
         }
     }
 
     public ActionReportLayout ActionReport => _actionReportRoot.ActionReport;
+
+    public bool IsMissing => _missingActionReport;
 }

@@ -101,8 +101,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                 client.Keepalive();
                 Announce("Follow this link to authorize this GitHub application");
                 Announce(url.ToString());
-                Announce("When finished it is normal that the site can't be reached");
-                Announce("===============================================================");
+                Announce("<ins>When finished it is normal that the site can't be reached</ins>");
                 Announce("Copy everything in the website URL between |code=| and |&|");
                 Announce($"Paste this value in action secret {YouTubeConstants.RedirectCodeVariable}");
                 GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/secrets/actions/{YouTubeConstants.RedirectCodeVariable}\n");

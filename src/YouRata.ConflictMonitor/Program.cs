@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using YouRata.Common.Configurations;
 using YouRata.Common.GitHub;
 using YouRata.Common.YouTube;
@@ -17,4 +18,12 @@ MilestoneIntelligenceRegistry milestoneIntelligence = new MilestoneIntelligenceR
 PreviousActionReportProvider actionReportProvider = new PreviousActionReportProvider();
 WebAppServer appServer = new WebAppServer(callHandler, logProvider, configurationHelper, environmentHelper, conflictMonitorWorkflow, milestoneIntelligence, actionReportProvider);
 WorkflowLogicProvider.ProcessWorkflow(conflictMonitorWorkflow);
-appServer.RunAsync().Wait();
+
+if (args?.FirstOrDefault() == "newconfig")
+{
+    configurationHelper.Build();
+}
+else
+{
+    appServer.RunAsync().Wait();
+}

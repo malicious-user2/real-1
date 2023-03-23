@@ -43,10 +43,11 @@ jobs:
     - name: Copy directions readme
       if: ${{ env.COPY_DIRECTIONS_README == 'true' }}
       run: |
+          cp .github/readme/DIRECTIONS.md .
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add .
-          git commit -m "Template cleanup"
+          git add DIRECTIONS.md
+          git commit -m "Initial setup complete"
           git push
     - name: Run YouTubeSync
       run: dotnet run --verbosity normal --no-build --configuration Release --project ./src/YouRata.YouTubeSync/YouRata.YouTubeSync.csproj ./src/YouRata.YouTubeSync/bin/Release/net7.0/YouRata.YouTubeSync.dll

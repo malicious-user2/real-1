@@ -57,7 +57,7 @@ public static class GitHubAPIClient
 
 
             //TODO:
-            Credentials = new Credentials(Environment.GetEnvironmentVariable("GITHUB_TOKEN"), AuthenticationType.Bearer)
+            Credentials = new Credentials(Environment.GetEnvironmentVariable("ACTION_TOKEN"), AuthenticationType.Bearer)
         };
         ghClient.SetRequestTimeout(GitHubConstants.RequestTimeout);
         return new ApiConnection(ghClient.Connection);

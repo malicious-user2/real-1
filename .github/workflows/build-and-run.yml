@@ -45,7 +45,7 @@ jobs:
     - name: Copy directions readme
       if: ${{ env.COPY_DIRECTIONS_README == 'true' }}
       run: |
-          cp .github/readme/DIRECTIONS.md .
+          cp .github/readme/DIRECTIONS.md ./README.md
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add DIRECTIONS.md

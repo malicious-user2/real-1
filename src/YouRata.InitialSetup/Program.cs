@@ -85,6 +85,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                         YouTubeAPIHelper.SaveTokenResponse(authorizationCodeTokenResponse, actionEnvironment, client.LogMessage);
                         client.Keepalive();
                         Announce($"Google API stored token response has been saved to {YouRataConstants.StoredTokenResponseVariable}");
+                        workflow.CopyDirectionsReadme = true;
                     }
                     else
                     {

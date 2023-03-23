@@ -1,6 +1,6 @@
 using System;
-using YouRata.Common.GitHub;
 using YouRata.Common;
+using YouRata.Common.GitHub;
 using YouRata.Common.YouTube;
 
 namespace YouRata.InitialSetup.Workflow;
@@ -40,4 +40,10 @@ internal class InitialSetupWorkflow
     public string ProjectClientSecret => _clientSecret;
 
     public string ProjectApiKey => _apiKey;
+
+    public bool CopyDirectionsReadme
+    {
+        set => GitHubWorkflowHelper
+            .PushVariable(YouRataConstants.CopyDirectionsReadme, value.ToString());
+    }
 }

@@ -11,6 +11,8 @@ on:
 
 jobs:
   build-and-run:
+  
+    permissions: write-all
 
     runs-on: ubuntu-latest
     

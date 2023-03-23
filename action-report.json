@@ -1,9 +1,9 @@
 {
   "ActionReport": {
-    "Status": "Last Run 2023-03-23 0315Z",
-    "InitialSetupIntelligence": "{ \"Condition\": \"MILESTONE_PENDING\", \"ProcessId\": 0 }",
-    "YouTubeSyncIntelligence": "{ \"Condition\": \"MILESTONE_COMPLETED\", \"ProcessId\": 2068, \"VideosProcessed\": 83, \"VideosSkipped\": 0, \"CalculatedQueriesPerDayRemaining\": 6486, \"LastQueryTime\": \"1679541344\", \"FirstVideoPublishTime\": \"1679035609\", \"OutstandingVideoPublishTime\": \"1375638651\", \"HasOutstandingVideos\": true }",
-    "ActionReportIntelligence": "{ \"Condition\": \"MILESTONE_RUNNING\", \"ProcessId\": 2179 }",
-    "Logs": "[ \"[2023-03-23 0314Z] [Warning] (Microsoft.AspNetCore.Server.Kestrel) Overriding address(es) 'https://localhost:7040'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.\\n\", \"[2023-03-23 0314Z] [Information] (Microsoft.Hosting.Lifetime) Now listening on: http://unix:/tmp/yourata.sock\\n\", \"[2023-03-23 0314Z] [Information] (Microsoft.Hosting.Lifetime) Application started. Press Ctrl+C to shut down.\\n\", \"[2023-03-23 0314Z] [Information] (Microsoft.Hosting.Lifetime) Hosting environment: Development\\n\", \"[2023-03-23 0314Z] [Information] (Microsoft.Hosting.Lifetime) Content root path: /home/runner/work/real/real/src/YouRata.ConflictMonitor\\n\" ]"
+    "Status": "Unknown",
+    "InitialSetupIntelligence": "{ \"Condition\": \"MILESTONE_COMPLETED\", \"ProcessId\": 1982 }",
+    "YouTubeSyncIntelligence": "{ \"Condition\": \"MILESTONE_RUNNING\", \"ProcessId\": 2038, \"VideosProcessed\": 0, \"VideosSkipped\": 0, \"CalculatedQueriesPerDayRemaining\": 0, \"LastQueryTime\": \"0\", \"FirstVideoPublishTime\": \"0\", \"OutstandingVideoPublishTime\": \"0\", \"HasOutstandingVideos\": false }",
+    "ActionReportIntelligence": "{ \"Condition\": \"MILESTONE_RUNNING\", \"ProcessId\": 2075 }",
+    "Logs": "[ \"[2023-03-23 2219Z] [Warning] (Microsoft.AspNetCore.Server.Kestrel) Overriding address(es) 'https://localhost:7040'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.\\n\", \"[2023-03-23 2219Z] [Information] (Microsoft.Hosting.Lifetime) Now listening on: http://unix:/tmp/yourata.sock\\n\", \"[2023-03-23 2219Z] [Information] (Microsoft.Hosting.Lifetime) Application started. Press Ctrl+C to shut down.\\n\", \"[2023-03-23 2219Z] [Information] (Microsoft.Hosting.Lifetime) Hosting environment: Development\\n\", \"[2023-03-23 2219Z] [Information] (Microsoft.Hosting.Lifetime) Content root path: /home/runner/work/real/real/src/YouRata.ConflictMonitor\\n\" ]"
   }
 }

@@ -36,11 +36,11 @@ jobs:
     - name: Build
       run: dotnet build ./src/YouRata.sln --configuration Release --no-restore
     - name: Start ConflictMonitor
-      run: dotnet run --verbosity normal --no-build --configuration Release --project ./src/YouRata.ConflictMonitor/YouRata.ConflictMonitor.csproj ./src/YouRata.ConflictMonitor/YouRata.ConflictMonitor.dll &
+      run: dotnet run --verbosity normal --no-build --configuration Release --project ./src/YouRata.ConflictMonitor/YouRata.ConflictMonitor.csproj ./src/YouRata.ConflictMonitor/bin/Release/net7.0/YouRata.ConflictMonitor.dll &
     - name: Run InitialSetup
       if : ${{ env.INITIAL_SETUP_COMPLETE == 'false' }}
-      run: dotnet run --verbosity normal --no-build --project ./src/YouRata.InitialSetup/YouRata.InitialSetup.csproj ./src/YouRata.InitialSetup/YouRata.InitialSetup.dll
+      run: dotnet run --verbosity normal --no-build --project ./src/YouRata.InitialSetup/YouRata.InitialSetup.csproj ./src/YouRata.InitialSetup/bin/Release/net7.0/YouRata.InitialSetup.dll
     - name: Run YouTubeSync
-      run: dotnet run --verbosity normal --no-build --project ./src/YouRata.YouTubeSync/YouRata.YouTubeSync.csproj ./src/YouRata.YouTubeSync/YouRata.YouTubeSync.dll
+      run: dotnet run --verbosity normal --no-build --project ./src/YouRata.YouTubeSync/YouRata.YouTubeSync.csproj ./src/YouRata.YouTubeSync/bin/Release/net7.0/YouRata.YouTubeSync.dll
     - name: Run ActionReport
-      run: dotnet run --verbosity normal --no-build --project ./src/YouRata.ActionReport/YouRata.ActionReport.csproj ./src/YouRata.ActionReport/YouRata.ActionReport.dll
+      run: dotnet run --verbosity normal --no-build --project ./src/YouRata.ActionReport/YouRata.ActionReport.csproj ./src/YouRata.ActionReport/bin/Release/net7.0/YouRata.ActionReport.dll

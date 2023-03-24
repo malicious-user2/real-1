@@ -76,7 +76,7 @@ public static class GitHubAPIClient
     public static bool CreateContentFile(GitHubActionEnvironment environment, string message, string content, string path, Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) throw new MilestoneException("GitHub API rate limit exceeded");
-        IApiConnection apiCon = GetApiConnection(environment.ApiToken);
+        IApiConnection apiCon = GetApiConnection(environment.GitHubToken);
 
         string[] repository = environment.EnvGitHubRepository.Split("/");
         CreateFileRequest createFileRequest = new CreateFileRequest(message, content);
@@ -92,7 +92,7 @@ public static class GitHubAPIClient
     public static bool UpdateContentFile(GitHubActionEnvironment environment, string message, string content, string path, Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) throw new MilestoneException("GitHub API rate limit exceeded");
-        IApiConnection apiCon = GetApiConnection(environment.ApiToken);
+        IApiConnection apiCon = GetApiConnection(environment.GitHubToken);
 
         string[] repository = environment.EnvGitHubRepository.Split("/");
         RepositoryContentsClient conClient = new RepositoryContentsClient(apiCon);

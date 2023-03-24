@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration;
 
 namespace YouRata.ConflictMonitor.MilestoneInterface.ConfigurationValidation;
 

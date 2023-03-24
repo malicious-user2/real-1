@@ -1,6 +1,4 @@
-using System;
-
-namespace YouRata.Common.Configurations;
+namespace YouRata.Common.Configuration;
 
 public interface IConfigurationWriter
 {

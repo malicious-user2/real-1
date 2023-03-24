@@ -6,7 +6,7 @@ using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Requests;
 using Google.Apis.Auth.OAuth2.Responses;
 using YouRata.Common;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration;
 using YouRata.Common.GitHub;
 using YouRata.Common.Milestone;
 using YouRata.Common.Proto;

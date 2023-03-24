@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using YouRata.Common.Configurations;
+using YouRata.Common;
+using YouRata.Common.Configuration;
 using YouRata.Common.GitHub;
 using YouRata.ConflictMonitor.ActionReport;
 using YouRata.ConflictMonitor.MilestoneCall;
@@ -50,7 +51,7 @@ internal class WebAppServer
         builder.Services.AddGrpc(opt =>
         {
             opt.EnableDetailedErrors = true;
-            opt.ResponseCompressionLevel = GrpcConstants.ResponseCompressionLevel;
+            opt.ResponseCompressionLevel = YouRataConstants.GrpcResponseCompressionLevel;
         });
         builder.WebHost.AddUnixSocket();
         builder.Logging.Services.AddSingleton<ILoggerProvider, InServiceLoggerProvider>(service => _loggerProvider);

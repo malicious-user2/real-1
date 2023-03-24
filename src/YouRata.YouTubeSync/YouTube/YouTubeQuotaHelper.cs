@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Google.Protobuf;
 using YouRata.Common;
 using YouRata.Common.ActionReport;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration.YouTube;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 using YouRata.Common.YouTube;
 using YouRata.YouTubeSync.ConflictMonitor;

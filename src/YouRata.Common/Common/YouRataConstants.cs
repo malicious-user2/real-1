@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.IO.Compression;
 
 namespace YouRata.Common;
 
@@ -33,4 +35,10 @@ public static class YouRataConstants
     public const string SettingsFileName = "yourata-settings.json";
 
     public const string ZuluTimeFormat = "yyyy-MM-dd HHmmZ";
+
+    public const int MilestoneLifetimeCheckInterval = 200;
+
+    public static readonly string GrpcUnixSocketPath = Path.Combine(Path.GetTempPath(), "yourata.sock");
+
+    public const CompressionLevel GrpcResponseCompressionLevel = CompressionLevel.NoCompression;
 }

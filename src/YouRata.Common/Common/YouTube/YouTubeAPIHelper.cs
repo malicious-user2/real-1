@@ -75,10 +75,7 @@ public static class YouTubeAPIHelper
             savedTokenResponse = deserializedTokenResponse;
             return true;
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
     public static void SaveTokenResponse(TokenResponse response, GitHubActionEnvironment actionEnvironment, Action<string> logger)
@@ -93,6 +90,7 @@ public static class YouTubeAPIHelper
         TokenResponse? authorizationCodeTokenResponse;
         using (HttpClient tokenHttpClient = new HttpClient())
         {
+            tokenHttpClient.Timeout = YouTubeConstants.RequestTimeout;
             authorizationCodeTokenResponse = request.ExecuteAsync(tokenHttpClient, flow.TokenServerUrl, CancellationToken.None, flow.Clock).Result;
         }
         return authorizationCodeTokenResponse;

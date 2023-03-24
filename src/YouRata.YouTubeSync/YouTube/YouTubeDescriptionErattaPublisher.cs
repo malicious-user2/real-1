@@ -1,6 +1,6 @@
 using System;
 using System.Globalization;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration.YouTube;
 using YouRata.Common.Proto;
 using YouRata.Common.YouTube;
 

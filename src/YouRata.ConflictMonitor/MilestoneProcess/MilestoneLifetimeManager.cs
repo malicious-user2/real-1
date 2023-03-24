@@ -7,7 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using YouRata.Common.Configurations;
+using YouRata.Common;
+using YouRata.Common.Configuration;
+using YouRata.Common.Configuration.MilestoneLifetime;
 using YouRata.ConflictMonitor.MilestoneData;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
@@ -50,7 +52,7 @@ internal class MilestoneLifetimeManager : IDisposable
                 {
                     while (!_disposed && !_stopTokenSource.Token.IsCancellationRequested)
                     {
-                        Task.Delay(MilestoneLifetimeConstants.LifetimeCheckInterval, _stopTokenSource.Token);
+                        Task.Delay(YouRataConstants.MilestoneLifetimeCheckInterval, _stopTokenSource.Token);
                         ProcessLifetimeManager();
                     }
                     _stopTokenSource.Dispose();

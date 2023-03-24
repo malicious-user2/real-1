@@ -1,6 +1,6 @@
 using System;
 using System.Globalization;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration.ErrataBulletin;
 using YouRata.Common.Milestone;
 
 namespace YouRata.YouTubeSync.ErrataBulletin;

@@ -7,7 +7,7 @@ using System.Xml;
 using Google.Apis.Util;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration.YouTube;
 using YouRata.Common.Milestone;
 using YouRata.Common.YouTube;
 using YouRata.YouTubeSync.ConflictMonitor;

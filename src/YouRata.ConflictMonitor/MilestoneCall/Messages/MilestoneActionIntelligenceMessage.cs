@@ -4,7 +4,7 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration;
 using YouRata.Common.GitHub;
 using YouRata.Common.Proto;
 using YouRata.ConflictMonitor.MilestoneData;

@@ -13,7 +13,7 @@ using Google.Apis.YouTube.v3.Data;
 using Newtonsoft.Json.Linq;
 using Octokit;
 using YouRata.Common.ActionReport;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration;
 using YouRata.Common.GitHub;
 using YouRata.Common.Milestone;
 using YouRata.Common.Proto;

@@ -1,7 +1,6 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace YouRata.Common.Configurations;
+namespace YouRata.Common.Configuration.MilestoneLifetime;
 
 public class MilestoneLifetimeConfiguration : BaseValidatableConfiguration
 {

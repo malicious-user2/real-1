@@ -45,11 +45,7 @@ public static class UnsupportedGitHubAPIClient
         {
             Console.WriteLine($"WARNING: Only {environment.RateLimitCoreRemaining} GitHub API calls remaining");
         }
-        if (environment.RateLimitCoreRemaining < 3)
-        {
-            return false;
-        }
-        return true;
+        return (environment.RateLimitCoreRemaining >= 3);
     }
 
     public static bool CreateVariable(GitHubActionEnvironment environment, string variableName, string variableValue, Action<string> logger)

@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Google.Protobuf.WellKnownTypes;
 
 namespace YouRata.Common.GitHub;
 
@@ -12,24 +11,20 @@ public static class GitHubWorkflowHelper
     public static void PushVariable(string variable, string value)
     {
         string? environmentFile = Environment.GetEnvironmentVariable(GitHubEnvironmentFile);
-        if (environmentFile != null)
+        if (environmentFile == null) return;
+        using (StreamWriter variableWriter = File.AppendText(environmentFile))
         {
-            using (StreamWriter variableWriter = File.AppendText(environmentFile))
-            {
-                variableWriter.WriteLine($"{variable}={value}");
-            }
+            variableWriter.WriteLine($"{variable}={value}");
         }
     }
 
     public static void WriteStepSummary(string markdown)
     {
         string? summaryFile = Environment.GetEnvironmentVariable(GitHubStepSummaryFile);
-        if (summaryFile != null)
+        if (summaryFile == null) return;
+        using (StreamWriter summaryWriter = File.AppendText(summaryFile))
         {
-            using (StreamWriter summaryWriter = File.AppendText(summaryFile))
-            {
-                summaryWriter.Write(markdown);
-            }
+            summaryWriter.Write(markdown);
         }
     }
 }

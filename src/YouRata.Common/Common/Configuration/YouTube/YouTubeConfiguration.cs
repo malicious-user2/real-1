@@ -1,8 +1,7 @@
-using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace YouRata.Common.Configurations;
+namespace YouRata.Common.Configuration.YouTube;
 
 public class YouTubeConfiguration : BaseValidatableConfiguration
 {

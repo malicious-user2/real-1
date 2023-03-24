@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Xml;
 using Google.Apis.YouTube.v3.Data;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration.ErrataBulletin;
 
 namespace YouRata.YouTubeSync.ErrataBulletin;
 

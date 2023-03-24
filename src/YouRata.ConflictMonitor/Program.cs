@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration;
 using YouRata.Common.GitHub;
 using YouRata.ConflictMonitor.ActionReport;
 using YouRata.ConflictMonitor.MilestoneCall;

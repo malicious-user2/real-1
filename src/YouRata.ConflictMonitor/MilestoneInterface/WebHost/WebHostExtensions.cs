@@ -1,6 +1,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using YouRata.Common;
 
 namespace YouRata.ConflictMonitor.MilestoneInterface.WebHost;
 
@@ -10,11 +11,11 @@ public static class WebHostExtensions
     {
         builder.ConfigureKestrel(opt =>
         {
-            if (File.Exists(GrpcConstants.UnixSocketPath))
+            if (File.Exists(YouRataConstants.GrpcUnixSocketPath))
             {
-                File.Delete(GrpcConstants.UnixSocketPath);
+                File.Delete(YouRataConstants.GrpcUnixSocketPath);
             }
-            opt.ListenUnixSocket(GrpcConstants.UnixSocketPath);
+            opt.ListenUnixSocket(YouRataConstants.GrpcUnixSocketPath);
         });
     }
 }

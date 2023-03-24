@@ -3,9 +3,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
-namespace YouRata.Common.Configurations;
+namespace YouRata.Common.Configuration;
 
 public class ConfigurationWriter : IConfigurationWriter
 {

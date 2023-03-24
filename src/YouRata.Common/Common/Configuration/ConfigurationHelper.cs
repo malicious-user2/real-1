@@ -1,9 +1,8 @@
-using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 
-namespace YouRata.Common.Configurations;
+namespace YouRata.Common.Configuration;
 
 public sealed class ConfigurationHelper
 {
@@ -18,28 +17,28 @@ public sealed class ConfigurationHelper
     {
         DirectoryInfo startingDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
         DirectoryInfo searchingDirectory = startingDirectory;
-        string _settingsPath = string.Empty;
-        string _settingsDirectory = string.Empty;
+        string settingsPath;
+        string settingsDirectory;
         while (!searchingDirectory.GetFiles("*.sln").Any())
         {
             searchingDirectory = searchingDirectory.Parent ?? throw new FileNotFoundException("Solution file could not be found in any parent directory"); ;
         }
         if (searchingDirectory?.Parent != null)
         {
-            _settingsPath = Path.Combine(searchingDirectory.Parent.FullName, YouRataConstants.SettingsFileName);
-            _settingsDirectory = searchingDirectory.Parent.FullName;
+            settingsPath = Path.Combine(searchingDirectory.Parent.FullName, YouRataConstants.SettingsFileName);
+            settingsDirectory = searchingDirectory.Parent.FullName;
         }
         else
         {
-            _settingsPath = Path.Combine(startingDirectory.FullName, YouRataConstants.SettingsFileName);
-            _settingsDirectory = startingDirectory.FullName;
+            settingsPath = Path.Combine(startingDirectory.FullName, YouRataConstants.SettingsFileName);
+            settingsDirectory = startingDirectory.FullName;
         }
-        if (!Path.Exists(_settingsPath))
+        if (!Path.Exists(settingsPath))
         {
-            CreateBlankConfig(_settingsPath);
+            CreateBlankConfig(settingsPath);
         }
         return new ConfigurationBuilder()
-            .SetBasePath(_settingsDirectory)
+            .SetBasePath(settingsDirectory)
             .AddJsonFile(YouRataConstants.SettingsFileName, false, true)
             .AddCommandLine(_args)
             .Build();

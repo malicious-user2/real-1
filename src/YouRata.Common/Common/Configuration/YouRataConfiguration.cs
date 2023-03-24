@@ -1,8 +1,10 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Components.Web;
+using YouRata.Common.Configuration.ActionCutOuts;
+using YouRata.Common.Configuration.ErrataBulletin;
+using YouRata.Common.Configuration.MilestoneLifetime;
+using YouRata.Common.Configuration.YouTube;
 
-namespace YouRata.Common.Configurations;
+namespace YouRata.Common.Configuration;
 
 public class YouRataConfiguration : BaseValidatableConfiguration
 {

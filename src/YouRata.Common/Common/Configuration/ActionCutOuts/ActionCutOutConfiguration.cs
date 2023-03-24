@@ -1,15 +1,11 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace YouRata.Common.Configurations;
+namespace YouRata.Common.Configuration.ActionCutOuts;
 
 public class ActionCutOutConfiguration : BaseValidatableConfiguration
 {
     [Required]
     public bool DisableConflictMonitorGitHubOperations { get; set; }
-
-    [Required]
-    public bool DisableStoredTokenResponseDiscovery { get; set; }
 
     [Required]
     public bool DisableInitialSetupMilestone { get; set; }

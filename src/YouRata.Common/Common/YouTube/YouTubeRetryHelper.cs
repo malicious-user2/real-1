@@ -1,10 +1,9 @@
 using System;
-using Microsoft.Extensions.Hosting;
+using System.Net;
 using System.Threading;
+using Google;
 using YouRata.Common.Milestone;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
-using Google;
-using System.Net;
 
 namespace YouRata.Common.YouTube;
 
@@ -55,13 +54,10 @@ public static class YouTubeRetryHelper
                     trapped = true;
                     break;
                 }
-                else
+                retryCount++;
+                if (retryCount > 1)
                 {
-                    retryCount++;
-                    if (retryCount > 1)
-                    {
-                        throw new MilestoneException("YouTube API failure", ex);
-                    }
+                    throw new MilestoneException("YouTube API failure", ex);
                 }
             }
             catch (Exception)
@@ -123,13 +119,10 @@ public static class YouTubeRetryHelper
                     trapped = true;
                     break;
                 }
-                else
+                retryCount++;
+                if (retryCount > 1)
                 {
-                    retryCount++;
-                    if (retryCount > 1)
-                    {
-                        throw new MilestoneException("YouTube API failure", ex);
-                    }
+                    throw new MilestoneException("YouTube API failure", ex);
                 }
             }
             catch (Exception)

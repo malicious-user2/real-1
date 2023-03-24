@@ -2,7 +2,7 @@ using System;
 using YouRata.ActionReport.ActionReportFile;
 using YouRata.ActionReport.ConflictMonitor;
 using YouRata.Common;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration;
 using YouRata.Common.GitHub;
 using YouRata.Common.Milestone;
 using YouRata.Common.Proto;

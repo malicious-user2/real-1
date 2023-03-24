@@ -1,5 +1,5 @@
 using System;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration;
 using YouRata.Common.Proto;
 
 namespace YouRata.Common.Milestone;

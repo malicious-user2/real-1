@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using Octokit;
 using YouRata.Common.Milestone;
 using YouRata.Common.Proto;
 
@@ -35,13 +34,10 @@ public static class GitHubRetryHelper
                     trapped = true;
                     break;
                 }
-                else
+                retryCount++;
+                if (retryCount > 1)
                 {
-                    retryCount++;
-                    if (retryCount > 1)
-                    {
-                        throw new MilestoneException("GitHub API failure", ex);
-                    }
+                    throw new MilestoneException("GitHub API failure", ex);
                 }
             }
             catch (Exception)
@@ -85,13 +81,10 @@ public static class GitHubRetryHelper
                     trapped = true;
                     break;
                 }
-                else
+                retryCount++;
+                if (retryCount > 1)
                 {
-                    retryCount++;
-                    if (retryCount > 1)
-                    {
-                        throw new MilestoneException("GitHub API failure", ex);
-                    }
+                    throw new MilestoneException("GitHub API failure", ex);
                 }
             }
             catch (Exception)

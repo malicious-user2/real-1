@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,20 +10,17 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using YouRata.Common.ActionReport;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration;
 using YouRata.Common.Proto;
-using YouRata.ConflictMonitor;
 using static YouRata.Common.Proto.ActionIntelligenceService;
+using static YouRata.Common.Proto.LogService;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 using static YouRata.Common.Proto.MilestoneActionIntelligenceService;
-using static YouRata.Common.Proto.LogService;
-using System.Diagnostics;
 
 namespace YouRata.Common.Milestone;
 
@@ -35,7 +33,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
     {
         _conflictMonitorChannel = GrpcChannel.ForAddress($"http://{IPAddress.Loopback}", new GrpcChannelOptions
         {
-            HttpHandler = CreateHttpHandler(GrpcConstants.UnixSocketPath)
+            HttpHandler = CreateHttpHandler(YouRataConstants.GrpcUnixSocketPath)
         });
     }
 
@@ -88,8 +86,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
 
     public virtual T Activate<T>(System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
     {
-        T? milestoneActionIntelligence = (T?)Activator.CreateInstance(milestoneIntelligenceType);
-        if (milestoneActionIntelligence == null) throw new MilestoneException("Invalid milestone type to activate");
+        T? milestoneActionIntelligence = (T?)Activator.CreateInstance(milestoneIntelligenceType) ?? throw new MilestoneException("Invalid milestone type to activate");
         milestoneActionIntelligence.GetType().GetProperty("ProcessId")?.SetValue(milestoneActionIntelligence, Process.GetCurrentProcess().Id);
         milestoneActionIntelligence.GetType().GetProperty("Condition")?.SetValue(milestoneActionIntelligence, MilestoneCondition.MilestoneRunning);
         SetMilestoneActionIntelligence(milestoneActionIntelligence, milestoneIntelligenceType, milestoneIntelligenceName);
@@ -101,26 +98,23 @@ public abstract class MilestoneCommunicationClient : IDisposable
     {
         if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;
         object? milestoneActionIntelligence = GetMilestoneActionIntelligence(milestoneIntelligenceType);
-        if (milestoneActionIntelligence != null)
-        {
-            milestoneActionIntelligence.GetType().GetProperty("Condition")?.SetValue(milestoneActionIntelligence, milestoneCondition);
+        if (milestoneActionIntelligence == null) return;
+        milestoneActionIntelligence.GetType().GetProperty("Condition")?.SetValue(milestoneActionIntelligence, milestoneCondition);
 
-            SetMilestoneActionIntelligence(milestoneActionIntelligence, milestoneIntelligenceType, milestoneIntelligenceName);
-        }
+        SetMilestoneActionIntelligence(milestoneActionIntelligence, milestoneIntelligenceType, milestoneIntelligenceName);
+
     }
 
     public virtual MilestoneCondition GetStatus(System.Type milestoneIntelligenceType)
     {
         MilestoneCondition milestoneCondition = new MilestoneCondition();
         object? milestoneActionIntelligence = GetMilestoneActionIntelligence(milestoneIntelligenceType);
-        if (milestoneActionIntelligence != null)
+        if (milestoneActionIntelligence == null) return milestoneCondition;
+        PropertyInfo? conditionProperty = milestoneActionIntelligence.GetType().GetProperty("Condition");
+        object? conditionValue = conditionProperty?.GetValue(milestoneActionIntelligence, null);
+        if (conditionValue != null)
         {
-            PropertyInfo? conditionProperty = milestoneActionIntelligence.GetType().GetProperty("Condition");
-            object? conditionValue = conditionProperty?.GetValue(milestoneActionIntelligence, null);
-            if (conditionValue != null)
-            {
-                milestoneCondition = (MilestoneCondition)conditionValue;
-            }
+            milestoneCondition = (MilestoneCondition)conditionValue;
         }
         return milestoneCondition;
     }
@@ -199,29 +193,26 @@ public abstract class MilestoneCommunicationClient : IDisposable
             foreach (PropertyInfo milestoneIntelligenceProperty in milestoneIntelligenceProperties)
             {
                 object? milestoneIntelligenceObject = milestoneIntelligenceProperty.GetValue(actionIntelligence.MilestoneIntelligence);
-                if (milestoneIntelligenceObject != null)
+                if (milestoneIntelligenceObject == null) continue;
+                string milestoneIntelligenceName = milestoneIntelligenceProperty.Name;
+                System.Type milestoneIntelligenceType = milestoneIntelligenceObject.GetType();
+                PropertyInfo? conditionProperty = milestoneIntelligenceType.GetProperty("Condition");
+                if (conditionProperty == null)
                 {
-                    string milestoneIntelligenceName = milestoneIntelligenceProperty.Name;
-                    System.Type milestoneIntelligenceType = milestoneIntelligenceObject.GetType();
-                    PropertyInfo? conditionProperty = milestoneIntelligenceType.GetProperty("Condition");
-                    if (conditionProperty == null)
+                    continue;
+                }
+                object? conditionCurrentValue = conditionProperty.GetValue(milestoneIntelligenceObject);
+                if (conditionCurrentValue?.GetType() == typeof(MilestoneCondition))
+                {
+                    MilestoneCondition currentCondition = (MilestoneCondition)conditionCurrentValue;
+                    if (currentCondition is MilestoneCondition.MilestoneCompleted or MilestoneCondition.MilestoneFailed)
                     {
                         continue;
                     }
-                    object? conditionCurrentValue = conditionProperty.GetValue(milestoneIntelligenceObject);
-                    if (conditionCurrentValue?.GetType() == typeof(MilestoneCondition))
-                    {
-                        MilestoneCondition currentCondition = (MilestoneCondition)conditionCurrentValue;
-                        if (currentCondition == MilestoneCondition.MilestoneCompleted ||
-                            currentCondition == MilestoneCondition.MilestoneFailed)
-                        {
-                            continue;
-                        }
-                    }
-                    conditionProperty.SetValue(milestoneIntelligenceObject, MilestoneCondition.MilestoneBlocked);
-
-                    SetMilestoneActionIntelligence(milestoneIntelligenceObject, milestoneIntelligenceType, milestoneIntelligenceName);
                 }
+                conditionProperty.SetValue(milestoneIntelligenceObject, MilestoneCondition.MilestoneBlocked);
+
+                SetMilestoneActionIntelligence(milestoneIntelligenceObject, milestoneIntelligenceType, milestoneIntelligenceName);
             }
         }
     }

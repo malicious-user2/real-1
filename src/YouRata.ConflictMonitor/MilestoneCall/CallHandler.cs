@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using Octokit;
 using YouRata.Common;
 using YouRata.Common.ActionReport;
-using YouRata.Common.Configurations;
+using YouRata.Common.Configuration;
 using YouRata.Common.GitHub;
 using YouRata.Common.Proto;
 using YouRata.ConflictMonitor.ActionReport;

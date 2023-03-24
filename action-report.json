@@ -2,7 +2,7 @@
   "ActionReport": {
     "Status": "Last Run 2023-03-24 1241Z",
     "InitialSetupIntelligence": "{ \"Condition\": \"MILESTONE_PENDING\", \"ProcessId\": 0 }",
-    "YouTubeSyncIntelligence": "{ \"Condition\": \"MILESTONE_COMPLETED\", \"ProcessId\": 1995, \"VideosProcessed\": 188, \"VideosSkipped\": 4, \"CalculatedQueriesPerDayRemaining\": 9407, \"LastQueryTime\": \"1679661681\", \"FirstVideoPublishTime\": \"1679035609\", \"OutstandingVideoPublishTime\": \"1581756522\", \"HasOutstandingVideos\": true }",
+    "YouTubeSyncIntelligence": "{ \"Condition\": \"MILESTONE_COMPLETED\", \"ProcessId\": 1995, \"VideosProcessed\": 188, \"VideosSkipped\": 4, \"CalculatedQueriesPerDayRemaining\": 300, \"LastQueryTime\": \"1679661681\", \"FirstVideoPublishTime\": \"1679035609\", \"OutstandingVideoPublishTime\": \"1581756522\", \"HasOutstandingVideos\": true }",
     "ActionReportIntelligence": "{ \"Condition\": \"MILESTONE_RUNNING\", \"ProcessId\": 2171 }",
     "Logs": "[ \"[2023-03-24 1239Z] [Warning] (Microsoft.AspNetCore.Server.Kestrel) Overriding address(es) 'https://localhost:7040'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.\\n\", \"[2023-03-24 1239Z] [Information] (Microsoft.Hosting.Lifetime) Now listening on: http://unix:/tmp/yourata.sock\\n\", \"[2023-03-24 1239Z] [Information] (Microsoft.Hosting.Lifetime) Application started. Press Ctrl+C to shut down.\\n\", \"[2023-03-24 1239Z] [Information] (Microsoft.Hosting.Lifetime) Hosting environment: Development\\n\", \"[2023-03-24 1239Z] [Information] (Microsoft.Hosting.Lifetime) Content root path: /home/runner/work/real/real/src/YouRata.ConflictMonitor\\n\" ]"
   }

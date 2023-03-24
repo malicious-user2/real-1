@@ -96,4 +96,8 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         throw new MilestoneException("YouTubeSync failed", ex);
     }
     client.SetStatus(MilestoneCondition.MilestoneCompleted);
+
+
+
+    Console.WriteLine(actionEnvironment.RateLimitCoreRemaining);
 }

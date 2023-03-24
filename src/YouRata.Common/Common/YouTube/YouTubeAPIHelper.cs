@@ -85,7 +85,7 @@ public static class YouTubeAPIHelper
     {
         string tokenResponseString = JsonConvert.SerializeObject(response, Formatting.None);
         GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRataConstants.StoredTokenResponseVariable, tokenResponseString, logger);
-        GitHubAPIClient.DeleteSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, (_) => { });
+        GitHubAPIClient.DeleteSecret(actionEnvironment, YouRataConstants.RedirectCodeVariable, (_) => { });
     }
 
     public static TokenResponse? ExchangeAuthorizationCode(AuthorizationCodeTokenRequest request, GoogleAuthorizationCodeFlow flow)

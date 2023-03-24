@@ -18,15 +18,15 @@ internal class YouTubeSyncWorkflow
     public YouTubeSyncWorkflow()
     {
         _workspace = Environment
-            .GetEnvironmentVariable(GitHubConstants.GitHubWorkspaceVariable);
+            .GetEnvironmentVariable(YouRataConstants.GitHubWorkspaceVariable);
         _tokenResponse = Environment
             .GetEnvironmentVariable(YouRataConstants.StoredTokenResponseVariable);
         _clientId = Environment
-            .GetEnvironmentVariable(YouTubeConstants.ProjectClientIdVariable);
+            .GetEnvironmentVariable(YouRataConstants.ProjectClientIdVariable);
         _clientSecret = Environment
-            .GetEnvironmentVariable(YouTubeConstants.ProjectClientSecretsVariable);
+            .GetEnvironmentVariable(YouRataConstants.ProjectClientSecretsVariable);
         _apiKey = Environment
-            .GetEnvironmentVariable(YouTubeConstants.ProjectApiKeyVariable);
+            .GetEnvironmentVariable(YouRataConstants.ProjectApiKeyVariable);
     }
 #pragma warning restore CS8601
 #pragma warning restore CS8618

@@ -18,15 +18,15 @@ internal class InitialSetupWorkflow
     public InitialSetupWorkflow()
     {
         _redirectCode = Environment
-            .GetEnvironmentVariable(YouTubeConstants.RedirectCodeVariable);
+            .GetEnvironmentVariable(YouRataConstants.RedirectCodeVariable);
         _tokenResponse = Environment
             .GetEnvironmentVariable(YouRataConstants.StoredTokenResponseVariable);
         _clientId = Environment
-            .GetEnvironmentVariable(YouTubeConstants.ProjectClientIdVariable);
+            .GetEnvironmentVariable(YouRataConstants.ProjectClientIdVariable);
         _clientSecret = Environment
-            .GetEnvironmentVariable(YouTubeConstants.ProjectClientSecretsVariable);
+            .GetEnvironmentVariable(YouRataConstants.ProjectClientSecretsVariable);
         _apiKey = Environment
-            .GetEnvironmentVariable(YouTubeConstants.ProjectApiKeyVariable);
+            .GetEnvironmentVariable(YouRataConstants.ProjectApiKeyVariable);
     }
 #pragma warning restore CS8601
 #pragma warning restore CS8618
@@ -44,6 +44,6 @@ internal class InitialSetupWorkflow
     public bool CopyDirectionsReadme
     {
         set => GitHubWorkflowHelper
-            .PushVariable(YouRataConstants.CopyDirectionsReadme, value.ToString());
+            .PushVariable(YouRataConstants.CopyDirectionsReadmeVariable, value.ToString());
     }
 }

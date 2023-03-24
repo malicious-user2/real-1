@@ -10,10 +10,4 @@ public static class GitHubConstants
     public static readonly TimeSpan RequestTimeout = TimeSpan.FromMilliseconds(1000 * 30);
 
     public static ProductHeaderValue ProductHeader => new (ProductHeaderName);
-
-    public static string ActionTokenVariable = "ACTION_TOKEN";
-
-    public static string GitHubWorkspaceVariable = "GITHUB_WORKSPACE";
-
-    public static readonly string ApiTokenVariable = "API_TOKEN";
 }

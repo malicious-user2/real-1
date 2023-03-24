@@ -15,9 +15,9 @@ internal class ConflictMonitorWorkflow
     public ConflictMonitorWorkflow()
     {
         _actionToken = Environment
-            .GetEnvironmentVariable(GitHubConstants.ActionTokenVariable);
+            .GetEnvironmentVariable(YouRataConstants.ActionTokenVariable);
         _apiToken = Environment
-            .GetEnvironmentVariable(GitHubConstants.ApiTokenVariable);
+            .GetEnvironmentVariable(YouRataConstants.ApiTokenVariable);
         _tokenResponse = Environment
             .GetEnvironmentVariable(YouRataConstants.StoredTokenResponseVariable);
         InitialSetupComplete = false;

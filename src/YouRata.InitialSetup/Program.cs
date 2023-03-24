@@ -28,14 +28,14 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         if (string.IsNullOrEmpty(actionEnvironment.ApiToken))
         {
             Console.WriteLine("Entering actions secrets section");
-            Announce($"Create an action secret {GitHubConstants.ApiTokenVariable} to store GitHub personal access token");
+            Announce($"Create an action secret {YouRataConstants.ApiTokenVariable} to store GitHub personal access token");
             GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/secrets/actions\n");
             canContinue = false;
         }
         if (canContinue && (!Regex.IsMatch(actionEnvironment.ApiToken, @"^ghp_[a-zA-Z0-9]{36}$")))
         {
             Console.WriteLine("Entering actions secrets verify section");
-            Announce($"Action secret {GitHubConstants.ApiTokenVariable} is not a GitHub personal access token");
+            Announce($"Action secret {YouRataConstants.ApiTokenVariable} is not a GitHub personal access token");
             canContinue = false;
         }
         if (canContinue && ((string.IsNullOrEmpty(workflow.ProjectClientSecret) || string.IsNullOrEmpty(workflow.ProjectClientId)) ||
@@ -44,17 +44,17 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             Console.WriteLine("Entering actions variables section");
             if (!config.ActionCutOuts.DisableUnsupportedGitHubAPI)
             {
-                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ProjectClientIdVariable, "empty", client.LogMessage);
+                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouRataConstants.ProjectClientIdVariable, "empty", client.LogMessage);
                 client.Keepalive();
-                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouTubeConstants.ProjectClientSecretsVariable, "empty", client.LogMessage);
+                UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouRataConstants.ProjectClientSecretsVariable, "empty", client.LogMessage);
                 client.Keepalive();
                 Announce("Fill repository variables and run action again");
                 GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/variables/actions\n");
             }
             else
             {
-                Announce($"Create an action variable {YouTubeConstants.ProjectClientIdVariable} to store Google API client ID");
-                Announce($"Create an action variable {YouTubeConstants.ProjectClientSecretsVariable} to store Google API client secrets");
+                Announce($"Create an action variable {YouRataConstants.ProjectClientIdVariable} to store Google API client ID");
+                Announce($"Create an action variable {YouRataConstants.ProjectClientSecretsVariable} to store Google API client secrets");
                 GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/variables/actions\n");
             }
             canContinue = false;
@@ -62,10 +62,10 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
         if (canContinue && (string.IsNullOrEmpty(workflow.ProjectApiKey) || workflow.ProjectApiKey.Equals("empty")))
         {
             Console.WriteLine("Entering Google API key section");
-            GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.ProjectApiKeyVariable, "empty", client.LogMessage);
+            GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRataConstants.ProjectApiKeyVariable, "empty", client.LogMessage);
             client.Keepalive();
-            Announce($"Paste Google API key in action secret {YouTubeConstants.ProjectApiKeyVariable}");
-            GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/secrets/actions/{YouTubeConstants.ProjectApiKeyVariable}\n");
+            Announce($"Paste Google API key in action secret {YouRataConstants.ProjectApiKeyVariable}");
+            GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/secrets/actions/{YouRataConstants.ProjectApiKeyVariable}\n");
             canContinue = false;
         }
         if (canContinue && (!YouTubeAPIHelper.GetTokenResponse(workflow.StoredTokenResponse, out _)))
@@ -98,14 +98,14 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             {
                 client.Keepalive();
                 Uri url = flow.CreateAuthorizationCodeRequest(GoogleAuthConsts.LocalhostRedirectUri).Build();
-                GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouTubeConstants.RedirectCodeVariable, "empty", client.LogMessage);
+                GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRataConstants.RedirectCodeVariable, "empty", client.LogMessage);
                 client.Keepalive();
                 Announce("Follow this link to authorize this GitHub application");
                 Announce(url.ToString());
                 Announce("<ins>When finished it is normal that the site can't be reached</ins>");
                 Announce("Copy everything in the website URL between |code=| and |&|");
-                Announce($"Paste this value in action secret {YouTubeConstants.RedirectCodeVariable}");
-                GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/secrets/actions/{YouTubeConstants.RedirectCodeVariable}\n");
+                Announce($"Paste this value in action secret {YouRataConstants.RedirectCodeVariable}");
+                GitHubWorkflowHelper.WriteStepSummary($"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/secrets/actions/{YouRataConstants.RedirectCodeVariable}\n");
                 canContinue = false;
             }
             else

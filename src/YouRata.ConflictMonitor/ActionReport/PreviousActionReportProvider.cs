@@ -15,7 +15,7 @@ internal class PreviousActionReportProvider
     public PreviousActionReportProvider()
     {
         _actionReportRoot = new ActionReportRoot();
-        string? workspace = Environment.GetEnvironmentVariable(GitHubConstants.GitHubWorkspaceVariable);
+        string? workspace = Environment.GetEnvironmentVariable(YouRataConstants.GitHubWorkspaceVariable);
         if (workspace != null)
         {
             string fileName = Path.Combine(workspace, YouRataConstants.ActionReportFileName);

@@ -11,18 +11,19 @@ internal static class YouTubeDescriptionErattaPublisher
 
     public static string GetErrataLink(GitHubActionEnvironment actionEnvironment, string errataBulletinPath)
     {
-        return string.Format(CultureInfo.InvariantCulture, "{0}/{1}/{2}",
+        return string.Format(CultureInfo.InvariantCulture, "{0}/{1}/blob/{2}/{3}",
             actionEnvironment.EnvGitHubServerUrl,
             actionEnvironment.EnvGitHubRepository,
+            actionEnvironment.EnvGitHubRefName,
             errataBulletinPath);
     }
 
     public static string GetAmendedDescription(string description, string erattaLink, YouTubeConfiguration config)
     {
         string errataNotice = string.Format(CultureInfo.InvariantCulture, config.ErrataLinkTemplate, erattaLink);
-        if ((errataNotice.Length + 1 + description.Length) > YouTubeConstants.MaxDescriptionLength && config.TruncateDescriptionOverflow)
+        if ((errataNotice.Length + description.Length) > YouTubeConstants.MaxDescriptionLength && config.TruncateDescriptionOverflow)
         {
-            description = description.Substring(0, description.Length - errataNotice.Length - 1);
+            description = description.Substring(0, description.Length - errataNotice.Length);
         }
         switch (config.ErattaLinkLocation)
         {

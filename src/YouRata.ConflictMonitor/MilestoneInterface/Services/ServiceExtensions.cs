@@ -19,12 +19,6 @@ public static class ServiceExtensions
         services.AddSingleton<IValidatableConfiguration>(resolver => resolver.GetRequiredService<IOptions<YouRataConfiguration>>().Value);
     }
 
-    public static void AddConfigurationWriter(this IServiceCollection services, string settingsFilePath)
-    {
-        ConfigurationWriter writer = new ConfigurationWriter(settingsFilePath);
-        services.TryAddSingleton<IConfigurationWriter>(writer);
-    }
-
     public static void AddGitHubEnvironment(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<GitHubEnvironment>(configuration);

@@ -8,10 +8,12 @@ public class ErrataBulletinConfiguration : BaseValidatableConfiguration
 {
     [Required]
     [Range(1, 50)]
+    [DefaultValue(3)]
     public int EmptyLinesPerMark { get; set; }
 
     [Required]
     [Range(1, 50)]
+    [DefaultValue(30)]
     public int SecondsPerMark { get; set; }
 
     [Required]

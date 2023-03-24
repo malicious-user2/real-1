@@ -19,6 +19,10 @@ public class YouTubeConfiguration : BaseValidatableConfiguration
     public string ErattaLinkLocation { get; set; }
 
     [Required]
+    [DefaultValue(true)]
+    public bool TruncateDescriptionOverflow { get; set; }
+
+    [Required]
     [DefaultValue("To see errata for this video: {0}")]
     public string ErrataLinkTemplate { get; set; }
 

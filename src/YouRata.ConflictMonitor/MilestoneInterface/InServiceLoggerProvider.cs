@@ -59,7 +59,7 @@ internal class InServiceLoggerProvider : ILoggerProvider
             {
                 StringBuilder lineBuilder = new StringBuilder();
                 lineBuilder.Append("[");
-                lineBuilder.Append(DateTime.Now.ToString(TimeConstants.ZuluTimeFormat, CultureInfo.InvariantCulture));
+                lineBuilder.Append(DateTime.Now.ToString(YouRataConstants.ZuluTimeFormat, CultureInfo.InvariantCulture));
                 lineBuilder.Append("] ");
                 lineBuilder.Append("[");
                 lineBuilder.Append(logLevel.ToString());

@@ -56,7 +56,6 @@ internal class WebAppServer
         builder.Logging.Services.AddSingleton<ILoggerProvider, InServiceLoggerProvider>(service => _loggerProvider);
         builder.Services.AddAppConfiguration(appConfig);
         builder.Services.AddGitHubEnvironment(environmentConfig);
-        builder.Services.AddConfigurationWriter(_configurationHelper.SettingsFilePath);
         builder.Services.AddSingleton<ConflictMonitorWorkflow>(service => _conflictMonitorWorkflow);
         builder.Services.AddSingleton<MilestoneIntelligenceRegistry>(service => _milestoneIntelligence);
         builder.Services.AddSingleton<PreviousActionReportProvider>(service => _actionReportProvider);

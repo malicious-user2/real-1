@@ -28,7 +28,7 @@ public class ConfigurationWriter : IConfigurationWriter
         if (configSection == null) return;
         foreach (PropertyInfo propInfo in configSection.GetType().GetProperties())
         {
-            if (propInfo.PropertyType.BaseType != null && propInfo.PropertyType.BaseType == typeof(BaseValidatableConfiguration))
+            if (propInfo.PropertyType.BaseType?.Equals(typeof(BaseValidatableConfiguration)) == true)
             {
                 FillDefaultValues(propInfo.GetValue(configSection));
             }
@@ -45,42 +45,6 @@ public class ConfigurationWriter : IConfigurationWriter
 
     public void WriteSection(string name, object value)
     {
-        JToken jRoot = JObject.Parse(File.ReadAllText(_path));
-        JToken jSeeker = jRoot;
-        JToken jParent = null;
-        string[] parts = name.Split(':');
-        int part = 0;
-        while (jSeeker != null && jSeeker is JObject && part < parts.Length)
-        {
-            jSeeker = jSeeker[parts[part]];
-            part++;
-        }
-        if (jSeeker != null && (!(jSeeker is JObject)))
-        {
-            throw new FormatException("Section");
-        }
-        if (part == (parts.Length - 1))
-        {
-            jParent = jSeeker;
-        }
-        if (jParent == null)
-        {
-            jSeeker = jRoot;
-            part = 0;
-            while (jSeeker != null && jSeeker is JObject && part < (parts.Length - 1))
-            {
-                if (jSeeker[parts[part]] == null)
-                {
-                    jSeeker[parts[part]] = JObject.FromObject(new { });
-                }
-                jSeeker = jSeeker[parts[part]];
-                part++;
-            }
-            jParent = jSeeker;
-        }
-        string sectionName = parts[parts.Length - 1];
-        if (jParent == null) return;
-        jParent[sectionName] = JToken.FromObject(value);
-        File.WriteAllText(_path, JsonConvert.SerializeObject(jRoot, Formatting.Indented));
+        throw new NotImplementedException("No writer for this configuration");
     }
 }

@@ -76,7 +76,10 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                         {
                             string erattaLink = YouTubeDescriptionErattaPublisher.GetErrataLink(actionEnvironment, errataBulletinPath);
                             string newDescription = YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink, config.YouTube);
-                            YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, milestoneInt, ytService, client);
+                            if (newDescription.Length <= YouTubeConstants.MaxDescriptionLength)
+                            {
+                                YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, milestoneInt, ytService, client);
+                            }
                             client.Keepalive();
                         }
                     }

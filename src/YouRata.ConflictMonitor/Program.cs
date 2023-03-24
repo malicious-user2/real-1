@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using YouRata.Common.Configurations;
 using YouRata.Common.GitHub;
-using YouRata.Common.YouTube;
 using YouRata.ConflictMonitor.ActionReport;
 using YouRata.ConflictMonitor.MilestoneCall;
 using YouRata.ConflictMonitor.MilestoneData;

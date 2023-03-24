@@ -5,7 +5,7 @@ namespace YouRata.Common.GitHub;
 
 public static class GitHubConstants
 {
-    public static readonly string ProductHeaderName = "YouRata";
+    public const string ProductHeaderName = "YouRata";
 
     public static readonly TimeSpan RequestTimeout = TimeSpan.FromMilliseconds(1000 * 30);
 

@@ -8,51 +8,50 @@ namespace YouRata.Common.Configurations;
 public sealed class ConfigurationHelper
 {
     private readonly string[] _args;
-    private readonly string _settingsFileName = "yourata-settings.json";
-    private string _settingsPath;
 
     public ConfigurationHelper(string[] args)
     {
         _args = args;
-        _settingsPath = string.Empty;
     }
 
     public IConfiguration Build()
     {
         DirectoryInfo startingDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
         DirectoryInfo searchingDirectory = startingDirectory;
+        string _settingsPath = string.Empty;
+        string _settingsDirectory = string.Empty;
         while (!searchingDirectory.GetFiles("*.sln").Any())
         {
             searchingDirectory = searchingDirectory.Parent ?? throw new FileNotFoundException("Solution file could not be found in any parent directory"); ;
         }
         if (searchingDirectory?.Parent != null)
         {
-            _settingsPath = Path.Combine(searchingDirectory.Parent.FullName, _settingsFileName);
+            _settingsPath = Path.Combine(searchingDirectory.Parent.FullName, YouRataConstants.SettingsFileName);
+            _settingsDirectory = searchingDirectory.Parent.FullName;
         }
         else
         {
-            _settingsPath = Path.Combine(startingDirectory.FullName, _settingsFileName);
+            _settingsPath = Path.Combine(startingDirectory.FullName, YouRataConstants.SettingsFileName);
+            _settingsDirectory = startingDirectory.FullName;
         }
         if (!Path.Exists(_settingsPath))
         {
-            CreateBlankConfig();
+            CreateBlankConfig(_settingsPath);
         }
         return new ConfigurationBuilder()
-            .SetBasePath(Path.GetDirectoryName(_settingsPath))
-            .AddJsonFile(_settingsFileName, false, true)
+            .SetBasePath(_settingsDirectory)
+            .AddJsonFile(YouRataConstants.SettingsFileName, false, true)
             .AddCommandLine(_args)
             .Build();
     }
 
-    public void CreateBlankConfig()
+    private void CreateBlankConfig(string settingsPath)
     {
-        if (Path.Exists(_settingsPath))
+        if (Path.Exists(settingsPath))
         {
-            throw new IOException($"Configuration file {_settingsPath} already exists");
+            throw new IOException($"Configuration file {settingsPath} already exists");
         }
-        ConfigurationWriter writer = new ConfigurationWriter(_settingsPath);
+        ConfigurationWriter writer = new ConfigurationWriter(settingsPath);
         writer.WriteBlankFile();
     }
-
-    public string SettingsFilePath => _settingsPath;
 }

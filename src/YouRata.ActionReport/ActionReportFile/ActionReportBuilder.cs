@@ -22,7 +22,7 @@ internal class ActionReportBuilder
 
     public string Build()
     {
-        string zuluTime = DateTime.Now.ToString(TimeConstants.ZuluTimeFormat, CultureInfo.InvariantCulture);
+        string zuluTime = DateTime.Now.ToString(YouRataConstants.ZuluTimeFormat, CultureInfo.InvariantCulture);
         string status = "Unknown";
         JsonFormatter intelligenceFormatter = new JsonFormatter(JsonFormatter.Settings.Default.WithFormatDefaultValues(true));
         MilestoneActionIntelligence milestoneInt = _actionIntelligence.MilestoneIntelligence;

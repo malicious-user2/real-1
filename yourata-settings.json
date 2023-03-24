@@ -20,8 +20,8 @@
     "DisableActionReportMilestone": false
   },
   "MilestoneLifetime": {
-    "MaxUpdateDwellTime": 0,
-    "MaxRunTime": 0
+    "MaxUpdateDwellTime": 1000,
+    "MaxRunTime": 1500
   },
   "ErrataBulletin": {
     "EmptyLinesPerMark": 3,

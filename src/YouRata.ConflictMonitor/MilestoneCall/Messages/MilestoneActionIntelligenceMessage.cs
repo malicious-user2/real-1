@@ -46,7 +46,6 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
 
     public override Task<Empty> KeepaliveInitialSetup(Empty request, ServerCallContext context)
     {
-        _logger.LogError("This is a fake error");
         TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
         _callManager.ActionCallbacks.Enqueue((callHandler) =>
         {
@@ -85,6 +84,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
 
     public override Task<Empty> KeepaliveYouTubeSync(Empty request, ServerCallContext context)
     {
+        _logger.LogError("This is a fake error");
         TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
         _callManager.ActionCallbacks.Enqueue((callHandler) =>
         {

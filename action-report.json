@@ -1,9 +1,9 @@
 {
   "ActionReport": {
-    "Status": "Last Run 2023-03-25 1845Z",
+    "Status": "Last Run 2023-03-25 1848Z",
     "InitialSetupIntelligence": "{ \"Condition\": \"MILESTONE_PENDING\", \"ProcessId\": 0 }",
-    "YouTubeSyncIntelligence": "{ \"Condition\": \"MILESTONE_COMPLETED\", \"ProcessId\": 1955, \"VideosProcessed\": 0, \"VideosSkipped\": 1, \"CalculatedQueriesPerDayRemaining\": 9799, \"LastQueryTime\": \"1679769922\", \"FirstVideoPublishTime\": \"1678734856\", \"OutstandingVideoPublishTime\": \"0\", \"HasOutstandingVideos\": false }",
-    "ActionReportIntelligence": "{ \"Condition\": \"MILESTONE_RUNNING\", \"ProcessId\": 1995 }",
-    "Logs": "[ \"[2023-03-25 1845Z] [Warning] (Microsoft.AspNetCore.Server.Kestrel) Overriding address(es) 'https://localhost:7040'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.\\n\", \"[2023-03-25 1845Z] [Information] (Microsoft.Hosting.Lifetime) Now listening on: http://unix:/tmp/yourata.sock\\n\", \"[2023-03-25 1845Z] [Information] (Microsoft.Hosting.Lifetime) Application started. Press Ctrl+C to shut down.\\n\", \"[2023-03-25 1845Z] [Information] (Microsoft.Hosting.Lifetime) Hosting environment: Development\\n\", \"[2023-03-25 1845Z] [Information] (Microsoft.Hosting.Lifetime) Content root path: /home/runner/work/real/real/src/YouRata.ConflictMonitor\\n\" ]"
+    "YouTubeSyncIntelligence": "{ \"Condition\": \"MILESTONE_COMPLETED\", \"ProcessId\": 1983, \"VideosProcessed\": 0, \"VideosSkipped\": 1, \"CalculatedQueriesPerDayRemaining\": 9698, \"LastQueryTime\": \"1679770103\", \"FirstVideoPublishTime\": \"1678734856\", \"OutstandingVideoPublishTime\": \"0\", \"HasOutstandingVideos\": false }",
+    "ActionReportIntelligence": "{ \"Condition\": \"MILESTONE_RUNNING\", \"ProcessId\": 2023 }",
+    "Logs": "[ \"[2023-03-25 1848Z] [Warning] (Microsoft.AspNetCore.Server.Kestrel) Overriding address(es) 'https://localhost:7040'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.\\n\", \"[2023-03-25 1848Z] [Information] (Microsoft.Hosting.Lifetime) Now listening on: http://unix:/tmp/yourata.sock\\n\", \"[2023-03-25 1848Z] [Information] (Microsoft.Hosting.Lifetime) Application started. Press Ctrl+C to shut down.\\n\", \"[2023-03-25 1848Z] [Information] (Microsoft.Hosting.Lifetime) Hosting environment: Development\\n\", \"[2023-03-25 1848Z] [Information] (Microsoft.Hosting.Lifetime) Content root path: /home/runner/work/real/real/src/YouRata.ConflictMonitor\\n\", \"[2023-03-25 1848Z] [Error] (YouRata.ConflictMonitor.MilestoneCall.Messages.MilestoneActionIntelligenceMessage) This is a fake error\\n\", \"[2023-03-25 1848Z] [Error] (YouRata.ConflictMonitor.MilestoneCall.Messages.MilestoneActionIntelligenceMessage) This is a fake error\\n\" ]"
   }
 }

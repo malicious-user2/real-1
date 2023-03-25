@@ -14,23 +14,23 @@ internal class PreviousActionReportProvider
 
     public PreviousActionReportProvider()
     {
+        _missingActionReport = true;
         _actionReportRoot = new ActionReportRoot();
         string? workspace = Environment.GetEnvironmentVariable(YouRataConstants.GitHubWorkspaceVariable);
-        if (workspace != null)
+        if (workspace == null) return;
+        string fileName = Path.Combine(workspace, YouRataConstants.ActionReportFileName);
+        try
         {
-            string fileName = Path.Combine(workspace, YouRataConstants.ActionReportFileName);
-            try
+            ActionReportRoot? deserializeActionReportRoot = JsonConvert.DeserializeObject<ActionReportRoot>(File.ReadAllText(fileName));
+            if (deserializeActionReportRoot != null)
             {
-                ActionReportRoot? deserializeActionReportRoot = JsonConvert.DeserializeObject<ActionReportRoot>(File.ReadAllText(fileName));
-                if (deserializeActionReportRoot != null)
-                {
-                    _actionReportRoot = deserializeActionReportRoot;
-                }
+                _actionReportRoot = deserializeActionReportRoot;
+                _missingActionReport = false;
             }
-            catch
-            {
-                _missingActionReport = true;
-            }
+        }
+        catch
+        {
+            Console.WriteLine("No previous action report found");
         }
     }
 

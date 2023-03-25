@@ -52,14 +52,20 @@ internal class InServiceLoggerProvider : ILoggerProvider
             return true;
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception?, string> formatter)
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+            Func<TState, Exception?, string> formatter)
         {
-            if (!IsEnabled(logLevel)) return;
-            Func<TState, Exception, string> defaultFormatter = (fnState, fnException) =>
+            if (!IsEnabled(logLevel))
             {
-                StringBuilder lineBuilder = new StringBuilder();
+                return;
+            }
+
+            Func<TState, Exception?, string> defaultFormatter = (fnState, fnException) =>
+            {
+                var lineBuilder = new StringBuilder();
                 lineBuilder.Append("[");
-                lineBuilder.Append(DateTime.Now.ToString(YouRataConstants.ZuluTimeFormat, CultureInfo.InvariantCulture));
+                lineBuilder.Append(DateTime.Now.ToString(YouRataConstants.ZuluTimeFormat,
+                    CultureInfo.InvariantCulture));
                 lineBuilder.Append("] ");
                 lineBuilder.Append("[");
                 lineBuilder.Append(logLevel.ToString());
@@ -68,14 +74,13 @@ internal class InServiceLoggerProvider : ILoggerProvider
                 {
                     lineBuilder.AppendLine(exception.ToString());
                 }
-                if (_categoryName != null)
+
+                if (!string.IsNullOrEmpty(_categoryName))
                 {
                     lineBuilder.Append(string.Format(CultureInfo.InvariantCulture, "({0}) ", _categoryName));
                 }
-                if (formatter != null)
-                {
-                    lineBuilder.AppendLine(formatter(state, exception));
-                }
+
+                lineBuilder.AppendLine(formatter(state, exception));
                 return lineBuilder.ToString();
             };
             _handler.AppendLog(defaultFormatter(state, exception));

@@ -39,11 +39,13 @@ internal class CallHandler
             ResourceRateLimit? ghRateLimit = default;
             Func<ResourceRateLimit> getResourceRateLimit = (() =>
             {
-                GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader);
-                ghClient.Credentials = new Credentials(workflow.GitHubToken, AuthenticationType.Bearer);
+                GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
+                {
+                    Credentials = new Credentials(workflow.GitHubToken, AuthenticationType.Bearer)
+                };
                 return ghClient.RateLimit.GetRateLimits().Result.Resources;
             });
-            ghRateLimit = GitHubRetryHelper.RetryCommand<ResourceRateLimit>(actionEnvironment.OverrideRateLimit(), getResourceRateLimit, AppendLog);
+            ghRateLimit = GitHubRetryHelper.RetryCommand(actionEnvironment.OverrideRateLimit(), getResourceRateLimit, AppendLog);
             if (ghRateLimit != null)
             {
                 actionEnvironment.RateLimitCoreRemaining = ghRateLimit.Core.Remaining;
@@ -58,14 +60,10 @@ internal class CallHandler
 
     internal string GetPreviousActionReport(YouRataConfiguration appConfig, PreviousActionReportProvider actionReportProvider)
     {
-        if (actionReportProvider.ActionReport != null && !actionReportProvider.IsMissing)
-        {
-            return JsonConvert.SerializeObject(actionReportProvider.ActionReport, Formatting.None);
-        }
-        return string.Empty;
+        return (actionReportProvider.IsMissing) ? string.Empty : JsonConvert.SerializeObject(actionReportProvider.ActionReport, Formatting.None);
     }
 
-    internal MilestoneActionIntelligence GetMilestoneActionIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence)
+    internal MilestoneActionIntelligence GetMilestoneActionIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence)
     {
         MilestoneActionIntelligence actionIntelligence = new MilestoneActionIntelligence
         {
@@ -97,7 +95,7 @@ internal class CallHandler
         return actionIntelligence;
     }
 
-    internal void UpdateInitialSetupActionIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, InitialSetupActionIntelligence actionIntelligence)
+    internal void UpdateInitialSetupActionIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence, InitialSetupActionIntelligence actionIntelligence)
     {
         long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
         milestoneIntelligence.InitialSetup.Condition = actionIntelligence.Condition;
@@ -115,7 +113,7 @@ internal class CallHandler
         milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
     }
 
-    internal void UpdateYouTubeSyncActionIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, YouTubeSyncActionIntelligence actionIntelligence)
+    internal void UpdateYouTubeSyncActionIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence, YouTubeSyncActionIntelligence actionIntelligence)
     {
         long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
         milestoneIntelligence.YouTubeSync.Condition = actionIntelligence.Condition;
@@ -140,7 +138,7 @@ internal class CallHandler
         milestoneIntelligence.YouTubeSync.LastUpdate = updateTime;
     }
 
-    internal void UpdateActionReportMilestoneIntelligence(YouRataConfiguration appConfig, MilestoneIntelligenceRegistry milestoneIntelligence, ActionReportActionIntelligence actionIntelligence)
+    internal void UpdateActionReportMilestoneIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence, ActionReportActionIntelligence actionIntelligence)
     {
         long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
         milestoneIntelligence.ActionReport.Condition = actionIntelligence.Condition;
@@ -184,6 +182,9 @@ internal class CallHandler
 
     internal List<string> GetLogs()
     {
-        return _logBuilder;
+        lock (_logBuilder)
+        {
+            return _logBuilder;
+        }
     }
 }

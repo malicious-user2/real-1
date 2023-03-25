@@ -16,16 +16,12 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
 {
     private readonly ILogger<MilestoneActionIntelligenceMessage> _logger;
     private readonly CallManager _callManager;
-    private readonly IOptions<YouRataConfiguration> _configuration;
-    private readonly IOptions<GitHubEnvironment> _environment;
     private readonly MilestoneIntelligenceRegistry _milestoneIntelligence;
 
-    public MilestoneActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager, IOptions<YouRataConfiguration> configuration, IOptions<GitHubEnvironment> environment, MilestoneIntelligenceRegistry milestoneIntelligence)
+    public MilestoneActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager, MilestoneIntelligenceRegistry milestoneIntelligence)
     {
         _logger = loggerFactory.CreateLogger<MilestoneActionIntelligenceMessage>();
         _callManager = callManager;
-        _configuration = configuration;
-        _environment = environment;
         _milestoneIntelligence = milestoneIntelligence;
     }
 
@@ -36,7 +32,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         {
             try
             {
-                callHandler.UpdateInitialSetupActionIntelligence(_configuration.Value, _milestoneIntelligence, request);
+                callHandler.UpdateInitialSetupActionIntelligence(_milestoneIntelligence, request);
             }
             catch (Exception e)
             {
@@ -50,6 +46,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
 
     public override Task<Empty> KeepaliveInitialSetup(Empty request, ServerCallContext context)
     {
+        _logger.LogError("This is a fake error");
         TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
         _callManager.ActionCallbacks.Enqueue((callHandler) =>
         {
@@ -74,7 +71,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         {
             try
             {
-                callHandler.UpdateYouTubeSyncActionIntelligence(_configuration.Value, _milestoneIntelligence, request);
+                callHandler.UpdateYouTubeSyncActionIntelligence(_milestoneIntelligence, request);
             }
             catch (Exception e)
             {
@@ -112,7 +109,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         {
             try
             {
-                callHandler.UpdateActionReportMilestoneIntelligence(_configuration.Value, _milestoneIntelligence, request);
+                callHandler.UpdateActionReportMilestoneIntelligence(_milestoneIntelligence, request);
             }
             catch (Exception e)
             {

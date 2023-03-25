@@ -12,6 +12,7 @@ using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using Newtonsoft.Json.Linq;
 using Octokit;
+using YouRata.Common;
 using YouRata.Common.ActionReport;
 using YouRata.Common.Configuration;
 using YouRata.Common.GitHub;
@@ -60,7 +61,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 if (video.ContentDetails == null) continue;
                 if (video.Snippet == null) continue;
                 if (processedVideos.Contains(video.Id)) continue;
-                string errataBulletinPath = $"{ErrataBulletinConstants.ErrataRootDirectory}" +
+                string errataBulletinPath = $"{YouRataConstants.ErrataRootDirectory}" +
                     $"{video.Id}.md";
                 if (!Path.Exists(Path.Combine(workflow.Workspace, errataBulletinPath)))
                 {

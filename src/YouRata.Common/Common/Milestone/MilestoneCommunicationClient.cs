@@ -86,7 +86,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
 
     public virtual T Activate<T>(System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
     {
-        T? milestoneActionIntelligence = (T?)Activator.CreateInstance(milestoneIntelligenceType) ?? throw new MilestoneException("Invalid milestone type to activate");
+        T milestoneActionIntelligence = (T?)Activator.CreateInstance(milestoneIntelligenceType) ?? throw new MilestoneException("Invalid milestone type to activate");
         milestoneActionIntelligence.GetType().GetProperty("ProcessId")?.SetValue(milestoneActionIntelligence, Process.GetCurrentProcess().Id);
         milestoneActionIntelligence.GetType().GetProperty("Condition")?.SetValue(milestoneActionIntelligence, MilestoneCondition.MilestoneRunning);
         SetMilestoneActionIntelligence(milestoneActionIntelligence, milestoneIntelligenceType, milestoneIntelligenceName);
@@ -301,7 +301,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
 
         internal ValueTask<Stream> PlaintextFilter(SocketsHttpPlaintextStreamFilterContext filterContext, CancellationToken cancellationToken = default)
         {
-            return new ValueTask<Stream>(Task.Run<Stream>(() => filterContext.PlaintextStream, cancellationToken));
+            return new ValueTask<Stream>(Task.Run(() => filterContext.PlaintextStream, cancellationToken));
         }
     }
 }

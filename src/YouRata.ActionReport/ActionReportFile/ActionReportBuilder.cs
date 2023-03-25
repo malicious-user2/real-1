@@ -9,7 +9,7 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.ActionReport.ActionReportFile;
 
-internal class ActionReportBuilder
+internal sealed class ActionReportBuilder
 {
     private readonly ActionIntelligence _actionIntelligence;
     private readonly string _logMessages;

@@ -21,9 +21,9 @@ public sealed class ConfigurationHelper
         string settingsDirectory;
         while (!searchingDirectory.GetFiles("*.sln").Any())
         {
-            searchingDirectory = searchingDirectory.Parent ?? throw new FileNotFoundException("Solution file could not be found in any parent directory"); ;
+            searchingDirectory = searchingDirectory.Parent ?? throw new FileNotFoundException("Solution file could not be found in any parent directory");
         }
-        if (searchingDirectory?.Parent != null)
+        if (searchingDirectory.Parent != null)
         {
             settingsPath = Path.Combine(searchingDirectory.Parent.FullName, YouRataConstants.SettingsFileName);
             settingsDirectory = searchingDirectory.Parent.FullName;

@@ -17,14 +17,17 @@ internal static class YouTubePlaylistHelper
         if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<string> videoIds = new List<string>();
         List<ResourceId> playlistResourceIds = new List<ResourceId>();
+        if (config.ExcludePlaylists == null) return playlistResourceIds;
         string[] playlists = config.ExcludePlaylists;
         if (playlists == null) return playlistResourceIds;
         foreach (string playlist in playlists)
         {
-            if (playlist == null) continue;
-            PlaylistItemsResource.ListRequest playlistRequest = new PlaylistItemsResource.ListRequest(service, new [] { YouTubeConstants.RequestSnippetPart, YouTubeConstants.RequestStatusPart });
-            playlistRequest.PlaylistId = playlist;
-            playlistRequest.MaxResults = 50;
+            if (string.IsNullOrEmpty(playlist)) continue;
+            PlaylistItemsResource.ListRequest playlistRequest = new PlaylistItemsResource.ListRequest(service, new[] { YouTubeConstants.RequestSnippetPart, YouTubeConstants.RequestStatusPart })
+            {
+                PlaylistId = playlist,
+                MaxResults = 50
+            };
             bool requestNextPage = true;
             while (requestNextPage)
             {

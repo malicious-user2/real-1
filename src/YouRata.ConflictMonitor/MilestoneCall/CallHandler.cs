@@ -36,7 +36,6 @@ internal class CallHandler
         GitHubActionEnvironment actionEnvironment = environment.GetActionEnvironment();
         if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GitHubToken?.Length > 0 && workflow.ApiToken?.Length > 0)
         {
-            ResourceRateLimit? ghRateLimit = default;
             Func<ResourceRateLimit> getResourceRateLimit = (() =>
             {
                 GitHubClient ghClient = new GitHubClient(GitHubConstants.ProductHeader)
@@ -45,7 +44,7 @@ internal class CallHandler
                 };
                 return ghClient.RateLimit.GetRateLimits().Result.Resources;
             });
-            ghRateLimit = GitHubRetryHelper.RetryCommand(actionEnvironment.OverrideRateLimit(), getResourceRateLimit, AppendLog);
+            ResourceRateLimit? ghRateLimit = GitHubRetryHelper.RetryCommand(actionEnvironment.OverrideRateLimit(), getResourceRateLimit, AppendLog);
             if (ghRateLimit != null)
             {
                 actionEnvironment.RateLimitCoreRemaining = ghRateLimit.Core.Remaining;

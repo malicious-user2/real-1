@@ -101,8 +101,7 @@ public static class GitHubAPIClient
         {
             return conClient.GetAllContentsByRef(repository[0], repository[1], path, environment.EnvGitHubRefName).Result;
         });
-        bool noContentsFound = false;
-        IReadOnlyList<RepositoryContent>? foundContent = GitHubRetryHelper.RetryCommand(environment, getContents, logger, typeof(NotFoundException), out noContentsFound);
+        IReadOnlyList<RepositoryContent>? foundContent = GitHubRetryHelper.RetryCommand(environment, getContents, logger, typeof(NotFoundException), out bool noContentsFound);
         if (noContentsFound)
         {
             Action createFile = (() =>

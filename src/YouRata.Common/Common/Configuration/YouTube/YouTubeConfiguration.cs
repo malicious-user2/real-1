@@ -5,6 +5,7 @@ namespace YouRata.Common.Configuration.YouTube;
 
 public class YouTubeConfiguration : BaseValidatableConfiguration
 {
+#pragma warning disable CS8618
     [RegularExpression(@"^UC[-_0-9A-Za-z]{21}[AQgw]$", ErrorMessage = "Invalid YouTubeConfiguration.ChannelId")]
     public string ChannelId { get; set; }
 
@@ -37,6 +38,5 @@ public class YouTubeConfiguration : BaseValidatableConfiguration
     [Required]
     [DefaultValue(60)]
     public int MinVideoSeconds { get; set; }
-
-
+#pragma warning restore CS8618
 }

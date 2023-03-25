@@ -84,7 +84,6 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
 
     public override Task<Empty> KeepaliveYouTubeSync(Empty request, ServerCallContext context)
     {
-        _logger.LogError(new Exception("oh crap"), "craaaaap");
         TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
         _callManager.ActionCallbacks.Enqueue((callHandler) =>
         {

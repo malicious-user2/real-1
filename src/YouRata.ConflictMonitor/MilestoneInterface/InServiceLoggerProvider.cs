@@ -36,7 +36,7 @@ internal class InServiceLoggerProvider : ILoggerProvider
         private readonly string _categoryName;
         private readonly CallHandler _handler;
 
-        public IDisposable? BeginScope<TState>(TState state)
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
         {
             return null;
         }

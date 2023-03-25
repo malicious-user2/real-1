@@ -70,7 +70,6 @@ internal class MilestoneLifetimeManager : IDisposable
                 IOptions<YouRataConfiguration>? options = _webApp.Services.GetService<IOptions<YouRataConfiguration>>();
                 if (options == null) return;
                 MilestoneLifetimeConfiguration config = options.Value.MilestoneLifetime;
-                if (config == null) return;
                 ILogger<MilestoneLifetimeManager>? logger = _webApp.Services.GetService<ILogger<MilestoneLifetimeManager>>();
                 if (logger == null) return;
                 foreach (BaseMilestoneIntelligence milestoneIntelligence in _milestoneIntelligence.Milestones)

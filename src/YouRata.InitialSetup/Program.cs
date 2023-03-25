@@ -74,24 +74,21 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             GoogleAuthorizationCodeFlow flow = YouTubeAPIHelper.GetFlow(workflow.ProjectClientId, workflow.ProjectClientSecret);
             if (!string.IsNullOrEmpty(workflow.RedirectCode) && workflow.RedirectCode != "empty")
             {
-                using (HttpClient tokenHttpClient = new HttpClient())
+                string redirectTokenCode = workflow.RedirectCode.Trim().Replace("=", "").Replace("&", "");
+                AuthorizationCodeTokenRequest authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(redirectTokenCode, workflow.ProjectClientId, workflow.ProjectClientSecret);
+                TokenResponse? authorizationCodeTokenResponse = YouTubeAPIHelper.ExchangeAuthorizationCode(authorizationCodeTokenRequest, flow);
+                client.Keepalive();
+                if (authorizationCodeTokenResponse != null)
                 {
-                    string redirectTokenCode = workflow.RedirectCode.Trim().Replace("=", "").Replace("&", "");
-                    AuthorizationCodeTokenRequest authorizationCodeTokenRequest = YouTubeAPIHelper.GetTokenRequest(redirectTokenCode, workflow.ProjectClientId, workflow.ProjectClientSecret);
-                    TokenResponse? authorizationCodeTokenResponse = YouTubeAPIHelper.ExchangeAuthorizationCode(authorizationCodeTokenRequest, flow);
+                    YouTubeAPIHelper.SaveTokenResponse(authorizationCodeTokenResponse, actionEnvironment, client.LogMessage);
                     client.Keepalive();
-                    if (authorizationCodeTokenResponse != null)
-                    {
-                        YouTubeAPIHelper.SaveTokenResponse(authorizationCodeTokenResponse, actionEnvironment, client.LogMessage);
-                        client.Keepalive();
-                        Announce($"Google API stored token response has been saved to {YouRataConstants.StoredTokenResponseVariable}");
-                        workflow.CopyDirectionsReadme = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Could not exchange authorization code");
-                        canContinue = false;
-                    }
+                    Announce($"Google API stored token response has been saved to {YouRataConstants.StoredTokenResponseVariable}");
+                    workflow.CopyDirectionsReadme = true;
+                }
+                else
+                {
+                    Console.WriteLine("Could not exchange authorization code");
+                    canContinue = false;
                 }
             }
             else if (GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRataConstants.StoredTokenResponseVariable, "empty", client.LogMessage))

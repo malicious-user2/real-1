@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace YouRata.Common.Configuration;
 
-public class ConfigurationWriter : IConfigurationWriter
+public class ConfigurationWriter
 {
     private readonly string _path;
 
@@ -40,10 +40,5 @@ public class ConfigurationWriter : IConfigurationWriter
                 }
             }
         }
-    }
-
-    public void WriteSection(string name, object value)
-    {
-        throw new NotImplementedException("No writer for this configuration");
     }
 }

@@ -48,7 +48,7 @@ jobs:
           cp .github/readme/DIRECTIONS.md ./README.md
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add ./DIRECTIONS.md
+          git add README.md
           git commit -m "Initial setup complete"
           git push
     - name: Run YouTubeSync

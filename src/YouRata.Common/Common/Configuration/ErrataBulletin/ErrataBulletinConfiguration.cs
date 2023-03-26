@@ -1,3 +1,7 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -12,6 +16,10 @@ public class ErrataBulletinConfiguration : BaseValidatableConfiguration
     public int EmptyLinesPerMark { get; set; }
 
     [Required]
+    [DefaultValue("Enter your errata here")]
+    public string Instructions { get; set; }
+
+    [Required]
     [Range(1, 50)]
     [DefaultValue(30)]
     public int SecondsPerMark { get; set; }
@@ -20,9 +28,5 @@ public class ErrataBulletinConfiguration : BaseValidatableConfiguration
     [DefaultValue("top")]
     [RegularExpression(@"^(top|bottom)$", ErrorMessage = "ErrataBulletinConfiguration.TitleLocation must be top or bottom")]
     public string TitleLocation { get; set; }
-
-    [Required]
-    [DefaultValue("Enter your errata here")]
-    public string Instructions { get; set; }
 #pragma warning restore CS8618
 }

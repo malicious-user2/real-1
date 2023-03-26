@@ -1,3 +1,7 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,10 +23,7 @@ public class ConfigurationsValidator : IValidator
             await Task.Run(() => validatableObject.Validate()).ConfigureAwait(false);
             if (validatableObject is YouRataConfiguration)
             {
-                await Task.Run(() =>
-                {
-                    ((YouRataConfiguration)validatableObject).ValidateConfigurationMembers();
-                }).ConfigureAwait(false);
+                await Task.Run(() => { ((YouRataConfiguration)validatableObject).ValidateConfigurationMembers(); }).ConfigureAwait(false);
             }
         }
     }

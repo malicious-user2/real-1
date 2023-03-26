@@ -1,31 +1,31 @@
 {
-  "YouTube": {
-    "ChannelId": "UCEvt5rd7Mvh2slOs1vHYezg",
-    "ExcludePlaylists": null,
-    "ExcludeVideos": null,
-    "ErattaLinkLocation": "bottom",
-    "TruncateDescriptionOverflow": true,
-    "ErrataLinkTemplate": "To see errata for this video: {0}",
-    "QueriesPerDay": 10000,
-    "VideoDurationFilter": "any",
-    "MinVideoSeconds": 60
-  },
   "ActionCutOuts": {
+    "DisableActionReportMilestone": false,
     "DisableConflictMonitorGitHubOperations": false,
     "DisableInitialSetupMilestone": false,
     "DisableUnsupportedGitHubAPI": false,
     "DisableYouTubeSyncMilestone": false,
-    "DisableYouTubeVideoUpdate": false,
-    "DisableActionReportMilestone": false
-  },
-  "MilestoneLifetime": {
-    "MaxUpdateDwellTime": 1000,
-    "MaxRunTime": 1500
+    "DisableYouTubeVideoUpdate": false
   },
   "ErrataBulletin": {
     "EmptyLinesPerMark": 3,
+    "Instructions": "Enter your errata here",
     "SecondsPerMark": 30,
-    "TitleLocation": "top",
-    "Instructions": "Enter your errata here"
+    "TitleLocation": "top"
+  },
+  "MilestoneLifetime": {
+    "MaxRunTime": 1000,
+    "MaxUpdateDwellTime": 1500
+  },
+  "YouTube": {
+    "ChannelId": "UCEvt5rd7Mvh2slOs1vHYezg",
+    "ErattaLinkLocation": "bottom",
+    "ErrataLinkTemplate": "To see errata for this video: {0}",
+    "ExcludePlaylists": null,
+    "ExcludeVideos": null,
+    "MinVideoSeconds": 60,
+    "QueriesPerDay": 10000,
+    "TruncateDescriptionOverflow": true,
+    "VideoDurationFilter": "any"
   }
 }

@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
@@ -9,32 +12,13 @@ namespace YouRata.ConflictMonitor.MilestoneCall.Messages;
 
 internal class LogMessage : LogService.LogServiceBase
 {
-    private readonly ILogger<LogMessage> _logger;
     private readonly CallManager _callManager;
+    private readonly ILogger<LogMessage> _logger;
 
     public LogMessage(ILoggerFactory loggerFactory, CallManager callManager)
     {
         _logger = loggerFactory.CreateLogger<LogMessage>();
         _callManager = callManager;
-    }
-
-    public override Task<Empty> WriteLogMessage(MilestoneLog request, ServerCallContext context)
-    {
-        TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
-        _callManager.ActionCallbacks.Enqueue((callHandler) =>
-        {
-            try
-            {
-                callHandler.LogMessage($"({request.Milestone}) {request.Message}");
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Error on WriteLogMessage: {e.Message}");
-            }
-            emptyResult.SetResult(new Empty());
-        });
-        _callManager.ActionReady.Set();
-        return emptyResult.Task;
     }
 
     public override Task<LogMessages> GetLogMessages(Empty request, ServerCallContext context)
@@ -51,9 +35,30 @@ internal class LogMessage : LogService.LogServiceBase
             {
                 _logger.LogError($"Error on GetLogMessages: {e.Message}");
             }
+
             logMessagesResult.SetResult(logMessages);
         });
         _callManager.ActionReady.Set();
         return logMessagesResult.Task;
+    }
+
+    public override Task<Empty> WriteLogMessage(MilestoneLog request, ServerCallContext context)
+    {
+        TaskCompletionSource<Empty> emptyResult = new TaskCompletionSource<Empty>();
+        _callManager.ActionCallbacks.Enqueue((callHandler) =>
+        {
+            try
+            {
+                callHandler.LogMessage($"({request.Milestone}) {request.Message}");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error on WriteLogMessage: {e.Message}");
+            }
+
+            emptyResult.SetResult(new Empty());
+        });
+        _callManager.ActionReady.Set();
+        return emptyResult.Task;
     }
 }

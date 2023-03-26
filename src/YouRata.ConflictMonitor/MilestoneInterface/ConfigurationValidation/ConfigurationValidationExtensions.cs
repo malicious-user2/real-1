@@ -1,3 +1,7 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,7 +10,7 @@ using YouRata.Common.Configuration;
 
 namespace YouRata.ConflictMonitor.MilestoneInterface.ConfigurationValidation;
 
-public static class ConfigurationValidationExtensions
+internal static class ConfigurationValidationExtensions
 {
     public static async Task ValidateConfigurationAsync(this IHost host)
     {

@@ -1,9 +1,11 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,11 +19,11 @@ namespace YouRata.ConflictMonitor.MilestoneProcess;
 
 internal class MilestoneLifetimeManager : IDisposable
 {
-    private readonly WebApplication _webApp;
+    private readonly object _lock = new();
     private readonly MilestoneIntelligenceRegistry _milestoneIntelligence;
-    private readonly object _lock = new ();
-    private bool _disposed;
     private readonly CancellationTokenSource _stopTokenSource;
+    private readonly WebApplication _webApp;
+    private bool _disposed;
 
     internal MilestoneLifetimeManager(WebApplication webApp, MilestoneIntelligenceRegistry milestoneIntelligence)
     {
@@ -55,6 +57,7 @@ internal class MilestoneLifetimeManager : IDisposable
                         Task.Delay(YouRataConstants.MilestoneLifetimeCheckInterval, _stopTokenSource.Token);
                         ProcessLifetimeManager();
                     }
+
                     _stopTokenSource.Dispose();
                 });
             }
@@ -75,9 +78,9 @@ internal class MilestoneLifetimeManager : IDisposable
                 foreach (BaseMilestoneIntelligence milestoneIntelligence in _milestoneIntelligence.Milestones)
                 {
                     if (milestoneIntelligence.Condition == MilestoneCondition.MilestoneRunning &&
-                    milestoneIntelligence.LastUpdate != 0 &&
-                    milestoneIntelligence.StartTime != 0 &&
-                    milestoneIntelligence.ProcessId != 0)
+                        milestoneIntelligence.LastUpdate != 0 &&
+                        milestoneIntelligence.StartTime != 0 &&
+                        milestoneIntelligence.ProcessId != 0)
                     {
                         long dwellTime = DateTimeOffset.Now.ToUnixTimeSeconds() - milestoneIntelligence.LastUpdate;
                         long runTime = DateTimeOffset.Now.ToUnixTimeSeconds() - milestoneIntelligence.StartTime;

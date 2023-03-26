@@ -1,17 +1,13 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Octokit;
 using YouRata.Common;
-using YouRata.Common.ActionReport;
 using YouRata.Common.Configuration;
 using YouRata.Common.GitHub;
 using YouRata.Common.Proto;
@@ -31,10 +27,25 @@ internal class CallHandler
         _logBuilder = new List<string>();
     }
 
-    internal GitHubActionEnvironment GetGithubActionEnvironment(YouRataConfiguration appConfig, GitHubEnvironment environment, ConflictMonitorWorkflow workflow)
+    internal void AppendLog(string message)
+    {
+        lock (_logBuilder)
+        {
+            _logBuilder.Add(message);
+        }
+    }
+
+    internal string GetConfigJson(YouRataConfiguration appConfig)
+    {
+        return JsonConvert.SerializeObject(appConfig, Formatting.None);
+    }
+
+    internal GitHubActionEnvironment GetGithubActionEnvironment(YouRataConfiguration appConfig, GitHubEnvironment environment,
+        ConflictMonitorWorkflow workflow)
     {
         GitHubActionEnvironment actionEnvironment = environment.GetActionEnvironment();
-        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GitHubToken?.Length > 0 && workflow.ApiToken?.Length > 0)
+        if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GitHubToken?.Length > 0 &&
+            workflow.ApiToken?.Length > 0)
         {
             Func<ResourceRateLimit> getResourceRateLimit = (() =>
             {
@@ -44,33 +55,39 @@ internal class CallHandler
                 };
                 return ghClient.RateLimit.GetRateLimits().Result.Resources;
             });
-            ResourceRateLimit? ghRateLimit = GitHubRetryHelper.RetryCommand(actionEnvironment.OverrideRateLimit(), getResourceRateLimit, AppendLog);
+            ResourceRateLimit? ghRateLimit =
+                GitHubRetryHelper.RetryCommand(actionEnvironment.OverrideRateLimit(), getResourceRateLimit, AppendLog);
             if (ghRateLimit != null)
             {
                 actionEnvironment.RateLimitCoreRemaining = ghRateLimit.Core.Remaining;
                 actionEnvironment.RateLimitCoreLimit = ghRateLimit.Core.Limit;
                 actionEnvironment.RateLimitCoreReset = ghRateLimit.Core.Reset.ToUnixTimeSeconds();
             }
+
             actionEnvironment.GitHubToken = workflow.GitHubToken;
             actionEnvironment.ApiToken = workflow.ApiToken;
         }
+
         return actionEnvironment;
     }
 
-    internal string GetPreviousActionReport(YouRataConfiguration appConfig, PreviousActionReportProvider actionReportProvider)
+    internal List<string> GetLogs()
     {
-        return (actionReportProvider.IsMissing) ? string.Empty : JsonConvert.SerializeObject(actionReportProvider.ActionReport, Formatting.None);
+        lock (_logBuilder)
+        {
+            return _logBuilder;
+        }
     }
 
     internal MilestoneActionIntelligence GetMilestoneActionIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence)
     {
         MilestoneActionIntelligence actionIntelligence = new MilestoneActionIntelligence
         {
-            InitialSetup = new InitialSetupActionIntelligence
-            {
-                Condition = milestoneIntelligence.InitialSetup.Condition,
-                ProcessId = milestoneIntelligence.InitialSetup.ProcessId
-            },
+            InitialSetup =
+                new InitialSetupActionIntelligence
+                {
+                    Condition = milestoneIntelligence.InitialSetup.Condition, ProcessId = milestoneIntelligence.InitialSetup.ProcessId
+                },
             YouTubeSync = new YouTubeSyncActionIntelligence
             {
                 Condition = milestoneIntelligence.YouTubeSync.Condition,
@@ -86,67 +103,18 @@ internal class CallHandler
             },
             ActionReport = new ActionReportActionIntelligence
             {
-                Condition = milestoneIntelligence.ActionReport.Condition,
-                ProcessId = milestoneIntelligence.ActionReport.ProcessId
+                Condition = milestoneIntelligence.ActionReport.Condition, ProcessId = milestoneIntelligence.ActionReport.ProcessId
             }
         };
 
         return actionIntelligence;
     }
 
-    internal void UpdateInitialSetupActionIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence, InitialSetupActionIntelligence actionIntelligence)
+    internal string GetPreviousActionReport(YouRataConfiguration appConfig, PreviousActionReportProvider actionReportProvider)
     {
-        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-        milestoneIntelligence.InitialSetup.Condition = actionIntelligence.Condition;
-        milestoneIntelligence.InitialSetup.ProcessId = actionIntelligence.ProcessId;
-        if (milestoneIntelligence.InitialSetup.StartTime == 0)
-        {
-            milestoneIntelligence.InitialSetup.StartTime = updateTime;
-        }
-        milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
-    }
-
-    internal void KeepaliveInitialSetup(MilestoneIntelligenceRegistry milestoneIntelligence)
-    {
-        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-        milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
-    }
-
-    internal void UpdateYouTubeSyncActionIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence, YouTubeSyncActionIntelligence actionIntelligence)
-    {
-        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-        milestoneIntelligence.YouTubeSync.Condition = actionIntelligence.Condition;
-        milestoneIntelligence.YouTubeSync.ProcessId = actionIntelligence.ProcessId;
-        if (milestoneIntelligence.YouTubeSync.StartTime == 0)
-        {
-            milestoneIntelligence.YouTubeSync.StartTime = updateTime;
-        }
-        milestoneIntelligence.YouTubeSync.LastUpdate = updateTime;
-        milestoneIntelligence.YouTubeSync.VideosProcessed = actionIntelligence.VideosProcessed;
-        milestoneIntelligence.YouTubeSync.VideosSkipped = actionIntelligence.VideosSkipped;
-        milestoneIntelligence.YouTubeSync.CalculatedQueriesPerDayRemaining = actionIntelligence.CalculatedQueriesPerDayRemaining;
-        milestoneIntelligence.YouTubeSync.LastQueryTime = actionIntelligence.LastQueryTime;
-        milestoneIntelligence.YouTubeSync.FirstVideoPublishTime = actionIntelligence.FirstVideoPublishTime;
-        milestoneIntelligence.YouTubeSync.OutstandingVideoPublishTime = actionIntelligence.OutstandingVideoPublishTime;
-        milestoneIntelligence.YouTubeSync.HasOutstandingVideos = actionIntelligence.HasOutstandingVideos;
-    }
-
-    internal void KeepaliveYouTubeSync(MilestoneIntelligenceRegistry milestoneIntelligence)
-    {
-        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-        milestoneIntelligence.YouTubeSync.LastUpdate = updateTime;
-    }
-
-    internal void UpdateActionReportMilestoneIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence, ActionReportActionIntelligence actionIntelligence)
-    {
-        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-        milestoneIntelligence.ActionReport.Condition = actionIntelligence.Condition;
-        milestoneIntelligence.ActionReport.ProcessId = actionIntelligence.ProcessId;
-        if (milestoneIntelligence.ActionReport.StartTime == 0)
-        {
-            milestoneIntelligence.ActionReport.StartTime = updateTime;
-        }
-        milestoneIntelligence.ActionReport.LastUpdate = updateTime;
+        return (actionReportProvider.IsMissing)
+            ? string.Empty
+            : JsonConvert.SerializeObject(actionReportProvider.ActionReport, Formatting.None);
     }
 
     internal void KeepaliveActionReport(MilestoneIntelligenceRegistry milestoneIntelligence)
@@ -155,9 +123,16 @@ internal class CallHandler
         milestoneIntelligence.ActionReport.LastUpdate = updateTime;
     }
 
-    internal string GetConfigJson(YouRataConfiguration appConfig)
+    internal void KeepaliveInitialSetup(MilestoneIntelligenceRegistry milestoneIntelligence)
     {
-        return JsonConvert.SerializeObject(appConfig, Formatting.None);
+        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+        milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
+    }
+
+    internal void KeepaliveYouTubeSync(MilestoneIntelligenceRegistry milestoneIntelligence)
+    {
+        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+        milestoneIntelligence.YouTubeSync.LastUpdate = updateTime;
     }
 
     internal void LogMessage(string message)
@@ -171,19 +146,52 @@ internal class CallHandler
         AppendLog(lineBuilder.ToString());
     }
 
-    internal void AppendLog(string message)
+    internal void UpdateActionReportMilestoneIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence,
+        ActionReportActionIntelligence actionIntelligence)
     {
-        lock (_logBuilder)
+        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+        milestoneIntelligence.ActionReport.Condition = actionIntelligence.Condition;
+        milestoneIntelligence.ActionReport.ProcessId = actionIntelligence.ProcessId;
+        if (milestoneIntelligence.ActionReport.StartTime == 0)
         {
-            _logBuilder.Add(message);
+            milestoneIntelligence.ActionReport.StartTime = updateTime;
         }
+
+        milestoneIntelligence.ActionReport.LastUpdate = updateTime;
     }
 
-    internal List<string> GetLogs()
+    internal void UpdateInitialSetupActionIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence,
+        InitialSetupActionIntelligence actionIntelligence)
     {
-        lock (_logBuilder)
+        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+        milestoneIntelligence.InitialSetup.Condition = actionIntelligence.Condition;
+        milestoneIntelligence.InitialSetup.ProcessId = actionIntelligence.ProcessId;
+        if (milestoneIntelligence.InitialSetup.StartTime == 0)
         {
-            return _logBuilder;
+            milestoneIntelligence.InitialSetup.StartTime = updateTime;
         }
+
+        milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
+    }
+
+    internal void UpdateYouTubeSyncActionIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence,
+        YouTubeSyncActionIntelligence actionIntelligence)
+    {
+        long updateTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+        milestoneIntelligence.YouTubeSync.Condition = actionIntelligence.Condition;
+        milestoneIntelligence.YouTubeSync.ProcessId = actionIntelligence.ProcessId;
+        if (milestoneIntelligence.YouTubeSync.StartTime == 0)
+        {
+            milestoneIntelligence.YouTubeSync.StartTime = updateTime;
+        }
+
+        milestoneIntelligence.YouTubeSync.LastUpdate = updateTime;
+        milestoneIntelligence.YouTubeSync.VideosProcessed = actionIntelligence.VideosProcessed;
+        milestoneIntelligence.YouTubeSync.VideosSkipped = actionIntelligence.VideosSkipped;
+        milestoneIntelligence.YouTubeSync.CalculatedQueriesPerDayRemaining = actionIntelligence.CalculatedQueriesPerDayRemaining;
+        milestoneIntelligence.YouTubeSync.LastQueryTime = actionIntelligence.LastQueryTime;
+        milestoneIntelligence.YouTubeSync.FirstVideoPublishTime = actionIntelligence.FirstVideoPublishTime;
+        milestoneIntelligence.YouTubeSync.OutstandingVideoPublishTime = actionIntelligence.OutstandingVideoPublishTime;
+        milestoneIntelligence.YouTubeSync.HasOutstandingVideos = actionIntelligence.HasOutstandingVideos;
     }
 }

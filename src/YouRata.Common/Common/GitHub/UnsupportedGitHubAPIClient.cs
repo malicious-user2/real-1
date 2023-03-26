@@ -1,53 +1,18 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
-using System.Net.Http.Headers;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
-using Newtonsoft.Json.Linq;
-using YouRata.Common.Proto;
 using Newtonsoft.Json;
-using System.Text;
 using YouRata.Common.Milestone;
+using YouRata.Common.Proto;
 
 namespace YouRata.Common.GitHub;
 
 public static class UnsupportedGitHubAPIClient
 {
-    private static void RetryCommand(GitHubActionEnvironment environment, Action command, TimeSpan minRetry, TimeSpan maxRetry, Action<string> logger)
-    {
-        int retryCount = 0;
-        while (retryCount < 3)
-        {
-            try
-            {
-                {
-                    environment.RateLimitCoreRemaining--;
-                    command.Invoke();
-                }
-                break;
-            }
-            catch (Exception ex)
-            {
-                retryCount++;
-                logger.Invoke(ex.Message);
-                if (retryCount > 1)
-                {
-                    throw new MilestoneException("GitHub API failure", ex);
-                }
-            }
-            TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(minRetry, maxRetry);
-            Thread.Sleep(backOff);
-        }
-    }
-
-    public static bool HasRemainingCalls(GitHubActionEnvironment environment)
-    {
-        if (environment.RateLimitCoreRemaining is > 0 and < 100)
-        {
-            Console.WriteLine($"WARNING: Only {environment.RateLimitCoreRemaining} GitHub API calls remaining");
-        }
-        return (environment.RateLimitCoreRemaining >= 3);
-    }
-
     public static bool CreateVariable(GitHubActionEnvironment environment, string variableName, string variableValue, Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) return false;
@@ -76,12 +41,49 @@ public static class UnsupportedGitHubAPIClient
         return false;
     }
 
+    internal static bool HasRemainingCalls(GitHubActionEnvironment environment)
+    {
+        if (environment.RateLimitCoreRemaining is > 0 and < 100)
+        {
+            Console.WriteLine($"WARNING: Only {environment.RateLimitCoreRemaining} GitHub API calls remaining");
+        }
+
+        return (environment.RateLimitCoreRemaining >= 3);
+    }
+
+    private static void RetryCommand(GitHubActionEnvironment environment, Action command, TimeSpan minRetry, TimeSpan maxRetry,
+        Action<string> logger)
+    {
+        int retryCount = 0;
+        while (retryCount < 3)
+        {
+            try
+            {
+                {
+                    environment.RateLimitCoreRemaining--;
+                    command.Invoke();
+                }
+                break;
+            }
+            catch (Exception ex)
+            {
+                retryCount++;
+                logger.Invoke(ex.Message);
+                if (retryCount > 1)
+                {
+                    throw new MilestoneException("GitHub API failure", ex);
+                }
+            }
+
+            TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(minRetry, maxRetry);
+            Thread.Sleep(backOff);
+        }
+    }
+
     public class RepositoryVariable
     {
-        [JsonProperty(PropertyName = "name")]
-        public string? Name { get; set; }
+        [JsonProperty(PropertyName = "name")] public string? Name { get; set; }
 
-        [JsonProperty(PropertyName = "value")]
-        public string? Value { get; set; }
+        [JsonProperty(PropertyName = "value")] public string? Value { get; set; }
     }
 }

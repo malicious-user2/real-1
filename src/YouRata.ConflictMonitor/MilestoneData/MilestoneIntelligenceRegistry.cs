@@ -1,3 +1,7 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
+using System;
 using System.Collections.Generic;
 
 namespace YouRata.ConflictMonitor.MilestoneData;
@@ -14,11 +18,8 @@ internal class MilestoneIntelligenceRegistry
         _milestones = new List<BaseMilestoneIntelligence> { InitialSetup, YouTubeSync, ActionReport };
     }
 
-    internal IReadOnlyCollection<BaseMilestoneIntelligence> Milestones => _milestones;
-
-    internal InitialSetupMilestoneIntelligence InitialSetup { get; set; }
-
-    internal YouTubeSyncMilestoneIntelligence YouTubeSync { get; set; }
-
     internal ActionReportMilestoneIntelligence ActionReport { get; set; }
+    internal InitialSetupMilestoneIntelligence InitialSetup { get; set; }
+    internal IReadOnlyCollection<BaseMilestoneIntelligence> Milestones => _milestones;
+    internal YouTubeSyncMilestoneIntelligence YouTubeSync { get; set; }
 }

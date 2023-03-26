@@ -1,6 +1,8 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Threading.Tasks;
-using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
@@ -16,15 +18,17 @@ namespace YouRata.ConflictMonitor.MilestoneCall.Messages;
 
 internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntelligenceServiceBase
 {
-    private readonly ILogger<ActionIntelligenceMessage> _logger;
     private readonly CallManager _callManager;
     private readonly IOptions<YouRataConfiguration> _configuration;
-    private readonly IOptions<GitHubEnvironment> _environment;
     private readonly ConflictMonitorWorkflow _conflictMonitorWorkflow;
+    private readonly IOptions<GitHubEnvironment> _environment;
+    private readonly ILogger<ActionIntelligenceMessage> _logger;
     private readonly MilestoneIntelligenceRegistry _milestoneIntelligence;
     private readonly PreviousActionReportProvider _previousActionReport;
 
-    public ActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager, IOptions<YouRataConfiguration> configuration, IOptions<GitHubEnvironment> environment, ConflictMonitorWorkflow conflictMonitorWorkflow, MilestoneIntelligenceRegistry milestoneIntelligence, PreviousActionReportProvider actionReportProvider)
+    public ActionIntelligenceMessage(ILoggerFactory loggerFactory, CallManager callManager, IOptions<YouRataConfiguration> configuration,
+        IOptions<GitHubEnvironment> environment, ConflictMonitorWorkflow conflictMonitorWorkflow,
+        MilestoneIntelligenceRegistry milestoneIntelligence, PreviousActionReportProvider actionReportProvider)
     {
         _logger = loggerFactory.CreateLogger<ActionIntelligenceMessage>();
         _callManager = callManager;
@@ -43,7 +47,8 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
             ActionIntelligence actionIntelligence = new ActionIntelligence();
             try
             {
-                actionIntelligence.GitHubActionEnvironment = callHandler.GetGithubActionEnvironment(_configuration.Value, _environment.Value, _conflictMonitorWorkflow);
+                actionIntelligence.GitHubActionEnvironment =
+                    callHandler.GetGithubActionEnvironment(_configuration.Value, _environment.Value, _conflictMonitorWorkflow);
                 actionIntelligence.MilestoneIntelligence = callHandler.GetMilestoneActionIntelligence(_milestoneIntelligence);
                 actionIntelligence.ConfigJson = callHandler.GetConfigJson(_configuration.Value);
                 actionIntelligence.PreviousActionReport = callHandler.GetPreviousActionReport(_configuration.Value, _previousActionReport);
@@ -52,6 +57,7 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
             {
                 _logger.LogError($"Error on GetActionIntelligence: {e.Message}");
             }
+
             actionIntelligenceResult.SetResult(actionIntelligence);
         });
         _callManager.ActionReady.Set();

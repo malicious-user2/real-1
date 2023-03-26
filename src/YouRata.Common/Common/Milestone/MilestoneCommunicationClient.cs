@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -31,151 +34,29 @@ public abstract class MilestoneCommunicationClient : IDisposable
 
     protected MilestoneCommunicationClient()
     {
-        _conflictMonitorChannel = GrpcChannel.ForAddress($"http://{IPAddress.Loopback}", new GrpcChannelOptions
+        _conflictMonitorChannel = GrpcChannel.ForAddress($"http://{IPAddress.Loopback}",
+            new GrpcChannelOptions { HttpHandler = CreateHttpHandler(YouRataConstants.GrpcUnixSocketPath) });
+    }
+
+    public void Dispose()
+    {
+        if (!_disposed)
         {
-            HttpHandler = CreateHttpHandler(YouRataConstants.GrpcUnixSocketPath)
-        });
-    }
-
-    private bool IsValidMilestoneIntelligenceType(System.Type milestoneIntelligenceType)
-    {
-        System.Type[] milestoneTypes = typeof(MilestoneActionIntelligence.Types).GetNestedTypes();
-        if (!milestoneTypes.Contains(milestoneIntelligenceType)) return false;
-        return true;
-    }
-
-    public string GetLogMessages()
-    {
-        LogServiceClient logServiceClient = new LogServiceClient(_conflictMonitorChannel);
-        return logServiceClient.GetLogMessages(new Empty()).Messages.ToString();
-    }
-
-    public virtual void LogMessage(string message, string milestone)
-    {
-        LogServiceClient logServiceClient = new LogServiceClient(_conflictMonitorChannel);
-        MilestoneLog milestoneLog = new MilestoneLog { Message = message, Milestone = milestone };
-        milestoneLog.Message = message;
-        milestoneLog.Milestone = milestone;
-        logServiceClient.WriteLogMessage(milestoneLog);
-    }
-
-    public virtual bool IsBlocked(System.Type milestoneIntelligenceType)
-    {
-        MilestoneCondition milestoneCondition = new MilestoneCondition();
-        int retryCount = 0;
-        while (retryCount < 3)
-        {
-            try
-            {
-                milestoneCondition = GetStatus(milestoneIntelligenceType);
-                break;
-            }
-            catch (Grpc.Core.RpcException ex)
-            {
-                retryCount++;
-                if (retryCount > 1)
-                {
-                    throw new MilestoneException("Failed to connect to ConflictMonitor", ex);
-                }
-            }
-            TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
-            Thread.Sleep(backOff);
+            _conflictMonitorChannel.Dispose();
+            _disposed = true;
         }
-        return (milestoneCondition == MilestoneCondition.MilestoneBlocked);
     }
 
     public virtual T Activate<T>(System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
     {
-        T milestoneActionIntelligence = (T?)Activator.CreateInstance(milestoneIntelligenceType) ?? throw new MilestoneException("Invalid milestone type to activate");
-        milestoneActionIntelligence.GetType().GetProperty("ProcessId")?.SetValue(milestoneActionIntelligence, Process.GetCurrentProcess().Id);
-        milestoneActionIntelligence.GetType().GetProperty("Condition")?.SetValue(milestoneActionIntelligence, MilestoneCondition.MilestoneRunning);
+        T milestoneActionIntelligence = (T?)Activator.CreateInstance(milestoneIntelligenceType) ??
+                                        throw new MilestoneException("Invalid milestone type to activate");
+        milestoneActionIntelligence.GetType().GetProperty("ProcessId")
+            ?.SetValue(milestoneActionIntelligence, Process.GetCurrentProcess().Id);
+        milestoneActionIntelligence.GetType().GetProperty("Condition")
+            ?.SetValue(milestoneActionIntelligence, MilestoneCondition.MilestoneRunning);
         SetMilestoneActionIntelligence(milestoneActionIntelligence, milestoneIntelligenceType, milestoneIntelligenceName);
         Console.WriteLine($"Entering {milestoneIntelligenceName}");
-        return milestoneActionIntelligence;
-    }
-
-    public virtual void SetStatus(MilestoneCondition milestoneCondition, System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
-    {
-        if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;
-        object? milestoneActionIntelligence = GetMilestoneActionIntelligence(milestoneIntelligenceType);
-        if (milestoneActionIntelligence == null) return;
-        milestoneActionIntelligence.GetType().GetProperty("Condition")?.SetValue(milestoneActionIntelligence, milestoneCondition);
-
-        SetMilestoneActionIntelligence(milestoneActionIntelligence, milestoneIntelligenceType, milestoneIntelligenceName);
-
-    }
-
-    public virtual MilestoneCondition GetStatus(System.Type milestoneIntelligenceType)
-    {
-        MilestoneCondition milestoneCondition = new MilestoneCondition();
-        object? milestoneActionIntelligence = GetMilestoneActionIntelligence(milestoneIntelligenceType);
-        if (milestoneActionIntelligence == null) return milestoneCondition;
-        PropertyInfo? conditionProperty = milestoneActionIntelligence.GetType().GetProperty("Condition");
-        object? conditionValue = conditionProperty?.GetValue(milestoneActionIntelligence, null);
-        if (conditionValue != null)
-        {
-            milestoneCondition = (MilestoneCondition)conditionValue;
-        }
-        return milestoneCondition;
-    }
-
-    public virtual void SetMilestoneActionIntelligence(object milestoneActionIntelligence, System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
-    {
-        if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;
-        MilestoneActionIntelligenceServiceClient milestoneActionIntelligenceServiceClient = new MilestoneActionIntelligenceServiceClient(_conflictMonitorChannel);
-        List<MethodInfo> clientMethods = milestoneActionIntelligenceServiceClient
-            .GetType()
-            .GetMethods()
-            .Where(method => method
-                .GetParameters().Length == 4 && method
-                .Name == $"Update{milestoneIntelligenceName}ActionIntelligence")
-            .ToList();
-        if (clientMethods?.Count > 0)
-        {
-            MethodInfo clientMethod = clientMethods.First();
-            clientMethod.Invoke(milestoneActionIntelligenceServiceClient, new object?[] { milestoneActionIntelligence, null, null, default(CancellationToken) });
-        }
-    }
-
-    public virtual void Keepalive(System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
-    {
-        if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;
-        MilestoneActionIntelligenceServiceClient milestoneActionIntelligenceServiceClient = new MilestoneActionIntelligenceServiceClient(_conflictMonitorChannel);
-        List<MethodInfo> clientMethods = milestoneActionIntelligenceServiceClient
-            .GetType()
-            .GetMethods()
-            .Where(method => method
-                .GetParameters().Length == 4 && method
-                .Name == $"Keepalive{milestoneIntelligenceName}")
-            .ToList();
-        if (clientMethods?.Count > 0)
-        {
-            MethodInfo clientMethod = clientMethods.First();
-            clientMethod.Invoke(milestoneActionIntelligenceServiceClient, new object?[] { new Empty(), null, null, default(CancellationToken) });
-        }
-    }
-
-    public virtual object? GetMilestoneActionIntelligence(System.Type milestoneIntelligenceType)
-    {
-        object? milestoneActionIntelligence = null;
-        if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return milestoneActionIntelligence;
-        ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
-        ActionIntelligence? actionIntelligence = actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
-        if (actionIntelligence == null) return milestoneActionIntelligence;
-        List<PropertyInfo> milestoneIntelligenceProperties = actionIntelligence.MilestoneIntelligence
-            .GetType()
-            .GetProperties()
-            .Where(prop => prop.PropertyType == milestoneIntelligenceType)
-            .ToList();
-        if (milestoneIntelligenceProperties?.Count > 0)
-        {
-            PropertyInfo milestoneIntelligenceProperty = milestoneIntelligenceProperties.First();
-            object? milestoneIntelligenceObject = milestoneIntelligenceProperty.GetValue(actionIntelligence.MilestoneIntelligence);
-            if (milestoneIntelligenceObject != null)
-            {
-                milestoneActionIntelligence = milestoneIntelligenceObject;
-            }
-        }
         return milestoneActionIntelligence;
     }
 
@@ -201,6 +82,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
                 {
                     continue;
                 }
+
                 object? conditionCurrentValue = conditionProperty.GetValue(milestoneIntelligenceObject);
                 if (conditionCurrentValue?.GetType() == typeof(MilestoneCondition))
                 {
@@ -210,6 +92,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
                         continue;
                     }
                 }
+
                 conditionProperty.SetValue(milestoneIntelligenceObject, MilestoneCondition.MilestoneBlocked);
 
                 SetMilestoneActionIntelligence(milestoneIntelligenceObject, milestoneIntelligenceType, milestoneIntelligenceName);
@@ -221,6 +104,37 @@ public abstract class MilestoneCommunicationClient : IDisposable
     {
         ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
         return actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
+    }
+
+    public string GetLogMessages()
+    {
+        LogServiceClient logServiceClient = new LogServiceClient(_conflictMonitorChannel);
+        return logServiceClient.GetLogMessages(new Empty()).Messages.ToString();
+    }
+
+    public virtual object? GetMilestoneActionIntelligence(System.Type milestoneIntelligenceType)
+    {
+        object? milestoneActionIntelligence = null;
+        if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return milestoneActionIntelligence;
+        ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
+        ActionIntelligence? actionIntelligence = actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
+        if (actionIntelligence == null) return milestoneActionIntelligence;
+        List<PropertyInfo> milestoneIntelligenceProperties = actionIntelligence.MilestoneIntelligence
+            .GetType()
+            .GetProperties()
+            .Where(prop => prop.PropertyType == milestoneIntelligenceType)
+            .ToList();
+        if (milestoneIntelligenceProperties?.Count > 0)
+        {
+            PropertyInfo milestoneIntelligenceProperty = milestoneIntelligenceProperties.First();
+            object? milestoneIntelligenceObject = milestoneIntelligenceProperty.GetValue(actionIntelligence.MilestoneIntelligence);
+            if (milestoneIntelligenceObject != null)
+            {
+                milestoneActionIntelligence = milestoneIntelligenceObject;
+            }
+        }
+
+        return milestoneActionIntelligence;
     }
 
     public ActionReportLayout GetPreviousActionReport()
@@ -236,7 +150,23 @@ public abstract class MilestoneCommunicationClient : IDisposable
                 actionReport = deserializeActionReport;
             }
         }
+
         return actionReport;
+    }
+
+    public virtual MilestoneCondition GetStatus(System.Type milestoneIntelligenceType)
+    {
+        MilestoneCondition milestoneCondition = new MilestoneCondition();
+        object? milestoneActionIntelligence = GetMilestoneActionIntelligence(milestoneIntelligenceType);
+        if (milestoneActionIntelligence == null) return milestoneCondition;
+        PropertyInfo? conditionProperty = milestoneActionIntelligence.GetType().GetProperty("Condition");
+        object? conditionValue = conditionProperty?.GetValue(milestoneActionIntelligence, null);
+        if (conditionValue != null)
+        {
+            milestoneCondition = (MilestoneCondition)conditionValue;
+        }
+
+        return milestoneCondition;
     }
 
     public YouRataConfiguration GetYouRataConfiguration()
@@ -250,7 +180,96 @@ public abstract class MilestoneCommunicationClient : IDisposable
                 .AddJsonStream(jsonMemoryStream);
             configurationBuilder.Build().Bind(appConfig);
         }
+
         return appConfig;
+    }
+
+    public virtual bool IsBlocked(System.Type milestoneIntelligenceType)
+    {
+        MilestoneCondition milestoneCondition = new MilestoneCondition();
+        int retryCount = 0;
+        while (retryCount < 3)
+        {
+            try
+            {
+                milestoneCondition = GetStatus(milestoneIntelligenceType);
+                break;
+            }
+            catch (Grpc.Core.RpcException ex)
+            {
+                retryCount++;
+                if (retryCount > 1)
+                {
+                    throw new MilestoneException("Failed to connect to ConflictMonitor", ex);
+                }
+            }
+
+            TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
+            Thread.Sleep(backOff);
+        }
+
+        return (milestoneCondition == MilestoneCondition.MilestoneBlocked);
+    }
+
+    public virtual void Keepalive(System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
+    {
+        if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;
+        MilestoneActionIntelligenceServiceClient milestoneActionIntelligenceServiceClient =
+            new MilestoneActionIntelligenceServiceClient(_conflictMonitorChannel);
+        List<MethodInfo> clientMethods = milestoneActionIntelligenceServiceClient
+            .GetType()
+            .GetMethods()
+            .Where(method => method
+                .GetParameters().Length == 4 && method
+                .Name == $"Keepalive{milestoneIntelligenceName}")
+            .ToList();
+        if (clientMethods?.Count > 0)
+        {
+            MethodInfo clientMethod = clientMethods.First();
+            clientMethod.Invoke(milestoneActionIntelligenceServiceClient,
+                new object?[] { new Empty(), null, null, default(CancellationToken) });
+        }
+    }
+
+    public virtual void LogMessage(string message, string milestone)
+    {
+        LogServiceClient logServiceClient = new LogServiceClient(_conflictMonitorChannel);
+        MilestoneLog milestoneLog = new MilestoneLog { Message = message, Milestone = milestone };
+        milestoneLog.Message = message;
+        milestoneLog.Milestone = milestone;
+        logServiceClient.WriteLogMessage(milestoneLog);
+    }
+
+    public virtual void SetMilestoneActionIntelligence(object milestoneActionIntelligence, System.Type milestoneIntelligenceType,
+        string milestoneIntelligenceName)
+    {
+        if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;
+        MilestoneActionIntelligenceServiceClient milestoneActionIntelligenceServiceClient =
+            new MilestoneActionIntelligenceServiceClient(_conflictMonitorChannel);
+        List<MethodInfo> clientMethods = milestoneActionIntelligenceServiceClient
+            .GetType()
+            .GetMethods()
+            .Where(method => method
+                .GetParameters().Length == 4 && method
+                .Name == $"Update{milestoneIntelligenceName}ActionIntelligence")
+            .ToList();
+        if (clientMethods?.Count > 0)
+        {
+            MethodInfo clientMethod = clientMethods.First();
+            clientMethod.Invoke(milestoneActionIntelligenceServiceClient,
+                new object?[] { milestoneActionIntelligence, null, null, default(CancellationToken) });
+        }
+    }
+
+    public virtual void SetStatus(MilestoneCondition milestoneCondition, System.Type milestoneIntelligenceType,
+        string milestoneIntelligenceName)
+    {
+        if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;
+        object? milestoneActionIntelligence = GetMilestoneActionIntelligence(milestoneIntelligenceType);
+        if (milestoneActionIntelligence == null) return;
+        milestoneActionIntelligence.GetType().GetProperty("Condition")?.SetValue(milestoneActionIntelligence, milestoneCondition);
+
+        SetMilestoneActionIntelligence(milestoneActionIntelligence, milestoneIntelligenceType, milestoneIntelligenceName);
     }
 
     private static SocketsHttpHandler CreateHttpHandler(string socketPath)
@@ -259,20 +278,17 @@ public abstract class MilestoneCommunicationClient : IDisposable
         UnixDomainSocketConnectionFactory connectionFactory = new UnixDomainSocketConnectionFactory(endPoint);
         SocketsHttpHandler socketsHttpHandler = new SocketsHttpHandler
         {
-            ConnectCallback = connectionFactory.ConnectAsync,
-            PlaintextStreamFilter = connectionFactory.PlaintextFilter
+            ConnectCallback = connectionFactory.ConnectAsync, PlaintextStreamFilter = connectionFactory.PlaintextFilter
         };
 
         return socketsHttpHandler;
     }
 
-    public void Dispose()
+    private bool IsValidMilestoneIntelligenceType(System.Type milestoneIntelligenceType)
     {
-        if (!_disposed)
-        {
-            _conflictMonitorChannel.Dispose();
-            _disposed = true;
-        }
+        System.Type[] milestoneTypes = typeof(MilestoneActionIntelligence.Types).GetNestedTypes();
+        if (!milestoneTypes.Contains(milestoneIntelligenceType)) return false;
+        return true;
     }
 
     private class UnixDomainSocketConnectionFactory
@@ -299,7 +315,8 @@ public abstract class MilestoneCommunicationClient : IDisposable
             }
         }
 
-        internal ValueTask<Stream> PlaintextFilter(SocketsHttpPlaintextStreamFilterContext filterContext, CancellationToken cancellationToken = default)
+        internal ValueTask<Stream> PlaintextFilter(SocketsHttpPlaintextStreamFilterContext filterContext,
+            CancellationToken cancellationToken = default)
         {
             return new ValueTask<Stream>(Task.Run(() => filterContext.PlaintextStream, cancellationToken));
         }

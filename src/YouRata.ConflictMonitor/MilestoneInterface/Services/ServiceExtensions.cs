@@ -1,13 +1,16 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
+using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using YouRata.Common.Configuration;
 using YouRata.Common.GitHub;
 
 namespace YouRata.ConflictMonitor.MilestoneInterface.Services;
 
-public static class ServiceExtensions
+internal static class ServiceExtensions
 {
     public static void AddAppConfiguration(this IServiceCollection services, IConfiguration configuration)
     {

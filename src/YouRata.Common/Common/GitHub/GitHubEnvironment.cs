@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Reflection;
 using YouRata.Common.Proto;
@@ -55,22 +58,27 @@ public class GitHubEnvironment
             {
                 continue;
             }
+
             if (string.IsNullOrEmpty(environmentProp.Name))
             {
                 continue;
             }
+
             string propertyName = $"EnvGitHub{environmentProp.Name.Replace("_", "")}";
             PropertyInfo? targetProperty = actionEnvironmentType.GetProperty(propertyName);
             if (targetProperty == null)
             {
                 continue;
             }
+
             if (!targetProperty.PropertyType.IsAssignableFrom(environmentProp.PropertyType))
             {
                 continue;
             }
+
             targetProperty.SetValue(actionEnvironment, environmentProp.GetValue(this));
         }
+
         return actionEnvironment;
     }
 

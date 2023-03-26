@@ -1,9 +1,11 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.IO;
 using Newtonsoft.Json;
 using YouRata.Common;
 using YouRata.Common.ActionReport;
-using YouRata.Common.GitHub;
 
 namespace YouRata.ConflictMonitor.ActionReport;
 

@@ -1,7 +1,7 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
-using System.Diagnostics;
-using System.Threading;
-using YouRata.Common;
 using YouRata.Common.Milestone;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
@@ -24,16 +24,6 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
         return true;
     }
 
-    public void SetStatus(MilestoneCondition status)
-    {
-        base.SetStatus(status, _milestoneType, _milestoneName);
-    }
-
-    public void SetMilestoneActionIntelligence(InitialSetupActionIntelligence initialSetupActionIntelligence)
-    {
-        base.SetMilestoneActionIntelligence(initialSetupActionIntelligence, _milestoneType, _milestoneName);
-    }
-
     public InitialSetupActionIntelligence? GetMilestoneActionIntelligence()
     {
         InitialSetupActionIntelligence? initialSetupActionIntelligence = null;
@@ -42,7 +32,13 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
         {
             initialSetupActionIntelligence = (InitialSetupActionIntelligence?)milestoneActionIntelligence;
         }
+
         return initialSetupActionIntelligence;
+    }
+
+    public void Keepalive()
+    {
+        base.Keepalive(_milestoneType, _milestoneName);
     }
 
     public void LogMessage(string message)
@@ -50,8 +46,13 @@ internal class InitialSetupCommunicationClient : MilestoneCommunicationClient
         base.LogMessage(message, _milestoneName);
     }
 
-    public void Keepalive()
+    public void SetMilestoneActionIntelligence(InitialSetupActionIntelligence initialSetupActionIntelligence)
     {
-        base.Keepalive(_milestoneType, _milestoneName);
+        base.SetMilestoneActionIntelligence(initialSetupActionIntelligence, _milestoneType, _milestoneName);
+    }
+
+    public void SetStatus(MilestoneCondition status)
+    {
+        base.SetStatus(status, _milestoneType, _milestoneName);
     }
 }

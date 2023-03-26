@@ -1,3 +1,7 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
+using System;
 using System.ComponentModel.DataAnnotations;
 using YouRata.Common.Configuration.ActionCutOuts;
 using YouRata.Common.Configuration.ErrataBulletin;
@@ -16,6 +20,14 @@ public class YouRataConfiguration : BaseValidatableConfiguration
         YouTube = new YouTubeConfiguration();
     }
 
+    [Required] public ActionCutOutConfiguration ActionCutOuts { get; set; }
+
+    [Required] public ErrataBulletinConfiguration ErrataBulletin { get; set; }
+
+    [Required] public MilestoneLifetimeConfiguration MilestoneLifetime { get; set; }
+
+    [Required] public YouTubeConfiguration YouTube { get; set; }
+
     public void ValidateConfigurationMembers()
     {
         ActionCutOuts.Validate();
@@ -23,16 +35,4 @@ public class YouRataConfiguration : BaseValidatableConfiguration
         ErrataBulletin.Validate();
         YouTube.Validate();
     }
-
-    [Required]
-    public YouTubeConfiguration YouTube { get; set; }
-
-    [Required]
-    public ActionCutOutConfiguration ActionCutOuts { get; set; }
-
-    [Required]
-    public MilestoneLifetimeConfiguration MilestoneLifetime { get; set; }
-
-    [Required]
-    public ErrataBulletinConfiguration ErrataBulletin { get; set; }
 }

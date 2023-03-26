@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Globalization;
 using YouRata.Common.Configuration.ErrataBulletin;
@@ -7,12 +10,12 @@ namespace YouRata.YouTubeSync.ErrataBulletin;
 
 internal sealed class ErrataBulletinBuilder
 {
-    private const string MdTemplateTitleTop1 = "# {0}";
+    private const string MdTemplateInstructions1 = "{0}";
+    private const string MdTemplateTimeValueMark1 = "{0} ------------------------------------------------";
     private const string MdTemplateTitleBottom1 = "#";
     private const string MdTemplateTitleBottom2 = "{0}";
     private const string MdTemplateTitleBottom3 = "===";
-    private const string MdTemplateTimeValueMark1 = "{0} ------------------------------------------------";
-    private const string MdTemplateInstructions1 = "{0}";
+    private const string MdTemplateTitleTop1 = "# {0}";
     private readonly ErrataBulletinConfiguration _configuration;
     private readonly TimeSpan _contentDuration;
 
@@ -24,9 +27,19 @@ internal sealed class ErrataBulletinBuilder
         _contentDuration = contentDuration;
     }
 
-    public string SnippetTitle { get; }
+    public string Build()
+    {
+        var errataBulletin = string.Empty;
+        AddInstructions(ref errataBulletin);
+        AddTimeValueMarks(ref errataBulletin);
+        AddTitle(ref errataBulletin);
+        if (string.IsNullOrEmpty(SnippetTitle))
+        {
+            throw new MilestoneException("No title specified to build errata bulletin");
+        }
 
-    private string GitHubNewLine => "  " + Environment.NewLine;
+        return errataBulletin;
+    }
 
     private void AddInstructions(ref string bulletinTemplate)
     {
@@ -72,6 +85,7 @@ internal sealed class ErrataBulletinBuilder
                 bulletinTemplate = string.Format(CultureInfo.InvariantCulture, MdTemplateTitleTop1, SnippetTitle)
                                    + GitHubNewLine + GitHubNewLine + bulletinTemplate;
                 break;
+
             case "bottom":
                 bulletinTemplate += MdTemplateTitleBottom1;
                 bulletinTemplate += GitHubNewLine;
@@ -82,17 +96,7 @@ internal sealed class ErrataBulletinBuilder
         }
     }
 
-    public string Build()
-    {
-        var errataBulletin = string.Empty;
-        AddInstructions(ref errataBulletin);
-        AddTimeValueMarks(ref errataBulletin);
-        AddTitle(ref errataBulletin);
-        if (string.IsNullOrEmpty(SnippetTitle))
-        {
-            throw new MilestoneException("No title specified to build errata bulletin");
-        }
+    public string SnippetTitle { get; }
 
-        return errataBulletin;
-    }
+    private string GitHubNewLine => "  " + Environment.NewLine;
 }

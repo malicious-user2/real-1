@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Globalization;
 using Google.Protobuf;
@@ -50,10 +53,7 @@ internal sealed class ActionReportBuilder
             Logs = _logMessages
         };
 
-        ActionReportRoot actionReportRoot = new ActionReportRoot
-        {
-            ActionReport = actionReport
-        };
+        ActionReportRoot actionReportRoot = new ActionReportRoot { ActionReport = actionReport };
 
         return JsonConvert.SerializeObject(actionReportRoot, Formatting.Indented);
     }

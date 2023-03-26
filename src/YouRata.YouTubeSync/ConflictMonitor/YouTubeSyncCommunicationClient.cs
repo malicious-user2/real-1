@@ -1,7 +1,7 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
-using System.Diagnostics;
-using System.Threading;
-using YouRata.Common;
 using YouRata.Common.Milestone;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
@@ -24,16 +24,6 @@ internal class YouTubeSyncCommunicationClient : MilestoneCommunicationClient
         return true;
     }
 
-    public void SetStatus(MilestoneCondition status)
-    {
-        base.SetStatus(status, _milestoneType, _milestoneName);
-    }
-
-    public void SetMilestoneActionIntelligence(YouTubeSyncActionIntelligence youTubeSyncActionIntelligence)
-    {
-        base.SetMilestoneActionIntelligence(youTubeSyncActionIntelligence, _milestoneType, _milestoneName);
-    }
-
     public YouTubeSyncActionIntelligence? GetMilestoneActionIntelligence()
     {
         YouTubeSyncActionIntelligence? youTubeSyncActionIntelligence = null;
@@ -42,7 +32,13 @@ internal class YouTubeSyncCommunicationClient : MilestoneCommunicationClient
         {
             youTubeSyncActionIntelligence = (YouTubeSyncActionIntelligence?)milestoneActionIntelligence;
         }
+
         return youTubeSyncActionIntelligence;
+    }
+
+    public void Keepalive()
+    {
+        base.Keepalive(_milestoneType, _milestoneName);
     }
 
     public void LogMessage(string message)
@@ -50,8 +46,13 @@ internal class YouTubeSyncCommunicationClient : MilestoneCommunicationClient
         base.LogMessage(message, _milestoneName);
     }
 
-    public void Keepalive()
+    public void SetMilestoneActionIntelligence(YouTubeSyncActionIntelligence youTubeSyncActionIntelligence)
     {
-        base.Keepalive(_milestoneType, _milestoneName);
+        base.SetMilestoneActionIntelligence(youTubeSyncActionIntelligence, _milestoneType, _milestoneName);
+    }
+
+    public void SetStatus(MilestoneCondition status)
+    {
+        base.SetStatus(status, _milestoneType, _milestoneName);
     }
 }

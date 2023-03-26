@@ -1,15 +1,15 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Requests;
 using Google.Apis.Auth.OAuth2.Responses;
-using Google.Apis.Json;
 using Google.Apis.YouTube.v3;
 using Newtonsoft.Json;
-using Octokit;
 using YouRata.Common.GitHub;
 using YouRata.Common.Proto;
 
@@ -17,36 +17,24 @@ namespace YouRata.Common.YouTube;
 
 public static class YouTubeAPIHelper
 {
-    private static bool IsValidTokenResponse(string response)
+    public static TokenResponse? ExchangeAuthorizationCode(AuthorizationCodeTokenRequest request, GoogleAuthorizationCodeFlow flow)
     {
-        if (string.IsNullOrEmpty(response)) return false;
-        JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
+        TokenResponse? authorizationCodeTokenResponse;
+        using (HttpClient tokenHttpClient = new HttpClient())
         {
-            MissingMemberHandling = MissingMemberHandling.Error
-        };
-        try
-        {
-            TokenResponse? tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(response, serializerSettings);
-            if (tokenResponse == null) return false;
-            if (string.IsNullOrEmpty(tokenResponse.AccessToken)) return false;
-            if (string.IsNullOrEmpty(tokenResponse.RefreshToken)) return false;
+            tokenHttpClient.Timeout = YouTubeConstants.RequestTimeout;
+            authorizationCodeTokenResponse =
+                request.ExecuteAsync(tokenHttpClient, flow.TokenServerUrl, CancellationToken.None, flow.Clock).Result;
         }
-        catch
-        {
-            return false;
-        }
-        return true;
+
+        return authorizationCodeTokenResponse;
     }
 
     public static GoogleAuthorizationCodeFlow GetFlow(string clientId, string clientSecret)
     {
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow(new GoogleAuthorizationCodeFlow.Initializer
         {
-            ClientSecrets = new ClientSecrets
-            {
-                ClientId = clientId,
-                ClientSecret = clientSecret
-            },
+            ClientSecrets = new ClientSecrets { ClientId = clientId, ClientSecret = clientSecret },
             Scopes = new[] { YouTubeService.Scope.YoutubeForceSsl }
         });
         return flow;
@@ -75,6 +63,7 @@ public static class YouTubeAPIHelper
             savedTokenResponse = deserializedTokenResponse;
             return true;
         }
+
         return false;
     }
 
@@ -85,14 +74,22 @@ public static class YouTubeAPIHelper
         GitHubAPIClient.DeleteSecret(actionEnvironment, YouRataConstants.RedirectCodeVariable, (_) => { });
     }
 
-    public static TokenResponse? ExchangeAuthorizationCode(AuthorizationCodeTokenRequest request, GoogleAuthorizationCodeFlow flow)
+    private static bool IsValidTokenResponse(string response)
     {
-        TokenResponse? authorizationCodeTokenResponse;
-        using (HttpClient tokenHttpClient = new HttpClient())
+        if (string.IsNullOrEmpty(response)) return false;
+        JsonSerializerSettings serializerSettings = new JsonSerializerSettings() { MissingMemberHandling = MissingMemberHandling.Error };
+        try
         {
-            tokenHttpClient.Timeout = YouTubeConstants.RequestTimeout;
-            authorizationCodeTokenResponse = request.ExecuteAsync(tokenHttpClient, flow.TokenServerUrl, CancellationToken.None, flow.Clock).Result;
+            TokenResponse? tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(response, serializerSettings);
+            if (tokenResponse == null) return false;
+            if (string.IsNullOrEmpty(tokenResponse.AccessToken)) return false;
+            if (string.IsNullOrEmpty(tokenResponse.RefreshToken)) return false;
         }
-        return authorizationCodeTokenResponse;
+        catch
+        {
+            return false;
+        }
+
+        return true;
     }
 }

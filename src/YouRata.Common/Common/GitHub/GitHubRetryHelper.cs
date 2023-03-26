@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Threading;
 using YouRata.Common.Milestone;
@@ -12,7 +15,8 @@ public static class GitHubRetryHelper
         RetryCommand(environment, command, logger, null, out _);
     }
 
-    public static void RetryCommand(GitHubActionEnvironment environment, Action command, Action<string> logger, Type? trapInnerException, out bool trapped)
+    public static void RetryCommand(GitHubActionEnvironment environment, Action command, Action<string> logger, Type? trapInnerException,
+        out bool trapped)
     {
         trapped = false;
         int retryCount = 0;
@@ -34,6 +38,7 @@ public static class GitHubRetryHelper
                     trapped = true;
                     break;
                 }
+
                 retryCount++;
                 if (retryCount > 1)
                 {
@@ -48,6 +53,7 @@ public static class GitHubRetryHelper
                     throw;
                 }
             }
+
             TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
             Thread.Sleep(backOff);
         }
@@ -58,7 +64,8 @@ public static class GitHubRetryHelper
         return RetryCommand(environment, command, logger, null, out _);
     }
 
-    public static T? RetryCommand<T>(GitHubActionEnvironment environment, Func<T> command, Action<string> logger, Type? trapInnerException, out bool trapped)
+    public static T? RetryCommand<T>(GitHubActionEnvironment environment, Func<T> command, Action<string> logger, Type? trapInnerException,
+        out bool trapped)
     {
         trapped = false;
         int retryCount = 0;
@@ -81,6 +88,7 @@ public static class GitHubRetryHelper
                     trapped = true;
                     break;
                 }
+
                 retryCount++;
                 if (retryCount > 1)
                 {
@@ -95,9 +103,11 @@ public static class GitHubRetryHelper
                     throw;
                 }
             }
+
             TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
             Thread.Sleep(backOff);
         }
+
         return returnValue;
     }
 }

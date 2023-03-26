@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using YouRata.Common;
 using YouRata.Common.GitHub;
@@ -25,15 +28,15 @@ internal class ConflictMonitorWorkflow
 #pragma warning restore CS8601
 #pragma warning restore CS8618
 
-    public string GitHubToken => _actionToken;
-
     public string ApiToken => _apiToken;
 
-    public string StoredTokenResponse => _tokenResponse;
+    public string GitHubToken => _actionToken;
 
     public bool InitialSetupComplete
     {
         set => GitHubWorkflowHelper
             .PushVariable(YouRataConstants.InitialSetupCompleteVariable, value.ToString());
     }
+
+    public string StoredTokenResponse => _tokenResponse;
 }

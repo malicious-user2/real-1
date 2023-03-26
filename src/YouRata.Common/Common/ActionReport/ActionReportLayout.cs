@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using Newtonsoft.Json;
 
@@ -15,13 +18,9 @@ public class ActionReportLayout
         Logs = string.Empty;
     }
 
-    public string Status { get; set; }
-
-    public string InitialSetupIntelligence { get; set; }
-
-    public string YouTubeSyncIntelligence { get; set; }
-
     public string ActionReportIntelligence { get; set; }
-
+    public string InitialSetupIntelligence { get; set; }
     public string Logs { get; set; }
+    public string Status { get; set; }
+    public string YouTubeSyncIntelligence { get; set; }
 }

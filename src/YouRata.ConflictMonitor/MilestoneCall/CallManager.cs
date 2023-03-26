@@ -1,3 +1,7 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
+using System;
 using System.Collections.Concurrent;
 using System.Threading;
 
@@ -5,10 +9,11 @@ namespace YouRata.ConflictMonitor.MilestoneCall;
 
 internal class CallManager
 {
-    internal delegate void ConflictMonitorCall(CallHandler handler);
-    private readonly AutoResetEvent _actionReady;
-    private readonly ManualResetEvent _actionStop;
     private readonly ConcurrentQueue<ConflictMonitorCall> _actionCallbacks;
+
+    private readonly AutoResetEvent _actionReady;
+
+    private readonly ManualResetEvent _actionStop;
 
     public CallManager()
     {
@@ -17,7 +22,9 @@ internal class CallManager
         _actionCallbacks = new ConcurrentQueue<ConflictMonitorCall>();
     }
 
+    public ConcurrentQueue<ConflictMonitorCall> ActionCallbacks => _actionCallbacks;
     public AutoResetEvent ActionReady => _actionReady;
     public ManualResetEvent ActionStop => _actionStop;
-    public ConcurrentQueue<ConflictMonitorCall> ActionCallbacks => _actionCallbacks;
+
+    internal delegate void ConflictMonitorCall(CallHandler handler);
 }

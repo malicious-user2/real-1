@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Globalization;
 using System.Text;
@@ -12,6 +15,11 @@ internal class InServiceLoggerProvider : ILoggerProvider
     private readonly CallHandler _callHandler;
     private bool _disposed;
 
+    public InServiceLoggerProvider(CallHandler callHandler)
+    {
+        _callHandler = callHandler;
+    }
+
     public ILogger CreateLogger(string categoryName)
     {
         return new InServiceLogger(_callHandler, categoryName);
@@ -23,12 +31,8 @@ internal class InServiceLoggerProvider : ILoggerProvider
         {
             GC.SuppressFinalize(this);
         }
-        _disposed = true;
-    }
 
-    public InServiceLoggerProvider(CallHandler callHandler)
-    {
-        _callHandler = callHandler;
+        _disposed = true;
     }
 
     internal class InServiceLogger : ILogger
@@ -36,15 +40,15 @@ internal class InServiceLoggerProvider : ILoggerProvider
         private readonly string _categoryName;
         private readonly CallHandler _handler;
 
-        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
-        {
-            return null;
-        }
-
         public InServiceLogger(CallHandler callHandler, string categoryName)
         {
             _handler = callHandler;
             _categoryName = categoryName;
+        }
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+        {
+            return null;
         }
 
         public bool IsEnabled(LogLevel logLevel)

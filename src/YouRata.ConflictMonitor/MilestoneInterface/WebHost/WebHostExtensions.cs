@@ -1,3 +1,7 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -5,7 +9,7 @@ using YouRata.Common;
 
 namespace YouRata.ConflictMonitor.MilestoneInterface.WebHost;
 
-public static class WebHostExtensions
+internal static class WebHostExtensions
 {
     public static void AddUnixSocket(this ConfigureWebHostBuilder builder)
     {
@@ -15,6 +19,7 @@ public static class WebHostExtensions
             {
                 File.Delete(YouRataConstants.GrpcUnixSocketPath);
             }
+
             opt.ListenUnixSocket(YouRataConstants.GrpcUnixSocketPath);
         });
     }

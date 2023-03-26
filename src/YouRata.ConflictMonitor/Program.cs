@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Linq;
 using YouRata.Common.Configuration;
@@ -15,7 +18,8 @@ GitHubEnvironmentHelper environmentHelper = new GitHubEnvironmentHelper();
 ConflictMonitorWorkflow conflictMonitorWorkflow = new ConflictMonitorWorkflow();
 MilestoneIntelligenceRegistry milestoneIntelligence = new MilestoneIntelligenceRegistry();
 PreviousActionReportProvider actionReportProvider = new PreviousActionReportProvider();
-WebAppServer appServer = new WebAppServer(callHandler, logProvider, configurationHelper, environmentHelper, conflictMonitorWorkflow, milestoneIntelligence, actionReportProvider);
+WebAppServer appServer = new WebAppServer(callHandler, logProvider, configurationHelper, environmentHelper, conflictMonitorWorkflow,
+    milestoneIntelligence, actionReportProvider);
 WorkflowLogicProvider.ProcessWorkflow(conflictMonitorWorkflow);
 
 if (args?.FirstOrDefault() == "newconfig")

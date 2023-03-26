@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Collections.Generic;
 using Google.Apis.YouTube.v3;
@@ -12,7 +15,8 @@ namespace YouRata.YouTubeSync.YouTube;
 
 internal static class YouTubePlaylistHelper
 {
-    public static List<ResourceId> GetPlaylistVideos(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
+    public static List<ResourceId> GetPlaylistVideos(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence,
+        YouTubeService service, YouTubeSyncCommunicationClient client)
     {
         if (!YouTubeQuotaHelper.HasRemainingCalls(intelligence)) throw new MilestoneException("YouTube API rate limit exceeded");
         List<string> videoIds = new List<string>();
@@ -23,19 +27,19 @@ internal static class YouTubePlaylistHelper
         foreach (string playlist in playlists)
         {
             if (string.IsNullOrEmpty(playlist)) continue;
-            PlaylistItemsResource.ListRequest playlistRequest = new PlaylistItemsResource.ListRequest(service, new[] { YouTubeConstants.RequestSnippetPart, YouTubeConstants.RequestStatusPart })
-            {
-                PlaylistId = playlist,
-                MaxResults = 50
-            };
+            PlaylistItemsResource.ListRequest playlistRequest =
+                new PlaylistItemsResource.ListRequest(service,
+                    new[] { YouTubeConstants.RequestSnippetPart, YouTubeConstants.RequestStatusPart })
+                {
+                    PlaylistId = playlist, MaxResults = 50
+                };
             bool requestNextPage = true;
             while (requestNextPage)
             {
-                Func<PlaylistItemListResponse> getPlaylistResponse = (() =>
-                {
-                    return playlistRequest.Execute();
-                });
-                PlaylistItemListResponse? playlistResponse = YouTubeRetryHelper.RetryCommand(intelligence, YouTubeConstants.PlaylistItemListQuotaCost, getPlaylistResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10), client.LogMessage);
+                Func<PlaylistItemListResponse> getPlaylistResponse = (() => { return playlistRequest.Execute(); });
+                PlaylistItemListResponse? playlistResponse = YouTubeRetryHelper.RetryCommand(intelligence,
+                    YouTubeConstants.PlaylistItemListQuotaCost, getPlaylistResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10),
+                    client.LogMessage);
                 client.Keepalive();
                 if (playlistResponse == null) throw new MilestoneException("Could not get YouTube playlist items");
                 foreach (PlaylistItem playlistItem in playlistResponse.Items)
@@ -46,10 +50,12 @@ internal static class YouTubePlaylistHelper
                     playlistResourceIds.Add(playlistItem.Snippet.ResourceId);
                     videoIds.Add(playlistItem.Snippet.ResourceId.VideoId);
                 }
+
                 requestNextPage = !string.IsNullOrEmpty(playlistResponse.NextPageToken);
                 playlistRequest.PageToken = playlistResponse.NextPageToken;
             }
         }
+
         return playlistResourceIds;
     }
 }

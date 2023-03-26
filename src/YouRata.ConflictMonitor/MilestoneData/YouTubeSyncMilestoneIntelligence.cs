@@ -1,3 +1,8 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
+using System;
+
 namespace YouRata.ConflictMonitor.MilestoneData;
 
 internal class YouTubeSyncMilestoneIntelligence : BaseMilestoneIntelligence
@@ -8,17 +13,11 @@ internal class YouTubeSyncMilestoneIntelligence : BaseMilestoneIntelligence
         VideosSkipped = 0;
     }
 
-    public int VideosProcessed { get; set; }
-
-    public int VideosSkipped { get; set; }
-
     public int CalculatedQueriesPerDayRemaining { get; set; }
-
-    public long LastQueryTime { get; set; }
-
     public long FirstVideoPublishTime { get; set; }
-
-    public long OutstandingVideoPublishTime { get; set; }
-
     public bool HasOutstandingVideos { get; set; }
+    public long LastQueryTime { get; set; }
+    public long OutstandingVideoPublishTime { get; set; }
+    public int VideosProcessed { get; set; }
+    public int VideosSkipped { get; set; }
 }

@@ -1,3 +1,6 @@
+// Copyright (c) 2023 battleship-systems.
+// Licensed under the MIT license.
+
 using System;
 using System.Globalization;
 using YouRata.Common.Configuration.YouTube;
@@ -8,6 +11,24 @@ namespace YouRata.YouTubeSync.YouTube;
 
 internal static class YouTubeDescriptionErattaPublisher
 {
+    public static string GetAmendedDescription(string description, string erattaLink, YouTubeConfiguration config)
+    {
+        string errataNotice = string.Format(CultureInfo.InvariantCulture, config.ErrataLinkTemplate, erattaLink);
+        if ((errataNotice.Length + description.Length) > YouTubeConstants.MaxDescriptionLength && config.TruncateDescriptionOverflow)
+        {
+            description = description.Substring(0, description.Length - errataNotice.Length);
+        }
+
+        switch (config.ErattaLinkLocation)
+        {
+            case "top":
+                return errataNotice + Environment.NewLine + description;
+            case "bottom":
+                return description + Environment.NewLine + errataNotice;
+        }
+
+        return string.Empty;
+    }
 
     public static string GetErrataLink(GitHubActionEnvironment actionEnvironment, string errataBulletinPath)
     {
@@ -16,22 +37,5 @@ internal static class YouTubeDescriptionErattaPublisher
             actionEnvironment.EnvGitHubRepository,
             actionEnvironment.EnvGitHubRefName,
             errataBulletinPath);
-    }
-
-    public static string GetAmendedDescription(string description, string erattaLink, YouTubeConfiguration config)
-    {
-        string errataNotice = string.Format(CultureInfo.InvariantCulture, config.ErrataLinkTemplate, erattaLink);
-        if ((errataNotice.Length + description.Length) > YouTubeConstants.MaxDescriptionLength && config.TruncateDescriptionOverflow)
-        {
-            description = description.Substring(0, description.Length - errataNotice.Length);
-        }
-        switch (config.ErattaLinkLocation)
-        {
-            case "top":
-                return errataNotice + Environment.NewLine + description;
-            case "bottom":
-                return description + Environment.NewLine + errataNotice;
-        }
-        return string.Empty;
     }
 }

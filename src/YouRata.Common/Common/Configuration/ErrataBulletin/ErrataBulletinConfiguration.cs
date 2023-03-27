@@ -7,23 +7,30 @@ using System.ComponentModel.DataAnnotations;
 
 namespace YouRata.Common.Configuration.ErrataBulletin;
 
+/// <summary>
+/// YouRata configuration for video errata markdown files
+/// </summary>
 public class ErrataBulletinConfiguration : BaseValidatableConfiguration
 {
 #pragma warning disable CS8618
+    // The number of blank lines between each time marker
     [Required]
     [Range(1, 50)]
     [DefaultValue(3)]
     public int EmptyLinesPerMark { get; set; }
 
+    // Instructions for submitting errata
     [Required]
     [DefaultValue("Enter your errata here")]
     public string Instructions { get; set; }
 
+    // Seconds between each mark in the errata markdown file
     [Required]
     [Range(1, 50)]
     [DefaultValue(30)]
     public int SecondsPerMark { get; set; }
 
+    // Where to place the title of the YouTube video
     [Required]
     [DefaultValue("top")]
     [RegularExpression(@"^(top|bottom)$", ErrorMessage = "ErrataBulletinConfiguration.TitleLocation must be top or bottom")]

@@ -6,12 +6,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace YouRata.Common.Configuration.MilestoneLifetime;
 
+/// <summary>
+/// YouRata configuration for finding inert process
+/// </summary>
 public class MilestoneLifetimeConfiguration : BaseValidatableConfiguration
 {
+    // Maximum time since started
     [Required]
     [Range(5, 9000)]
     public int MaxRunTime { get; set; }
 
+    // Maximum time since last update
     [Required]
     [Range(5, 9000)]
     public int MaxUpdateDwellTime { get; set; }

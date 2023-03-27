@@ -5,6 +5,9 @@ using System;
 
 namespace YouRata.Common.ActionReport;
 
+/// <summary>
+/// Container for a YouRata action report
+/// </summary>
 public class ActionReportRoot
 {
     public ActionReportRoot()

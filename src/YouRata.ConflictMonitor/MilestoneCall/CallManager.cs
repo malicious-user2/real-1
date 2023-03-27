@@ -11,7 +11,7 @@ namespace YouRata.ConflictMonitor.MilestoneCall;
 /// Provides a way to manage a queue of ConflictMonitorCall objects and coordinate their processing
 /// </summary>
 /// <remarks>
-/// This class is only used in WebAppServer
+/// This class is used in WebAppServer
 /// </remarks>
 internal class CallManager
 {

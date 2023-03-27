@@ -6,6 +6,9 @@ using YouRata.Common.YouTube;
 
 namespace YouRata.ConflictMonitor.Workflow;
 
+/// <summary>
+/// Used to manipulate workflow variables before any milestone runs
+/// </summary>
 internal static class WorkflowLogicProvider
 {
     internal static void ProcessWorkflow(ConflictMonitorWorkflow workflow)

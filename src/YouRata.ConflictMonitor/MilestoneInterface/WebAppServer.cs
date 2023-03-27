@@ -23,6 +23,9 @@ using static YouRata.ConflictMonitor.MilestoneCall.CallManager;
 
 namespace YouRata.ConflictMonitor.MilestoneInterface;
 
+/// <summary>
+/// A server for for use with milestone program communication
+/// </summary>
 internal class WebAppServer
 {
     private readonly PreviousActionReportProvider _actionReportProvider;
@@ -48,6 +51,10 @@ internal class WebAppServer
         _actionReportProvider = actionReportProvider;
     }
 
+    /// <summary>
+    /// Start the server
+    /// </summary>
+    /// <returns></returns>
     internal async Task RunAsync()
     {
         WebApplication webApp = BuildApp();
@@ -55,27 +62,35 @@ internal class WebAppServer
         webApp.MapGrpcService<MilestoneActionIntelligenceMessage>();
         webApp.MapGrpcService<LogMessage>();
 
+        // Validate all configurations
         await webApp.ValidateConfigurationAsync().ConfigureAwait(false);
 
+        // Start the web app asynchronously
         await webApp.StartAsync().ConfigureAwait(false);
 
+        // The main loop of ConflictMonitor
         using (MilestoneLifetimeManager lifetimeManager = new MilestoneLifetimeManager(webApp, _milestoneIntelligence))
         {
+            // Start checking for inert milestones
             lifetimeManager.StartLoop();
             while (true)
             {
+                // Wait until signaled to process an action
                 _callManager.ActionReady.WaitOne();
                 while (!_callManager.ActionCallbacks.IsEmpty)
                 {
+                    // Get the ConflictMonitorCall callback function from the queue
                     _callManager.ActionCallbacks.TryDequeue(out ConflictMonitorCall? call);
                     if (call != null)
                     {
+                        // Execute the function
                         call(_callHandler);
                     }
                 }
-
+                // Check if ConflictMonitor was signaled to stop
                 if (_callManager.ActionStop.WaitOne(0))
                 {
+                    // Stop the server
                     await webApp.StopAsync().ConfigureAwait(false);
                     break;
                 }
@@ -83,6 +98,10 @@ internal class WebAppServer
         }
     }
 
+    /// <summary>
+    /// Builds a WebApplication with gRPC services
+    /// </summary>
+    /// <returns></returns>
     private WebApplication BuildApp()
     {
         IConfiguration appConfig = _configurationHelper.Build();

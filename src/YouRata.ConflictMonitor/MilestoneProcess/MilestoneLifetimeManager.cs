@@ -17,6 +17,9 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.ConflictMonitor.MilestoneProcess;
 
+/// <summary>
+/// Periodically checks the MilestoneIntelligenceRegistry for running milestones that don't have recent activity
+/// </summary>
 internal class MilestoneLifetimeManager : IDisposable
 {
     private readonly object _lock = new();
@@ -44,6 +47,9 @@ internal class MilestoneLifetimeManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Start the loop thread
+    /// </summary>
     internal void StartLoop()
     {
         lock (_lock)
@@ -64,6 +70,9 @@ internal class MilestoneLifetimeManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Check for running milestones that don't have recent activity and kill them
+    /// </summary>
     private void ProcessLifetimeManager()
     {
         lock (_lock)
@@ -77,19 +86,24 @@ internal class MilestoneLifetimeManager : IDisposable
                 if (logger == null) return;
                 foreach (BaseMilestoneIntelligence milestoneIntelligence in _milestoneIntelligence.Milestones)
                 {
+                    // Only find milestones with condition MilestoneRunning
                     if (milestoneIntelligence.Condition == MilestoneCondition.MilestoneRunning &&
                         milestoneIntelligence.LastUpdate != 0 &&
                         milestoneIntelligence.StartTime != 0 &&
                         milestoneIntelligence.ProcessId != 0)
                     {
+                        // Time since last update
                         long dwellTime = DateTimeOffset.Now.ToUnixTimeSeconds() - milestoneIntelligence.LastUpdate;
+                        // Time since started
                         long runTime = DateTimeOffset.Now.ToUnixTimeSeconds() - milestoneIntelligence.StartTime;
                         if (dwellTime > config.MaxUpdateDwellTime ||
                             runTime > config.MaxRunTime)
                         {
+                            // Try to find the process by the process ID that was registered at activation
                             Process milestoneProcess = Process.GetProcessById(milestoneIntelligence.ProcessId);
                             if (!milestoneProcess.HasExited)
                             {
+                                // Kill the process
                                 milestoneProcess.Kill();
                                 logger.LogWarning($"Milestone {milestoneIntelligence.GetType().Name} was forcefully killed");
                                 milestoneIntelligence.Condition = MilestoneCondition.MilestoneFailed;

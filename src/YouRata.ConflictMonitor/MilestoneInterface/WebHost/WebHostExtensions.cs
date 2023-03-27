@@ -9,12 +9,16 @@ using YouRata.Common;
 
 namespace YouRata.ConflictMonitor.MilestoneInterface.WebHost;
 
+/// <summary>
+/// Extension methods used in configuring a web host to listen on a Unix domain socket
+/// </summary>
 internal static class WebHostExtensions
 {
     public static void AddUnixSocket(this ConfigureWebHostBuilder builder)
     {
         builder.ConfigureKestrel(opt =>
         {
+            // A file will persist for all sockets
             if (File.Exists(YouRataConstants.GrpcUnixSocketPath))
             {
                 File.Delete(YouRataConstants.GrpcUnixSocketPath);

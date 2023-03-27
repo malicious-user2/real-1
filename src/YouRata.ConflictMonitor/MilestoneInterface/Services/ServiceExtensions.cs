@@ -19,7 +19,7 @@ internal static class ServiceExtensions
     {
         // Add transient ConfigurationsValidator
         services.AddTransient<IValidator, ConfigurationsValidator>();
-        // Prepare service for options
+        // Prepare services for options
         services.AddOptions();
         // Add YouRataConfiguration
         services.Configure<YouRataConfiguration>(configuration);

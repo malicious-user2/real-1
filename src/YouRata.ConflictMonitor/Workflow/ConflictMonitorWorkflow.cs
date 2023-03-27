@@ -7,10 +7,16 @@ using YouRata.Common.GitHub;
 
 namespace YouRata.ConflictMonitor.Workflow;
 
+/// <summary>
+/// Represents a GitHub Actions workflow
+/// </summary>
 internal class ConflictMonitorWorkflow
 {
+    // GitHub App installation access token
     private readonly string _actionToken;
+    // GitHub Personal access token
     private readonly string _apiToken;
+    // Saved YouTube token response
     private readonly string _tokenResponse;
 
 #pragma warning disable CS8601

@@ -33,12 +33,12 @@ internal class WebAppServer
     private readonly CallManager _callManager;
     private readonly ConfigurationHelper _configurationHelper;
     private readonly ConflictMonitorWorkflow _conflictMonitorWorkflow;
-    private readonly GitHubEnvironmentHelper _environmentHelper;
+    private readonly GitHubEnvironmentBuilder _environmentHelper;
     private readonly InServiceLoggerProvider _loggerProvider;
     private readonly MilestoneIntelligenceRegistry _milestoneIntelligence;
 
     public WebAppServer(CallHandler callHandler, InServiceLoggerProvider loggerProvider, ConfigurationHelper configurationHelper,
-        GitHubEnvironmentHelper environmentHelper, ConflictMonitorWorkflow conflictMonitorWorkflow,
+        GitHubEnvironmentBuilder environmentHelper, ConflictMonitorWorkflow conflictMonitorWorkflow,
         MilestoneIntelligenceRegistry milestoneIntelligence, PreviousActionReportProvider actionReportProvider)
     {
         _callHandler = callHandler;

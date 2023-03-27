@@ -12,8 +12,21 @@ using YouRata.Common.Proto;
 
 namespace YouRata.Common.GitHub;
 
+/// <summary>
+/// Static methods for interacting with the GitHub REST API
+/// </summary>
 public static class GitHubAPIClient
 {
+    /// <summary>
+    /// Create content directly on the repository
+    /// </summary>
+    /// <param name="environment"></param>
+    /// <param name="message"></param>
+    /// <param name="content"></param>
+    /// <param name="path"></param>
+    /// <param name="logger"></param>
+    /// <returns>Success</returns>
+    /// <exception cref="MilestoneException"></exception>
     public static bool CreateContentFile(GitHubActionEnvironment environment, string message, string content, string path,
         Action<string> logger)
     {
@@ -28,10 +41,20 @@ public static class GitHubAPIClient
         return true;
     }
 
+    /// <summary>
+    /// Create an action secret
+    /// </summary>
+    /// <param name="environment"></param>
+    /// <param name="secretName"></param>
+    /// <param name="secretValue"></param>
+    /// <param name="logger"></param>
+    /// <returns>Success</returns>
+    /// <exception cref="MilestoneException"></exception>
     public static bool CreateOrUpdateSecret(GitHubActionEnvironment environment, string secretName, string secretValue,
         Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) throw new MilestoneException("GitHub API rate limit exceeded");
+        // Only a personal access token is currently supported action secrets
         IApiConnection apiCon = GetApiConnection(environment.ApiToken);
 
         RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
@@ -46,18 +69,38 @@ public static class GitHubAPIClient
         return true;
     }
 
+    /// <summary>
+    /// Delete an action secret
+    /// </summary>
+    /// <param name="environment"></param>
+    /// <param name="secretName"></param>
+    /// <param name="logger"></param>
+    /// <returns>Success</returns>
+    /// <exception cref="MilestoneException"></exception>
     public static bool DeleteSecret(GitHubActionEnvironment environment, string secretName, Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) throw new MilestoneException("GitHub API rate limit exceeded");
+        // Only a personal access token is currently supported action secrets
         IApiConnection apiCon = GetApiConnection(environment.ApiToken);
 
         RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
         string[] repository = environment.EnvGitHubRepository.Split("/");
         Action deleteSecret = (() => { secClient.Delete(repository[0], repository[1], secretName).Wait(); });
+        // Catch the exception if the secret does not exist
         GitHubRetryHelper.RetryCommand(environment, deleteSecret, logger, typeof(NotFoundException), out _);
         return true;
     }
 
+    /// <summary>
+    /// Update content directly on the repository
+    /// </summary>
+    /// <param name="environment"></param>
+    /// <param name="message"></param>
+    /// <param name="content"></param>
+    /// <param name="path"></param>
+    /// <param name="logger"></param>
+    /// <returns>Success</returns>
+    /// <exception cref="MilestoneException"></exception>
     public static bool UpdateContentFile(GitHubActionEnvironment environment, string message, string content, string path,
         Action<string> logger)
     {
@@ -89,6 +132,11 @@ public static class GitHubAPIClient
         return true;
     }
 
+    /// <summary>
+    /// Check for sufficient remaining API calls
+    /// </summary>
+    /// <param name="environment"></param>
+    /// <returns>RemainingCalls</returns>
     internal static bool HasRemainingCalls(GitHubActionEnvironment environment)
     {
         if (environment.RateLimitCoreRemaining is > 0 and < 100)
@@ -104,6 +152,12 @@ public static class GitHubAPIClient
         return true;
     }
 
+    /// <summary>
+    /// Encrypt a value using the repositories public key
+    /// </summary>
+    /// <param name="secretValue"></param>
+    /// <param name="key"></param>
+    /// <returns>UpsertRepositorySecret</returns>
     private static UpsertRepositorySecret CreateSecret(string secretValue, SecretsPublicKey key)
     {
         byte[] secretBytes = Encoding.UTF8.GetBytes(secretValue);

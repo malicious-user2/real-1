@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace YouRata.Common.Configuration;
 
+/// <summary>
+/// Represents a custom validator
+/// </summary>
 public interface IValidator
 {
     Task ValidateAsync();

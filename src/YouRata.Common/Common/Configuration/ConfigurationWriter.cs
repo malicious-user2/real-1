@@ -9,6 +9,9 @@ using Newtonsoft.Json;
 
 namespace YouRata.Common.Configuration;
 
+/// <summary>
+/// Handles creating a default YouRata config file
+/// </summary>
 public class ConfigurationWriter
 {
     private readonly string _path;

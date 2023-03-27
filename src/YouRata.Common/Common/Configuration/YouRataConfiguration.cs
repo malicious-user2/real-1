@@ -10,23 +10,30 @@ using YouRata.Common.Configuration.YouTube;
 
 namespace YouRata.Common.Configuration;
 
+/// <summary>
+/// YouRata configuration root
+/// </summary>
 public class YouRataConfiguration : BaseValidatableConfiguration
 {
     public YouRataConfiguration()
     {
         ActionCutOuts = new ActionCutOutConfiguration();
-        MilestoneLifetime = new MilestoneLifetimeConfiguration();
         ErrataBulletin = new ErrataBulletinConfiguration();
+        MilestoneLifetime = new MilestoneLifetimeConfiguration();
         YouTube = new YouTubeConfiguration();
     }
 
-    [Required] public ActionCutOutConfiguration ActionCutOuts { get; set; }
+    [Required]
+    public ActionCutOutConfiguration ActionCutOuts { get; set; }
 
-    [Required] public ErrataBulletinConfiguration ErrataBulletin { get; set; }
+    [Required]
+    public ErrataBulletinConfiguration ErrataBulletin { get; set; }
 
-    [Required] public MilestoneLifetimeConfiguration MilestoneLifetime { get; set; }
+    [Required]
+    public MilestoneLifetimeConfiguration MilestoneLifetime { get; set; }
 
-    [Required] public YouTubeConfiguration YouTube { get; set; }
+    [Required]
+    public YouTubeConfiguration YouTube { get; set; }
 
     public void ValidateConfigurationMembers()
     {

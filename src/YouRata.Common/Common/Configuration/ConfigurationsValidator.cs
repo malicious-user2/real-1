@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace YouRata.Common.Configuration;
 
+/// <summary>
+/// Runs validation on any IValidatableConfiguration instance in the service
+/// </summary>
 public class ConfigurationsValidator : IValidator
 {
     private readonly IEnumerable<IValidatableConfiguration> _validatableObjects;
@@ -23,6 +26,7 @@ public class ConfigurationsValidator : IValidator
             await Task.Run(() => validatableObject.Validate()).ConfigureAwait(false);
             if (validatableObject is YouRataConfiguration)
             {
+                // Call ValidateConfigurationMembers on the root YouRataConfiguration
                 await Task.Run(() => { ((YouRataConfiguration)validatableObject).ValidateConfigurationMembers(); }).ConfigureAwait(false);
             }
         }

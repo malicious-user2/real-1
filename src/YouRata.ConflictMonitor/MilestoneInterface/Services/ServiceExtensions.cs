@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using YouRata.Common.Configuration;
-using YouRata.Common.GitHub;
+using YouRata.ConflictMonitor.MilestoneData;
 
 namespace YouRata.ConflictMonitor.MilestoneInterface.Services;
 

@@ -5,9 +5,12 @@ using System;
 using System.Reflection;
 using YouRata.Common.Proto;
 
-namespace YouRata.Common.GitHub;
+namespace YouRata.ConflictMonitor.MilestoneData;
 
-public class GitHubEnvironment
+/// <summary>
+/// ConflictMonitor abstraction of GitHubActionEnvironment
+/// </summary>
+internal class GitHubEnvironment
 {
     public GitHubEnvironment()
     {
@@ -46,6 +49,10 @@ public class GitHubEnvironment
         this.Workspace = string.Empty;
     }
 
+    /// <summary>
+    /// Populate a new GitHubActionEnvironment with this instances properties
+    /// </summary>
+    /// <returns>GitHubActionEnvironment</returns>
     public GitHubActionEnvironment GetActionEnvironment()
     {
         GitHubActionEnvironment actionEnvironment = new GitHubActionEnvironment();
@@ -64,6 +71,7 @@ public class GitHubEnvironment
                 continue;
             }
 
+            // Protobuf removes underscores from field names
             string propertyName = $"EnvGitHub{environmentProp.Name.Replace("_", "")}";
             PropertyInfo? targetProperty = actionEnvironmentType.GetProperty(propertyName);
             if (targetProperty == null)
@@ -76,6 +84,7 @@ public class GitHubEnvironment
                 continue;
             }
 
+            // Set the GitHubActionEnvironment value
             targetProperty.SetValue(actionEnvironment, environmentProp.GetValue(this));
         }
 

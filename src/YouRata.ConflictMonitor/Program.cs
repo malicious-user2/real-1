@@ -23,7 +23,7 @@ using YouRata.ConflictMonitor.Workflow;
 CallHandler callHandler = new CallHandler();
 InServiceLoggerProvider logProvider = new InServiceLoggerProvider(callHandler);
 ConfigurationHelper configurationHelper = new ConfigurationHelper(args);
-GitHubEnvironmentHelper environmentHelper = new GitHubEnvironmentHelper();
+GitHubEnvironmentBuilder environmentHelper = new GitHubEnvironmentBuilder();
 ConflictMonitorWorkflow conflictMonitorWorkflow = new ConflictMonitorWorkflow();
 MilestoneIntelligenceRegistry milestoneIntelligence = new MilestoneIntelligenceRegistry();
 PreviousActionReportProvider actionReportProvider = new PreviousActionReportProvider();

@@ -5,6 +5,9 @@ using System;
 
 namespace YouRata.Common.Configuration;
 
+/// <summary>
+/// Represents a custom validatable configuration
+/// </summary>
 public interface IValidatableConfiguration
 {
     void Validate();

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace YouRata.Common.GitHub;
 
-public sealed class GitHubEnvironmentHelper
+public sealed class GitHubEnvironmentBuilder
 {
     public IConfiguration Build()
     {

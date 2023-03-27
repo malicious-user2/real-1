@@ -8,6 +8,9 @@ using Microsoft.Extensions.Configuration;
 
 namespace YouRata.Common.Configuration;
 
+/// <summary>
+/// YouRata JSON configuration file helper class
+/// </summary>
 public sealed class ConfigurationHelper
 {
     private readonly string[] _args;
@@ -17,6 +20,11 @@ public sealed class ConfigurationHelper
         _args = args;
     }
 
+    /// <summary>
+    /// Find the checked out YouRata configuration file and create the configuration
+    /// </summary>
+    /// <returns>YouRata configuration root</returns>
+    /// <exception cref="FileNotFoundException"></exception>
     public IConfiguration Build()
     {
         DirectoryInfo startingDirectory = new DirectoryInfo(Directory.GetCurrentDirectory());
@@ -52,6 +60,14 @@ public sealed class ConfigurationHelper
             .Build();
     }
 
+    /// <summary>
+    /// Create a YouRata config file with default values
+    /// </summary>
+    /// <param name="settingsPath"></param>
+    /// <exception cref="IOException"></exception>
+    /// <remarks>
+    /// This is called if no YouRata config exists
+    /// </remarks>
     private void CreateBlankConfig(string settingsPath)
     {
         if (Path.Exists(settingsPath))

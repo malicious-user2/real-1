@@ -8,8 +8,10 @@ namespace YouRata.Common.GitHub;
 
 public static class GitHubConstants
 {
+    // YouRata GitHub API user agent string
     public const string ProductHeaderName = "YouRata";
 
+    // GitHub API http request timeout
     public static readonly TimeSpan RequestTimeout = TimeSpan.FromMilliseconds(1000 * 30);
 
     public static ProductHeaderValue ProductHeader => new(ProductHeaderName);

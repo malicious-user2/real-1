@@ -5,6 +5,9 @@ using System;
 
 namespace YouRata.ConflictMonitor.MilestoneData;
 
+/// <summary>
+/// ConflictMonitor abstraction of YouTubeSyncActionIntelligence
+/// </summary>
 internal class YouTubeSyncMilestoneIntelligence : BaseMilestoneIntelligence
 {
     public YouTubeSyncMilestoneIntelligence()

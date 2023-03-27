@@ -5,6 +5,9 @@ using System;
 
 namespace YouRata.ConflictMonitor.MilestoneData;
 
+/// <summary>
+/// ConflictMonitor abstraction of InitialSetupActionIntelligence
+/// </summary>
 internal class InitialSetupMilestoneIntelligence : BaseMilestoneIntelligence
 {
 }

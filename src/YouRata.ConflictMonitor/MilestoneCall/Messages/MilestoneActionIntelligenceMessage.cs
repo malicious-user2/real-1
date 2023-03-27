@@ -12,6 +12,9 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.ConflictMonitor.MilestoneCall.Messages;
 
+/// <summary>
+/// MilestoneActionIntelligenceMessage service impl
+/// </summary>
 internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceService.MilestoneActionIntelligenceServiceBase
 {
     private readonly CallManager _callManager;
@@ -33,6 +36,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         {
             try
             {
+                // Update ActionReport recent action timer
                 callHandler.KeepaliveActionReport(_milestoneIntelligence);
             }
             catch (Exception e)
@@ -42,6 +46,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
 
             emptyResult.SetResult(new Empty());
         });
+        // Let CallManager know it needs to run an action
         _callManager.ActionReady.Set();
         return emptyResult.Task;
     }
@@ -53,6 +58,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         {
             try
             {
+                // Update InitialSetup recent action timer
                 callHandler.KeepaliveInitialSetup(_milestoneIntelligence);
             }
             catch (Exception e)
@@ -62,6 +68,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
 
             emptyResult.SetResult(new Empty());
         });
+        // Let CallManager know it needs to run an action
         _callManager.ActionReady.Set();
         return emptyResult.Task;
     }
@@ -73,6 +80,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         {
             try
             {
+                // Update YouTubeSync recent action timer
                 callHandler.KeepaliveYouTubeSync(_milestoneIntelligence);
             }
             catch (Exception e)
@@ -82,6 +90,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
 
             emptyResult.SetResult(new Empty());
         });
+        // Let CallManager know it needs to run an action
         _callManager.ActionReady.Set();
         return emptyResult.Task;
     }
@@ -93,6 +102,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         {
             try
             {
+                // Update ActionReport intelligence
                 callHandler.UpdateActionReportMilestoneIntelligence(_milestoneIntelligence, request);
             }
             catch (Exception e)
@@ -104,9 +114,10 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         });
         if (request.Condition == MilestoneCondition.MilestoneCompleted)
         {
+            // ActionReport is the last milestone, stop ConflictMonitor
             _callManager.ActionStop.Set();
         }
-
+        // Let CallManager know it needs to run an action
         _callManager.ActionReady.Set();
         return emptyResult.Task;
     }
@@ -118,6 +129,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         {
             try
             {
+                // Update InitialSetup intelligence
                 callHandler.UpdateInitialSetupActionIntelligence(_milestoneIntelligence, request);
             }
             catch (Exception e)
@@ -127,6 +139,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
 
             emptyResult.SetResult(new Empty());
         });
+        // Let CallManager know it needs to run an action
         _callManager.ActionReady.Set();
         return emptyResult.Task;
     }
@@ -138,6 +151,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
         {
             try
             {
+                // Update YouTubeSync intelligence
                 callHandler.UpdateYouTubeSyncActionIntelligence(_milestoneIntelligence, request);
             }
             catch (Exception e)
@@ -147,6 +161,7 @@ internal class MilestoneActionIntelligenceMessage : MilestoneActionIntelligenceS
 
             emptyResult.SetResult(new Empty());
         });
+        // Let CallManager know it needs to run an action
         _callManager.ActionReady.Set();
         return emptyResult.Task;
     }

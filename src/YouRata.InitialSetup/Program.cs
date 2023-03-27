@@ -119,6 +119,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                 Announce("<ins>When finished it is normal that the site can't be reached</ins>");
                 Announce("Copy everything in the website URL between |code=| and |&|");
                 Announce($"Paste this value in action secret {YouRataConstants.RedirectCodeVariable}");
+                Announce("Run the action again within 30 seconds");
                 GitHubWorkflowHelper.WriteStepSummary(
                     $"{actionEnvironment.EnvGitHubServerUrl}/{actionEnvironment.EnvGitHubRepository}/settings/secrets/actions/{YouRataConstants.RedirectCodeVariable}\n");
                 canContinue = false;

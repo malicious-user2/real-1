@@ -10,6 +10,9 @@ using YouRata.Common.Proto;
 
 namespace YouRata.ConflictMonitor.MilestoneCall.Messages;
 
+/// <summary>
+/// LogMessage service impl
+/// </summary>
 internal class LogMessage : LogService.LogServiceBase
 {
     private readonly CallManager _callManager;
@@ -26,9 +29,11 @@ internal class LogMessage : LogService.LogServiceBase
         TaskCompletionSource<LogMessages> logMessagesResult = new TaskCompletionSource<LogMessages>();
         _callManager.ActionCallbacks.Enqueue((callHandler) =>
         {
+            // Create a blank LogMessages
             LogMessages logMessages = new LogMessages();
             try
             {
+                // Fill the LogMessages with CallHandler logs
                 logMessages.Messages.AddRange(callHandler.GetLogs());
             }
             catch (Exception e)
@@ -38,6 +43,7 @@ internal class LogMessage : LogService.LogServiceBase
 
             logMessagesResult.SetResult(logMessages);
         });
+        // Let CallManager know it needs to run an action
         _callManager.ActionReady.Set();
         return logMessagesResult.Task;
     }
@@ -49,6 +55,7 @@ internal class LogMessage : LogService.LogServiceBase
         {
             try
             {
+                // Log message to in-memory log
                 callHandler.LogMessage($"({request.Milestone}) {request.Message}");
             }
             catch (Exception e)
@@ -58,6 +65,7 @@ internal class LogMessage : LogService.LogServiceBase
 
             emptyResult.SetResult(new Empty());
         });
+        // Let CallManager know it needs to run an action
         _callManager.ActionReady.Set();
         return emptyResult.Task;
     }

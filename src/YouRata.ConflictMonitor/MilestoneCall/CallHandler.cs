@@ -18,8 +18,15 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.ConflictMonitor.MilestoneCall;
 
+/// <summary>
+/// Handler for milestone calls from gRPC messages
+/// </summary>
+/// <remarks>
+/// This object instance resides in ConflictMonitor as a singleton
+/// </remarks>
 internal class CallHandler
 {
+    // In-memory logs
     private readonly List<string> _logBuilder;
 
     internal CallHandler()
@@ -35,14 +42,28 @@ internal class CallHandler
         }
     }
 
+    /// <summary>
+    /// Serializes the YouRataConfiguration for transport over gRPC
+    /// </summary>
+    /// <param name="appConfig"></param>
+    /// <returns></returns>
     internal string GetConfigJson(YouRataConfiguration appConfig)
     {
         return JsonConvert.SerializeObject(appConfig, Formatting.None);
     }
 
+    /// <summary>
+    /// Returns GitHubActionEnvironment from information retrieved from
+    /// workflow environment variables and API calls
+    /// </summary>
+    /// <param name="appConfig"></param>
+    /// <param name="environment"></param>
+    /// <param name="workflow"></param>
+    /// <returns></returns>
     internal GitHubActionEnvironment GetGithubActionEnvironment(YouRataConfiguration appConfig, GitHubEnvironment environment,
         ConflictMonitorWorkflow workflow)
     {
+        // Populate the GitHubActionEnvironment from GitHubEnvironment
         GitHubActionEnvironment actionEnvironment = environment.GetActionEnvironment();
         if (!appConfig.ActionCutOuts.DisableConflictMonitorGitHubOperations && workflow.GitHubToken?.Length > 0 &&
             workflow.ApiToken?.Length > 0)
@@ -55,6 +76,7 @@ internal class CallHandler
                 };
                 return ghClient.RateLimit.GetRateLimits().Result.Resources;
             });
+            // Get the ResourceRateLimit from the API call
             ResourceRateLimit? ghRateLimit =
                 GitHubRetryHelper.RetryCommand(actionEnvironment.OverrideRateLimit(), getResourceRateLimit, AppendLog);
             if (ghRateLimit != null)
@@ -79,8 +101,14 @@ internal class CallHandler
         }
     }
 
+    /// <summary>
+    /// Returns MilestoneActionIntelligence for all milestones from MilestoneIntelligenceRegistry
+    /// </summary>
+    /// <param name="milestoneIntelligence"></param>
+    /// <returns></returns>
     internal MilestoneActionIntelligence GetMilestoneActionIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence)
     {
+        // Populate the MilestoneActionIntelligence from the MilestoneIntelligenceRegistry instance variable
         MilestoneActionIntelligence actionIntelligence = new MilestoneActionIntelligence
         {
             InitialSetup =
@@ -110,10 +138,16 @@ internal class CallHandler
         return actionIntelligence;
     }
 
+    /// <summary>
+    /// Returns a string representation of the previous action report JSON
+    /// </summary>
+    /// <param name="appConfig"></param>
+    /// <param name="actionReportProvider"></param>
+    /// <returns></returns>
     internal string GetPreviousActionReport(YouRataConfiguration appConfig, PreviousActionReportProvider actionReportProvider)
     {
         return (actionReportProvider.IsMissing)
-            ? string.Empty
+            ? string.Empty // Normal for initial setup
             : JsonConvert.SerializeObject(actionReportProvider.ActionReport, Formatting.None);
     }
 
@@ -146,6 +180,11 @@ internal class CallHandler
         AppendLog(lineBuilder.ToString());
     }
 
+    /// <summary>
+    /// Saves ActionReportActionIntelligence data to the MilestoneIntelligenceRegistry object instance
+    /// </summary>
+    /// <param name="milestoneIntelligence"></param>
+    /// <param name="actionIntelligence"></param>
     internal void UpdateActionReportMilestoneIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence,
         ActionReportActionIntelligence actionIntelligence)
     {
@@ -160,6 +199,11 @@ internal class CallHandler
         milestoneIntelligence.ActionReport.LastUpdate = updateTime;
     }
 
+    /// <summary>
+    /// Saves InitialSetupActionIntelligence data to the MilestoneIntelligenceRegistry object instance
+    /// </summary>
+    /// <param name="milestoneIntelligence"></param>
+    /// <param name="actionIntelligence"></param>
     internal void UpdateInitialSetupActionIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence,
         InitialSetupActionIntelligence actionIntelligence)
     {
@@ -174,6 +218,11 @@ internal class CallHandler
         milestoneIntelligence.InitialSetup.LastUpdate = updateTime;
     }
 
+    /// <summary>
+    /// Saves YouTubeSyncActionIntelligence data to the MilestoneIntelligenceRegistry object instance
+    /// </summary>
+    /// <param name="milestoneIntelligence"></param>
+    /// <param name="actionIntelligence"></param>
     internal void UpdateYouTubeSyncActionIntelligence(MilestoneIntelligenceRegistry milestoneIntelligence,
         YouTubeSyncActionIntelligence actionIntelligence)
     {

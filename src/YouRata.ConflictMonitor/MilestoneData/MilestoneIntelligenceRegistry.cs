@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace YouRata.ConflictMonitor.MilestoneData;
 
+/// <summary>
+/// This holds the intelligence for all the milestones
+/// </summary>
 internal class MilestoneIntelligenceRegistry
 {
     private readonly IReadOnlyCollection<BaseMilestoneIntelligence> _milestones;

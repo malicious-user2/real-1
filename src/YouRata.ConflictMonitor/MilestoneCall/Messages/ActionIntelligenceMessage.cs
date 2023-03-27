@@ -16,6 +16,9 @@ using YouRata.ConflictMonitor.Workflow;
 
 namespace YouRata.ConflictMonitor.MilestoneCall.Messages;
 
+/// <summary>
+/// ActionIntelligenceMessage service impl
+/// </summary>
 internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntelligenceServiceBase
 {
     private readonly CallManager _callManager;
@@ -44,9 +47,11 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
         TaskCompletionSource<ActionIntelligence> actionIntelligenceResult = new TaskCompletionSource<ActionIntelligence>();
         _callManager.ActionCallbacks.Enqueue((CallHandler callHandler) =>
         {
+            // Create a blank ActionIntelligence
             ActionIntelligence actionIntelligence = new ActionIntelligence();
             try
             {
+                // Fill the ActionIntelligence with instance variables
                 actionIntelligence.GitHubActionEnvironment =
                     callHandler.GetGithubActionEnvironment(_configuration.Value, _environment.Value, _conflictMonitorWorkflow);
                 actionIntelligence.MilestoneIntelligence = callHandler.GetMilestoneActionIntelligence(_milestoneIntelligence);
@@ -60,6 +65,7 @@ internal class ActionIntelligenceMessage : ActionIntelligenceService.ActionIntel
 
             actionIntelligenceResult.SetResult(actionIntelligence);
         });
+        // Let CallManager know it needs to run an action
         _callManager.ActionReady.Set();
         return actionIntelligenceResult.Task;
     }

@@ -3,6 +3,9 @@
 
 namespace YouRata.ConflictMonitor.MilestoneData;
 
+/// <summary>
+/// ConflictMonitor abstraction of ActionReportActionIntelligence
+/// </summary>
 internal class ActionReportMilestoneIntelligence : BaseMilestoneIntelligence
 {
 }

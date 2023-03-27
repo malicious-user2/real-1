@@ -9,6 +9,9 @@ using YouRata.Common.ActionReport;
 
 namespace YouRata.ConflictMonitor.ActionReport;
 
+/// <summary>
+/// Searches for a previously committed action report and stores the ActionReportLayout
+/// </summary>
 internal class PreviousActionReportProvider
 {
     private readonly ActionReportRoot _actionReportRoot;
@@ -18,8 +21,10 @@ internal class PreviousActionReportProvider
     {
         _missingActionReport = true;
         _actionReportRoot = new ActionReportRoot();
+        // Determine the working directory for the checkout
         string? workspace = Environment.GetEnvironmentVariable(YouRataConstants.GitHubWorkspaceVariable);
         if (workspace == null) return;
+        // Combining the workspace with the filename produces the full path
         string fileName = Path.Combine(workspace, YouRataConstants.ActionReportFileName);
         try
         {
@@ -32,6 +37,7 @@ internal class PreviousActionReportProvider
         }
         catch
         {
+            // This is normal during the initial setup
             Console.WriteLine("No previous action report found");
         }
     }

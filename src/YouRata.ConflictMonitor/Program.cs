@@ -11,6 +11,15 @@ using YouRata.ConflictMonitor.MilestoneData;
 using YouRata.ConflictMonitor.MilestoneInterface;
 using YouRata.ConflictMonitor.Workflow;
 
+/// <summary>
+/// Create runtime objects and start the WebApp
+/// </summary>
+/// <remarks>
+/// This WebApp is started in the background before any milestones
+/// The WebApp provides information to the milestones on request and collects action intelligence
+/// If it becomes necessary to kill an inert process ConflictMonitor retains its last intelligence
+/// </remarks>
+
 CallHandler callHandler = new CallHandler();
 InServiceLoggerProvider logProvider = new InServiceLoggerProvider(callHandler);
 ConfigurationHelper configurationHelper = new ConfigurationHelper(args);
@@ -24,9 +33,11 @@ WorkflowLogicProvider.ProcessWorkflow(conflictMonitorWorkflow);
 
 if (args?.FirstOrDefault() == "newconfig")
 {
+    // Create a blank config file and exit
     configurationHelper.Build();
 }
 else
 {
+    // Run the WebApp until stopped
     appServer.RunAsync().Wait();
 }

@@ -7,6 +7,9 @@ using YouRata.Common.Proto;
 
 namespace YouRata.Common.Milestone;
 
+/// <summary>
+/// Static methods for creating milestone variables
+/// </summary>
 public static class MilestoneVariablesHelper
 {
     public static void CreateRuntimeVariables(MilestoneCommunicationClient client, out ActionIntelligence actionInt,

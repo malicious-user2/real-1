@@ -30,7 +30,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config,
         out GitHubActionEnvironment actionEnvironment);
     YouTubeSyncWorkflow workflow = new YouTubeSyncWorkflow();
-    if (!YouTubeAPIHelper.GetTokenResponse(workflow.StoredTokenResponse, out TokenResponse savedTokenResponse)) return;
+    if (!YouTubeAuthHelper.GetTokenResponse(workflow.StoredTokenResponse, out TokenResponse savedTokenResponse)) return;
     try
     {
         ActionReportLayout previousActionReport = client.GetPreviousActionReport();
@@ -40,7 +40,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
         {
             savedTokenResponse = YouTubeAuthorizationHelper.RefreshToken(authFlow, savedTokenResponse.RefreshToken, client);
             client.Keepalive();
-            YouTubeAPIHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
+            YouTubeAuthHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
             client.Keepalive();
         }
 

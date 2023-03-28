@@ -5,6 +5,9 @@ using System;
 
 namespace YouRata.Common;
 
+/// <summary>
+/// API failure retry backoff helper class
+/// </summary>
 public static class APIBackoffHelper
 {
     public static TimeSpan GetRandomBackoff(TimeSpan minTime, TimeSpan maxTime)

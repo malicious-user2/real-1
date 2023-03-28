@@ -349,6 +349,11 @@ public abstract class MilestoneCommunicationClient : IDisposable
         SetMilestoneActionIntelligence(milestoneActionIntelligence, milestoneIntelligenceType, milestoneIntelligenceName);
     }
 
+    /// <summary>
+    /// Configures an http client to use a unix socket path
+    /// </summary>
+    /// <param name="socketPath"></param>
+    /// <returns></returns>
     private static SocketsHttpHandler CreateHttpHandler(string socketPath)
     {
         UnixDomainSocketEndPoint endPoint = new UnixDomainSocketEndPoint(socketPath);
@@ -361,6 +366,11 @@ public abstract class MilestoneCommunicationClient : IDisposable
         return socketsHttpHandler;
     }
 
+    /// <summary>
+    /// Check for a valid milestone type
+    /// </summary>
+    /// <param name="milestoneIntelligenceType"></param>
+    /// <returns></returns>
     private bool IsValidMilestoneIntelligenceType(System.Type milestoneIntelligenceType)
     {
         System.Type[] milestoneTypes = typeof(MilestoneActionIntelligence.Types).GetNestedTypes();
@@ -368,6 +378,9 @@ public abstract class MilestoneCommunicationClient : IDisposable
         return true;
     }
 
+    /// <summary>
+    /// Handles creating the socket connection to the gRPC server
+    /// </summary>
     private class UnixDomainSocketConnectionFactory
     {
         private readonly EndPoint _endPoint;

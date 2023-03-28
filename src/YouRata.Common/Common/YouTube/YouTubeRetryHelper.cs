@@ -10,14 +10,30 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.Common.YouTube;
 
+/// <summary>
+/// YouTube Data API request retry/recovery helper class
+/// </summary>
 public static class YouTubeRetryHelper
 {
     public static void RetryCommand(YouTubeSyncActionIntelligence? intelligence, int quotaCost, Action command, TimeSpan minRetry,
         TimeSpan maxRetry, Action<string> logger)
     {
+        // Do not trap any exceptions
         RetryCommand(intelligence, quotaCost, command, minRetry, maxRetry, logger, null, out _);
     }
 
+    /// <summary>
+    /// Used for retrying actions
+    /// </summary>
+    /// <param name="intelligence"></param>
+    /// <param name="quotaCost"></param>
+    /// <param name="command"></param>
+    /// <param name="minRetry"></param>
+    /// <param name="maxRetry"></param>
+    /// <param name="logger"></param>
+    /// <param name="trapStatus"></param>
+    /// <param name="trapped"></param>
+    /// <exception cref="MilestoneException"></exception>
     public static void RetryCommand(YouTubeSyncActionIntelligence? intelligence, int quotaCost, Action command, TimeSpan minRetry,
         TimeSpan maxRetry, Action<string> logger, HttpStatusCode? trapStatus, out bool trapped)
     {
@@ -31,6 +47,7 @@ public static class YouTubeRetryHelper
                 {
                     if (intelligence != null)
                     {
+                        // Decrement rate limit before the call
                         intelligence.CalculatedQueriesPerDayRemaining -= quotaCost;
                     }
 
@@ -38,6 +55,7 @@ public static class YouTubeRetryHelper
                 }
                 catch (GoogleApiException unavailableEx) when (unavailableEx.HttpStatusCode == HttpStatusCode.ServiceUnavailable)
                 {
+                    // 503 transient error
                     retryCount++;
                     if (intelligence != null)
                     {
@@ -59,6 +77,7 @@ public static class YouTubeRetryHelper
             {
                 if (ex.HttpStatusCode == trapStatus)
                 {
+                    // Exception type matches specified trap
                     logger.Invoke($"YouTube API: {ex.Message}");
                     trapped = true;
                     break;
@@ -79,6 +98,7 @@ public static class YouTubeRetryHelper
                 }
             }
 
+            // Wait for a random amount of time before the next attempt
             TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(minRetry, maxRetry);
             Thread.Sleep(backOff);
         }
@@ -87,9 +107,24 @@ public static class YouTubeRetryHelper
     public static T? RetryCommand<T>(YouTubeSyncActionIntelligence? intelligence, int quotaCost, Func<T> command, TimeSpan minRetry,
         TimeSpan maxRetry, Action<string> logger)
     {
+        // Do not trap any exceptions
         return RetryCommand(intelligence, quotaCost, command, minRetry, maxRetry, logger, null, out _);
     }
 
+    /// <summary>
+    /// Used for retrying functions
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="intelligence"></param>
+    /// <param name="quotaCost"></param>
+    /// <param name="command"></param>
+    /// <param name="minRetry"></param>
+    /// <param name="maxRetry"></param>
+    /// <param name="logger"></param>
+    /// <param name="trapStatus"></param>
+    /// <param name="trapped"></param>
+    /// <returns></returns>
+    /// <exception cref="MilestoneException"></exception>
     public static T? RetryCommand<T>(YouTubeSyncActionIntelligence? intelligence, int quotaCost, Func<T> command, TimeSpan minRetry,
         TimeSpan maxRetry, Action<string> logger, HttpStatusCode? trapStatus, out bool trapped)
     {
@@ -104,6 +139,7 @@ public static class YouTubeRetryHelper
                 {
                     if (intelligence != null)
                     {
+                        // Decrement rate limit before the call
                         intelligence.CalculatedQueriesPerDayRemaining -= quotaCost;
                     }
 
@@ -111,6 +147,7 @@ public static class YouTubeRetryHelper
                 }
                 catch (GoogleApiException unavailableEx) when (unavailableEx.HttpStatusCode == HttpStatusCode.ServiceUnavailable)
                 {
+                    // 503 transient error
                     retryCount++;
                     if (intelligence != null)
                     {
@@ -132,6 +169,7 @@ public static class YouTubeRetryHelper
             {
                 if (ex.HttpStatusCode == trapStatus)
                 {
+                    // Exception type matches specified trap
                     logger.Invoke($"YouTube API: {ex.Message}");
                     trapped = true;
                     break;
@@ -152,6 +190,7 @@ public static class YouTubeRetryHelper
                 }
             }
 
+            // Wait for a random amount of time before the next attempt
             TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(minRetry, maxRetry);
             Thread.Sleep(backOff);
         }

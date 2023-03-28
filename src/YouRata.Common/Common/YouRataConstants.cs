@@ -6,12 +6,21 @@ using System.IO.Compression;
 
 namespace YouRata.Common;
 
+/// <summary>
+/// Constant values for the GitHub action
+/// </summary>
 public static class YouRataConstants
 {
+    // Previous action report file name
     public const string ActionReportFileName = "action-report.json";
+    // Git commit message for updating the action report
     public const string ActionReportMessage = "ActionReport update";
+    // GITHUB_TOKEN variable name
     public const string ActionTokenVariable = "ACTION_TOKEN";
+    // API_TOKEN variable name
     public const string ApiTokenVariable = "API_TOKEN";
+    // Variable for workfl
+    efqwef
     public const string CopyDirectionsReadmeVariable = "COPY_DIRECTIONS_README";
     public const string ErrataRootDirectory = "errata/";
     public const string GitHubWorkspaceVariable = "GITHUB_WORKSPACE";

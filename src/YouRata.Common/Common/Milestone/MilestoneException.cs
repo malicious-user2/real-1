@@ -5,6 +5,9 @@ using System;
 
 namespace YouRata.Common.Milestone;
 
+/// <summary>
+/// Generic exception for any milestone
+/// </summary>
 public class MilestoneException : Exception
 {
     public MilestoneException()

@@ -82,21 +82,21 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             canContinue = false;
         }
 
-        if (canContinue && (!YouTubeAPIHelper.GetTokenResponse(workflow.StoredTokenResponse, out _)))
+        if (canContinue && (!YouTubeAuthHelper.GetTokenResponse(workflow.StoredTokenResponse, out _)))
         {
             Console.WriteLine("Entering Google API stored token response section");
-            GoogleAuthorizationCodeFlow flow = YouTubeAPIHelper.GetFlow(workflow.ProjectClientId, workflow.ProjectClientSecret);
+            GoogleAuthorizationCodeFlow flow = YouTubeAuthHelper.GetFlow(workflow.ProjectClientId, workflow.ProjectClientSecret);
             if (!string.IsNullOrEmpty(workflow.RedirectCode) && workflow.RedirectCode != "empty")
             {
                 string redirectTokenCode = workflow.RedirectCode.Trim().Replace("=", "").Replace("&", "");
                 AuthorizationCodeTokenRequest authorizationCodeTokenRequest =
-                    YouTubeAPIHelper.GetTokenRequest(redirectTokenCode, workflow.ProjectClientId, workflow.ProjectClientSecret);
+                    YouTubeAuthHelper.GetTokenRequest(redirectTokenCode, workflow.ProjectClientId, workflow.ProjectClientSecret);
                 TokenResponse? authorizationCodeTokenResponse =
-                    YouTubeAPIHelper.ExchangeAuthorizationCode(authorizationCodeTokenRequest, flow);
+                    YouTubeAuthHelper.ExchangeAuthorizationCode(authorizationCodeTokenRequest, flow);
                 client.Keepalive();
                 if (authorizationCodeTokenResponse != null)
                 {
-                    YouTubeAPIHelper.SaveTokenResponse(authorizationCodeTokenResponse, actionEnvironment, client.LogMessage);
+                    YouTubeAuthHelper.SaveTokenResponse(authorizationCodeTokenResponse, actionEnvironment, client.LogMessage);
                     client.Keepalive();
                     Announce($"Google API stored token response has been saved to {YouRataConstants.StoredTokenResponseVariable}");
                     workflow.CopyDirectionsReadme = true;

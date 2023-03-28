@@ -10,6 +10,9 @@ using YouRata.YouTubeSync.Workflow;
 
 namespace YouRata.YouTubeSync.YouTube;
 
+/// <summary>
+/// YouTube Data API (REST) client helper class
+/// </summary>
 internal static class YouTubeServiceHelper
 {
     public static YouTubeService GetService(YouTubeSyncWorkflow workflow, UserCredential userCred)

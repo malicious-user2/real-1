@@ -19,8 +19,20 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.YouTubeSync.YouTube;
 
+/// <summary>
+/// YouTube video action helper class
+/// </summary>
 internal static class YouTubeVideoHelper
 {
+    /// <summary>
+    /// Get a list of videos published before the first outstanding video time
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="excludeVideos"></param>
+    /// <param name="intelligence"></param>
+    /// <param name="service"></param>
+    /// <param name="client"></param>
+    /// <returns></returns>
     public static List<Video> GetOutstandingChannelVideos(YouTubeConfiguration config, List<ResourceId> excludeVideos,
         YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {
@@ -30,16 +42,27 @@ internal static class YouTubeVideoHelper
             excludeVideos, intelligence, service, client);
         if (lastPublishTime.HasValue)
         {
+            // Save the last publish time to the milestone intelligence
             intelligence.OutstandingVideoPublishTime = lastPublishTime.Value;
         }
         else
         {
+            // No outstanding videos exist
             intelligence.OutstandingVideoPublishTime = 0;
         }
 
         return outstandingChannelVideos;
     }
 
+    /// <summary>
+    /// Get a list of videos published after the first video time
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="excludeVideos"></param>
+    /// <param name="intelligence"></param>
+    /// <param name="service"></param>
+    /// <param name="client"></param>
+    /// <returns></returns>
     public static List<Video> GetRecentChannelVideos(YouTubeConfiguration config, List<ResourceId> excludeVideos,
         YouTubeSyncActionIntelligence intelligence, YouTubeService service, YouTubeSyncCommunicationClient client)
     {

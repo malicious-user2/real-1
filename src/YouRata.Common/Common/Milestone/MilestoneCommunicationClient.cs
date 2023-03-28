@@ -27,6 +27,9 @@ using static YouRata.Common.Proto.MilestoneActionIntelligenceService;
 
 namespace YouRata.Common.Milestone;
 
+/// <summary>
+/// Represents a ConflictMonitor communication client for a generic milestone
+/// </summary>
 public abstract class MilestoneCommunicationClient : IDisposable
 {
     private readonly GrpcChannel _conflictMonitorChannel;
@@ -34,6 +37,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
 
     protected MilestoneCommunicationClient()
     {
+        // Expect ConflictMonitor to already be running
         _conflictMonitorChannel = GrpcChannel.ForAddress($"http://{IPAddress.Loopback}",
             new GrpcChannelOptions { HttpHandler = CreateHttpHandler(YouRataConstants.GrpcUnixSocketPath) });
     }
@@ -47,6 +51,14 @@ public abstract class MilestoneCommunicationClient : IDisposable
         }
     }
 
+    /// <summary>
+    /// Signal ConflictMonitor that the milestone has started
+    /// </summary>
+    /// <typeparam name="T">Milestone type</typeparam>
+    /// <param name="milestoneIntelligenceType"></param>
+    /// <param name="milestoneIntelligenceName"></param>
+    /// <returns>Success</returns>
+    /// <exception cref="MilestoneException"></exception>
     public virtual T Activate<T>(System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
     {
         T milestoneActionIntelligence = (T?)Activator.CreateInstance(milestoneIntelligenceType) ??
@@ -60,10 +72,14 @@ public abstract class MilestoneCommunicationClient : IDisposable
         return milestoneActionIntelligence;
     }
 
+    /// <summary>
+    /// Signal that all subsequent milestones should not start
+    /// </summary>
     public void BlockAllMilestones()
     {
         ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
         ActionIntelligence actionIntelligence = actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
+        // Find all milestone action intelligence members
         List<PropertyInfo> milestoneIntelligenceProperties = actionIntelligence.MilestoneIntelligence
             .GetType()
             .GetProperties()
@@ -77,6 +93,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
                 if (milestoneIntelligenceObject == null) continue;
                 string milestoneIntelligenceName = milestoneIntelligenceProperty.Name;
                 System.Type milestoneIntelligenceType = milestoneIntelligenceObject.GetType();
+                // Condition is common to all milestone intelligence
                 PropertyInfo? conditionProperty = milestoneIntelligenceType.GetProperty("Condition");
                 if (conditionProperty == null)
                 {
@@ -89,10 +106,12 @@ public abstract class MilestoneCommunicationClient : IDisposable
                     MilestoneCondition currentCondition = (MilestoneCondition)conditionCurrentValue;
                     if (currentCondition is MilestoneCondition.MilestoneCompleted or MilestoneCondition.MilestoneFailed)
                     {
+                        // Do not block a milestone that has already completed or failed
                         continue;
                     }
                 }
 
+                // Set the condition to MilestoneBlocked
                 conditionProperty.SetValue(milestoneIntelligenceObject, MilestoneCondition.MilestoneBlocked);
 
                 SetMilestoneActionIntelligence(milestoneIntelligenceObject, milestoneIntelligenceType, milestoneIntelligenceName);
@@ -100,18 +119,31 @@ public abstract class MilestoneCommunicationClient : IDisposable
         }
     }
 
+    /// <summary>
+    /// Get the global action intelligence
+    /// </summary>
+    /// <returns></returns>
     public ActionIntelligence GetActionIntelligence()
     {
         ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
         return actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
     }
 
+    /// <summary>
+    /// Retreive the in-memory log messages
+    /// </summary>
+    /// <returns></returns>
     public string GetLogMessages()
     {
         LogServiceClient logServiceClient = new LogServiceClient(_conflictMonitorChannel);
         return logServiceClient.GetLogMessages(new Empty()).Messages.ToString();
     }
 
+    /// <summary>
+    /// Get the milestone type specific intelligence
+    /// </summary>
+    /// <param name="milestoneIntelligenceType"></param>
+    /// <returns></returns>
     public virtual object? GetMilestoneActionIntelligence(System.Type milestoneIntelligenceType)
     {
         object? milestoneActionIntelligence = null;
@@ -119,6 +151,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
         ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
         ActionIntelligence? actionIntelligence = actionIntelligenceServiceClient.GetActionIntelligence(new Empty());
         if (actionIntelligence == null) return milestoneActionIntelligence;
+        // Find the milestone type in MilestoneActionIntelligence
         List<PropertyInfo> milestoneIntelligenceProperties = actionIntelligence.MilestoneIntelligence
             .GetType()
             .GetProperties()
@@ -137,6 +170,10 @@ public abstract class MilestoneCommunicationClient : IDisposable
         return milestoneActionIntelligence;
     }
 
+    /// <summary>
+    /// Get the previously committed action report
+    /// </summary>
+    /// <returns></returns>
     public ActionReportLayout GetPreviousActionReport()
     {
         ActionIntelligenceServiceClient actionIntelligenceServiceClient = new ActionIntelligenceServiceClient(_conflictMonitorChannel);
@@ -154,6 +191,11 @@ public abstract class MilestoneCommunicationClient : IDisposable
         return actionReport;
     }
 
+    /// <summary>
+    /// Get the milestone type specific MilestoneCondition
+    /// </summary>
+    /// <param name="milestoneIntelligenceType"></param>
+    /// <returns></returns>
     public virtual MilestoneCondition GetStatus(System.Type milestoneIntelligenceType)
     {
         MilestoneCondition milestoneCondition = new MilestoneCondition();
@@ -169,6 +211,10 @@ public abstract class MilestoneCommunicationClient : IDisposable
         return milestoneCondition;
     }
 
+    /// <summary>
+    /// Get the YouRata configuration root
+    /// </summary>
+    /// <returns></returns>
     public YouRataConfiguration GetYouRataConfiguration()
     {
         YouRataConfiguration appConfig = new YouRataConfiguration();
@@ -184,6 +230,13 @@ public abstract class MilestoneCommunicationClient : IDisposable
         return appConfig;
     }
 
+    /// <summary>
+    /// Determines if a milestone type is blocked
+    /// </summary>
+    /// <param name="milestoneIntelligenceType"></param>
+    /// <returns></returns>
+    /// <exception cref="MilestoneException"></exception>
+    /// <remarks>This the first call to ConflictMonitor so it needs retry logic</remarks>
     public virtual bool IsBlocked(System.Type milestoneIntelligenceType)
     {
         MilestoneCondition milestoneCondition = new MilestoneCondition();
@@ -204,6 +257,7 @@ public abstract class MilestoneCommunicationClient : IDisposable
                 }
             }
 
+            // Wait for ConflictMonitor to finish starting
             TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10));
             Thread.Sleep(backOff);
         }
@@ -211,6 +265,11 @@ public abstract class MilestoneCommunicationClient : IDisposable
         return (milestoneCondition == MilestoneCondition.MilestoneBlocked);
     }
 
+    /// <summary>
+    /// Signal ConflictMonitor that the milestone is alive
+    /// </summary>
+    /// <param name="milestoneIntelligenceType"></param>
+    /// <param name="milestoneIntelligenceName"></param>
     public virtual void Keepalive(System.Type milestoneIntelligenceType, string milestoneIntelligenceName)
     {
         if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;
@@ -231,6 +290,11 @@ public abstract class MilestoneCommunicationClient : IDisposable
         }
     }
 
+    /// <summary>
+    /// Log a message to the in-memory log
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="milestone"></param>
     public virtual void LogMessage(string message, string milestone)
     {
         LogServiceClient logServiceClient = new LogServiceClient(_conflictMonitorChannel);
@@ -240,12 +304,19 @@ public abstract class MilestoneCommunicationClient : IDisposable
         logServiceClient.WriteLogMessage(milestoneLog);
     }
 
+    /// <summary>
+    /// Set the milestone type specific intelligence
+    /// </summary>
+    /// <param name="milestoneActionIntelligence"></param>
+    /// <param name="milestoneIntelligenceType"></param>
+    /// <param name="milestoneIntelligenceName"></param>
     public virtual void SetMilestoneActionIntelligence(object milestoneActionIntelligence, System.Type milestoneIntelligenceType,
         string milestoneIntelligenceName)
     {
         if (!IsValidMilestoneIntelligenceType(milestoneIntelligenceType)) return;
         MilestoneActionIntelligenceServiceClient milestoneActionIntelligenceServiceClient =
             new MilestoneActionIntelligenceServiceClient(_conflictMonitorChannel);
+        // Find the update method for the milestone type in MMilestoneActionIntelligenceServiceClient
         List<MethodInfo> clientMethods = milestoneActionIntelligenceServiceClient
             .GetType()
             .GetMethods()
@@ -261,6 +332,12 @@ public abstract class MilestoneCommunicationClient : IDisposable
         }
     }
 
+    /// <summary>
+    /// Set the milestone type specific MilestoneCondition
+    /// </summary>
+    /// <param name="milestoneCondition"></param>
+    /// <param name="milestoneIntelligenceType"></param>
+    /// <param name="milestoneIntelligenceName"></param>
     public virtual void SetStatus(MilestoneCondition milestoneCondition, System.Type milestoneIntelligenceType,
         string milestoneIntelligenceName)
     {

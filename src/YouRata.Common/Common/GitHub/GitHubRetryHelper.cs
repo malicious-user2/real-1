@@ -15,6 +15,7 @@ public static class GitHubRetryHelper
 {
     public static void RetryCommand(GitHubActionEnvironment environment, Action command, Action<string> logger)
     {
+        // Do not trap any exceptions
         RetryCommand(environment, command, logger, null, out _);
     }
 
@@ -37,6 +38,7 @@ public static class GitHubRetryHelper
             try
             {
                 {
+                    // Decrement rate limit before the call
                     environment.RateLimitCoreRemaining--;
                     command.Invoke();
                 }
@@ -67,6 +69,7 @@ public static class GitHubRetryHelper
                 }
             }
 
+            // Wait for a random amount of time before the next attempt
             TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
             Thread.Sleep(backOff);
         }
@@ -74,6 +77,7 @@ public static class GitHubRetryHelper
 
     public static T? RetryCommand<T>(GitHubActionEnvironment environment, Func<T> command, Action<string> logger)
     {
+        // Do not trap any exceptions
         return RetryCommand(environment, command, logger, null, out _);
     }
 
@@ -99,6 +103,7 @@ public static class GitHubRetryHelper
             try
             {
                 {
+                    // Decrement rate limit before the call
                     environment.RateLimitCoreRemaining--;
                     returnValue = command.Invoke();
                 }
@@ -129,6 +134,7 @@ public static class GitHubRetryHelper
                 }
             }
 
+            // Wait for a random amount of time before the next attempt
             TimeSpan backOff = APIBackoffHelper.GetRandomBackoff(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5));
             Thread.Sleep(backOff);
         }

@@ -9,7 +9,10 @@ using YouRata.Common.Configuration.ErrataBulletin;
 
 namespace YouRata.YouTubeSync.ErrataBulletin;
 
-internal static class ErrataBulletin
+/// <summary>
+/// Static methods for creating video errata bulletins
+/// </summary>
+internal static class ErrataBulletinFactory
 {
     public static ErrataBulletinBuilder CreateBuilder(Video video, ErrataBulletinConfiguration config)
     {

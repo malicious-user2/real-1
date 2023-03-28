@@ -6,12 +6,20 @@ using YouRata.Common;
 
 namespace YouRata.YouTubeSync.Workflow;
 
+/// <summary>
+/// Represents a GitHub Actions workflow
+/// </summary>
 internal class YouTubeSyncWorkflow
 {
+    // Google Cloud project credential API key
     private readonly string _apiKey;
+    // OAuth 2.0 client ID
     private readonly string _clientId;
+    // OAuth 2.0 client secret
     private readonly string _clientSecret;
+    // Saved token response
     private readonly string _tokenResponse;
+    // Working directory on the runner
     private readonly string _workspace;
 
 #pragma warning disable CS8601

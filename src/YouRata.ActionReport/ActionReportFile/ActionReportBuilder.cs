@@ -12,6 +12,9 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.ActionReport.ActionReportFile;
 
+/// <summary>
+/// Builds an action report JSON string from ActionIntelligence
+/// </summary>
 internal sealed class ActionReportBuilder
 {
     private readonly ActionIntelligence _actionIntelligence;
@@ -33,6 +36,7 @@ internal sealed class ActionReportBuilder
             milestoneInt.InitialSetup.Condition != MilestoneCondition.MilestoneBlocked &&
             milestoneInt.YouTubeSync.Condition == MilestoneCondition.MilestoneCompleted)
         {
+            // Success status
             status = $"Last Run {zuluTime}";
         }
         else if (milestoneInt.InitialSetup.Condition == MilestoneCondition.MilestoneFailed)

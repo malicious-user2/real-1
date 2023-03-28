@@ -7,12 +7,20 @@ using YouRata.Common.GitHub;
 
 namespace YouRata.InitialSetup.Workflow;
 
+/// <summary>
+/// Represents a GitHub Actions workflow
+/// </summary>
 internal class InitialSetupWorkflow
 {
+    // Google Cloud project credential API key
     private readonly string _apiKey;
+    // OAuth 2.0 client ID
     private readonly string _clientId;
+    // OAuth 2.0 client secret
     private readonly string _clientSecret;
+    // Authentication redirect code
     private readonly string _redirectCode;
+    // Saved token response
     private readonly string _tokenResponse;
 
 #pragma warning disable CS8601

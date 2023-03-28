@@ -7,6 +7,9 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.YouTubeSync.YouTube;
 
+/// <summary>
+/// Extension methods used to log the number of YouTube Data API queries
+/// </summary>
 internal static class YouTubeLoggingExtensions
 {
     internal static void LogAPIQueries(this YouTubeSyncCommunicationClient client, YouTubeSyncActionIntelligence intelligence)

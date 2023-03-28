@@ -35,10 +35,10 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     {
         ActionReportLayout previousActionReport = client.GetPreviousActionReport();
         YouTubeQuotaHelper.SetPreviousActionReport(config.YouTube, client, milestoneInt, previousActionReport);
-        GoogleAuthorizationCodeFlow authFlow = YouTubeAuthorizationHelper.GetFlow(workflow);
+        GoogleAuthorizationCodeFlow authFlow = YouTubeAuthHelper.GetFlow(workflow.ProjectClientId, workflow.ProjectClientSecret);
         if (savedTokenResponse.IsExpired(authFlow.Clock))
         {
-            savedTokenResponse = YouTubeAuthorizationHelper.RefreshToken(authFlow, savedTokenResponse.RefreshToken, client);
+            savedTokenResponse = YouTubeAuthHelper.RefreshToken(authFlow, savedTokenResponse.RefreshToken, client.LogMessage);
             client.Keepalive();
             YouTubeAuthHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
             client.Keepalive();
@@ -69,7 +69,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                                             $"{video.Id}.md";
                 if (!Path.Exists(Path.Combine(workflow.Workspace, errataBulletinPath)))
                 {
-                    ErrataBulletinBuilder errataBulletinBuilder = ErrataBulletin.CreateBuilder(video, config.ErrataBulletin);
+                    ErrataBulletinBuilder errataBulletinBuilder = ErrataBulletinFactory.CreateBuilder(video, config.ErrataBulletin);
                     if (GitHubAPIClient.CreateContentFile(actionEnvironment,
                             errataBulletinBuilder.SnippetTitle,
                             errataBulletinBuilder.Build(),

@@ -11,6 +11,7 @@ using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.YouTube.v3;
 using Newtonsoft.Json;
 using YouRata.Common.GitHub;
+using YouRata.Common.Milestone;
 using YouRata.Common.Proto;
 
 namespace YouRata.Common.YouTube;
@@ -93,6 +94,26 @@ public static class YouTubeAuthHelper
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Get a new TokenResponse from a refresh token
+    /// </summary>
+    /// <param name="authFlow"></param>
+    /// <param name="refreshToken"></param>
+    /// <param name="logger"></param>
+    /// <returns></returns>
+    /// <exception cref="MilestoneException"></exception>
+    public static TokenResponse RefreshToken(GoogleAuthorizationCodeFlow authFlow, string refreshToken, Action<string> logger)
+    {
+        Func<TokenResponse> getTokenResponse = (() =>
+        {
+            return authFlow.RefreshTokenAsync(null, refreshToken, CancellationToken.None).Result;
+        });
+        TokenResponse? tokenResponse = YouTubeRetryHelper.RetryCommand(null, 0, getTokenResponse, TimeSpan.FromSeconds(5),
+            TimeSpan.FromSeconds(10), logger);
+        if (tokenResponse == null) throw new MilestoneException("Could not refresh authorization token");
+        return tokenResponse;
     }
 
     /// <summary>

@@ -13,8 +13,20 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
 namespace YouRata.YouTubeSync.YouTube;
 
+/// <summary>
+/// YouTube Data API playlist helper class
+/// </summary>
 internal static class YouTubePlaylistHelper
 {
+    /// <summary>
+    /// Get a list of resource ID's from a YouTube playlist
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="intelligence"></param>
+    /// <param name="service"></param>
+    /// <param name="client"></param>
+    /// <returns></returns>
+    /// <exception cref="MilestoneException"></exception>
     public static List<ResourceId> GetPlaylistVideos(YouTubeConfiguration config, YouTubeSyncActionIntelligence intelligence,
         YouTubeService service, YouTubeSyncCommunicationClient client)
     {
@@ -31,11 +43,13 @@ internal static class YouTubePlaylistHelper
                 new PlaylistItemsResource.ListRequest(service,
                     new[] { YouTubeConstants.RequestSnippetPart, YouTubeConstants.RequestStatusPart })
                 {
+                    // YouTube Data API only allows 50 items per page
                     PlaylistId = playlist, MaxResults = 50
                 };
             bool requestNextPage = true;
             while (requestNextPage)
             {
+                // Construct a GetPlaylistResponse function
                 Func<PlaylistItemListResponse> getPlaylistResponse = (() => { return playlistRequest.Execute(); });
                 PlaylistItemListResponse? playlistResponse = YouTubeRetryHelper.RetryCommand(intelligence,
                     YouTubeConstants.PlaylistItemListQuotaCost, getPlaylistResponse, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(10),
@@ -44,8 +58,11 @@ internal static class YouTubePlaylistHelper
                 if (playlistResponse == null) throw new MilestoneException("Could not get YouTube playlist items");
                 foreach (PlaylistItem playlistItem in playlistResponse.Items)
                 {
+                    // Skip resources that are not a video
                     if (playlistItem.Snippet.ResourceId.Kind != YouTubeConstants.VideoKind) continue;
+                    // Skip videos already retrieved
                     if (videoIds.Contains(playlistItem.Snippet.ResourceId.VideoId)) continue;
+                    // Skip private videos
                     if (playlistItem.Status.PrivacyStatus == YouTubeConstants.PrivacyStatusPrivate) continue;
                     playlistResourceIds.Add(playlistItem.Snippet.ResourceId);
                     videoIds.Add(playlistItem.Snippet.ResourceId.VideoId);

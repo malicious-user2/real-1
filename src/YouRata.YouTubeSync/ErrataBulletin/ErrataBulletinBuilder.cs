@@ -8,13 +8,23 @@ using YouRata.Common.Milestone;
 
 namespace YouRata.YouTubeSync.ErrataBulletin;
 
+/// <summary>
+/// Builds an errata bulletin string from a video snippet
+/// </summary>
 internal sealed class ErrataBulletinBuilder
 {
+    // --- GitHub flavored markdown templates ---
+    // Editing instructions template
     private const string MdTemplateInstructions1 = "{0}";
+    // Time separator
     private const string MdTemplateTimeValueMark1 = "{0} ------------------------------------------------";
+    // Title marker
     private const string MdTemplateTitleBottom1 = "#";
+    // Title template
     private const string MdTemplateTitleBottom2 = "{0}";
+    // Title marker
     private const string MdTemplateTitleBottom3 = "===";
+    // Title template
     private const string MdTemplateTitleTop1 = "# {0}";
     private readonly ErrataBulletinConfiguration _configuration;
     private readonly TimeSpan _contentDuration;
@@ -29,35 +39,38 @@ internal sealed class ErrataBulletinBuilder
 
     public string Build()
     {
-        var errataBulletin = string.Empty;
-        AddInstructions(ref errataBulletin);
-        AddTimeValueMarks(ref errataBulletin);
-        AddTitle(ref errataBulletin);
         if (string.IsNullOrEmpty(SnippetTitle))
         {
             throw new MilestoneException("No title specified to build errata bulletin");
         }
+        string errataBulletin = string.Empty;
+        AddInstructions(ref errataBulletin);
+        AddTimeValueMarks(ref errataBulletin);
+        AddTitle(ref errataBulletin);
 
         return errataBulletin;
     }
 
     private void AddInstructions(ref string bulletinTemplate)
     {
-        var instructions = string.Format(CultureInfo.InvariantCulture, MdTemplateInstructions1,
+        string instructions = string.Format(CultureInfo.InvariantCulture, MdTemplateInstructions1,
             _configuration.Instructions);
         bulletinTemplate = $"{instructions}{GitHubNewLine}{bulletinTemplate}";
     }
 
     private void AddTimeValueMarks(ref string bulletinTemplate)
     {
-        var secondCounter = 0;
+        int secondCounter = 0;
+        // Iterate through every second of the video duration
         while (secondCounter < _contentDuration.TotalSeconds)
         {
+            // Check if the second is divisible by SecondsPerMark
             if (secondCounter % _configuration.SecondsPerMark == 0)
             {
-                var secondValue = TimeSpan.FromSeconds(secondCounter);
+                TimeSpan secondValue = TimeSpan.FromSeconds(secondCounter);
                 if (secondCounter >= 3600)
                 {
+                    // Include hours in the time
                     bulletinTemplate += string.Format(CultureInfo.InvariantCulture, MdTemplateTimeValueMark1,
                         secondValue.ToString(@"h\:mm\:ss", CultureInfo.InvariantCulture));
                 }
@@ -69,6 +82,7 @@ internal sealed class ErrataBulletinBuilder
 
                 for (var emptyLines = 0; emptyLines <= _configuration.EmptyLinesPerMark; emptyLines++)
                 {
+                    // Add blank lines after marks
                     bulletinTemplate += Environment.NewLine;
                 }
             }
@@ -98,5 +112,6 @@ internal sealed class ErrataBulletinBuilder
 
     public string SnippetTitle { get; }
 
+    // For a new line to appear in markdown
     private string GitHubNewLine => "  " + Environment.NewLine;
 }

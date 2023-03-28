@@ -23,6 +23,8 @@ using YouRata.YouTubeSync.Workflow;
 using YouRata.YouTubeSync.YouTube;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
+///////// the idea is that any missed videos will be picked up on a subsequent run and any new videos
+
 using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClient())
 {
     if (!client.Activate(out YouTubeSyncActionIntelligence milestoneInt)) return;

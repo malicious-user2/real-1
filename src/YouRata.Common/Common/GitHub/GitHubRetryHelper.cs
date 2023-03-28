@@ -8,6 +8,9 @@ using YouRata.Common.Proto;
 
 namespace YouRata.Common.GitHub;
 
+/// <summary>
+/// GitHub REST API request retry/recovery helper class
+/// </summary>
 public static class GitHubRetryHelper
 {
     public static void RetryCommand(GitHubActionEnvironment environment, Action command, Action<string> logger)
@@ -15,6 +18,15 @@ public static class GitHubRetryHelper
         RetryCommand(environment, command, logger, null, out _);
     }
 
+    /// <summary>
+    /// Used for retrying actions
+    /// </summary>
+    /// <param name="environment"></param>
+    /// <param name="command"></param>
+    /// <param name="logger"></param>
+    /// <param name="trapInnerException"></param>
+    /// <param name="trapped"></param>
+    /// <exception cref="MilestoneException"></exception>
     public static void RetryCommand(GitHubActionEnvironment environment, Action command, Action<string> logger, Type? trapInnerException,
         out bool trapped)
     {
@@ -34,6 +46,7 @@ public static class GitHubRetryHelper
             {
                 if (ex.InnerException != null && ex.InnerException.GetType() == trapInnerException)
                 {
+                    // Exception type matches specified trap
                     logger.Invoke($"GitHub API: {ex.Message}");
                     trapped = true;
                     break;
@@ -64,6 +77,17 @@ public static class GitHubRetryHelper
         return RetryCommand(environment, command, logger, null, out _);
     }
 
+    /// <summary>
+    /// Used for retrying functions
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="environment"></param>
+    /// <param name="command"></param>
+    /// <param name="logger"></param>
+    /// <param name="trapInnerException"></param>
+    /// <param name="trapped"></param>
+    /// <returns></returns>
+    /// <exception cref="MilestoneException"></exception>
     public static T? RetryCommand<T>(GitHubActionEnvironment environment, Func<T> command, Action<string> logger, Type? trapInnerException,
         out bool trapped)
     {
@@ -84,6 +108,7 @@ public static class GitHubRetryHelper
             {
                 if (ex.InnerException != null && ex.InnerException.GetType() == trapInnerException)
                 {
+                    // Exception type matches specified trap
                     logger.Invoke($"GitHub API: {ex.Message}");
                     trapped = true;
                     break;

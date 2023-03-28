@@ -54,7 +54,7 @@ public static class GitHubAPIClient
         Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) throw new MilestoneException("GitHub API rate limit exceeded");
-        // Only a personal access token is currently supported action secrets
+        // Only personal access tokens are currently supported for action secrets
         IApiConnection apiCon = GetApiConnection(environment.ApiToken);
 
         RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);
@@ -80,7 +80,7 @@ public static class GitHubAPIClient
     public static bool DeleteSecret(GitHubActionEnvironment environment, string secretName, Action<string> logger)
     {
         if (!HasRemainingCalls(environment)) throw new MilestoneException("GitHub API rate limit exceeded");
-        // Only a personal access token is currently supported action secrets
+        // Only personal access tokens are currently supported for action secrets
         IApiConnection apiCon = GetApiConnection(environment.ApiToken);
 
         RepositorySecretsClient secClient = new RepositorySecretsClient(apiCon);

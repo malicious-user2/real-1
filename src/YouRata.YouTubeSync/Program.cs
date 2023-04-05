@@ -28,7 +28,7 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 /// Each YouTube video description is updated to add a link to the errata bulletin on GitHub.
 /// Control is started from the Run YouRata action in the event the TOKEN_RESPONSE environment
 /// variable contains a valid TokenResponse. Channels with extensive video history will require
-/// multiple days to create all errata bulletins.
+/// multiple days of runs to create all errata bulletins.
 /// ---------------------------------------------------------------------------------------------
 
 using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClient())

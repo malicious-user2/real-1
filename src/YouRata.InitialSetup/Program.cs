@@ -17,6 +17,14 @@ using YouRata.InitialSetup.ConflictMonitor;
 using YouRata.InitialSetup.Workflow;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
+/// ---------------------------------------------------------------------------------------------
+/// The Initial Setup milestone verifies the existence of action secrets and variables.
+/// Control is started from the Run YouRata action in the event TOKEN_RESPONSE is not a populated
+/// environment variable. Step feedback is generated in the GITHUB_STEP_SUMMARY workflow
+/// command and provides further instructions after each run. Finally the program allows the
+/// workflow to copy errata contributing instructions to the repository root.
+/// ---------------------------------------------------------------------------------------------
+
 using (InitialSetupCommunicationClient client = new InitialSetupCommunicationClient())
 {
     if (!client.Activate(out InitialSetupActionIntelligence milestoneInt)) return;

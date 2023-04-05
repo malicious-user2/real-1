@@ -66,7 +66,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
             Console.WriteLine("Entering actions variables section");
             if (!config.ActionCutOuts.DisableUnsupportedGitHubAPI)
             {
-                // Create empty variables for the credentials
+                // Create empty action variables for the credentials
                 UnsupportedGitHubAPIClient.CreateVariable(actionEnvironment, YouRataConstants.ProjectClientIdVariable, "empty",
                     client.LogMessage);
                 client.Keepalive();

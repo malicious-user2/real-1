@@ -23,7 +23,13 @@ using YouRata.YouTubeSync.Workflow;
 using YouRata.YouTubeSync.YouTube;
 using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 
-///////// the idea is that any missed videos will be picked up on a subsequent run and any new videos
+/// ---------------------------------------------------------------------------------------------
+/// The YouTubeSync milestone makes a video errata bulletin for each video in a YouTube channel.
+/// Each YouTube video description is updated to add a link to the errata bulletin on GitHub.
+/// Control is started from the Run YouRata action in the event the TOKEN_RESPONSE environment
+/// variable contains a valid TokenResponse. Channels with extensive video history will require
+/// multiple days to create all errata bulletins.
+/// ---------------------------------------------------------------------------------------------
 
 using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClient())
 {

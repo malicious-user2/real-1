@@ -28,19 +28,24 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 /// Each YouTube video description is updated to add a link to the errata bulletin on GitHub.
 /// Control is started from the Run YouRata action in the event the TOKEN_RESPONSE environment
 /// variable contains a valid TokenResponse. Channels with extensive video history will require
-/// multiple days of runs to create all errata bulletins.
+/// multiple days/runs to create all errata bulletins.
 /// ---------------------------------------------------------------------------------------------
 
 using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClient())
 {
+    // Notify YouTubeSync that the InitialSetup milestone is starting
     if (!client.Activate(out YouTubeSyncActionIntelligence milestoneInt)) return;
+    // Stop if YouTubeSync is disabled
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableYouTubeSyncMilestone) return;
+    // Fill runtime variables
     MilestoneVariablesHelper.CreateRuntimeVariables(client, out ActionIntelligence actionInt, out YouRataConfiguration config,
         out GitHubActionEnvironment actionEnvironment);
+    // Get workflow variables
     YouTubeSyncWorkflow workflow = new YouTubeSyncWorkflow();
     if (!YouTubeAuthHelper.GetTokenResponse(workflow.StoredTokenResponse, out TokenResponse savedTokenResponse)) return;
     try
     {
+        // TOKEN_RESPONSE is valid
         ActionReportLayout previousActionReport = client.GetPreviousActionReport();
         YouTubeQuotaHelper.SetPreviousActionReport(config.YouTube, client, milestoneInt, previousActionReport);
         GoogleAuthorizationCodeFlow authFlow = YouTubeAuthHelper.GetFlow(workflow.ProjectClientId, workflow.ProjectClientSecret);

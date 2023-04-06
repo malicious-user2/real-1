@@ -47,26 +47,33 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
     {
         // TOKEN_RESPONSE is valid
         ActionReportLayout previousActionReport = client.GetPreviousActionReport();
+        // Copy the old action report to our milestone intelligence
         YouTubeQuotaHelper.SetPreviousActionReport(config.YouTube, client, milestoneInt, previousActionReport);
         GoogleAuthorizationCodeFlow authFlow = YouTubeAuthHelper.GetFlow(workflow.ProjectClientId, workflow.ProjectClientSecret);
         if (savedTokenResponse.IsExpired(authFlow.Clock))
         {
+            // Token has expired, refresh it
             savedTokenResponse = YouTubeAuthHelper.RefreshToken(authFlow, savedTokenResponse.RefreshToken, client.LogMessage);
             client.Keepalive();
+            // Save the new token to TOKEN_RESPONSE
             YouTubeAuthHelper.SaveTokenResponse(savedTokenResponse, actionInt.GitHubActionEnvironment, client.LogMessage);
             client.Keepalive();
         }
 
+        // Create credentials for the YouTube Data API
         UserCredential userCred = new UserCredential(authFlow, null, savedTokenResponse);
         List<string> processedVideos = new List<string>();
         using (YouTubeService ytService = YouTubeServiceHelper.GetService(workflow, userCred))
         {
+            // Get the videos to ignore from the playlist(s)
             List<ResourceId> ignoreVideos = YouTubePlaylistHelper.GetPlaylistVideos(config.YouTube, milestoneInt, ytService, client);
+            // Get recently published videos
             List<Video> videoList =
                 YouTubeVideoHelper.GetRecentChannelVideos(config.YouTube, ignoreVideos, milestoneInt, ytService, client);
             List<Video> oustandingVideoList = new List<Video>();
             if (milestoneInt.HasOutstandingVideos)
             {
+                // Get any older videos not picked up by the last run
                 oustandingVideoList =
                     YouTubeVideoHelper.GetOutstandingChannelVideos(config.YouTube, ignoreVideos, milestoneInt, ytService, client);
                 videoList.AddRange(oustandingVideoList
@@ -78,11 +85,14 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 if (video.ContentDetails == null) continue;
                 if (video.Snippet == null) continue;
                 if (processedVideos.Contains(video.Id)) continue;
+                // Build a path to the new errata bulletin
                 string errataBulletinPath = $"{YouRataConstants.ErrataRootDirectory}" +
                                             $"{video.Id}.md";
                 if (!Path.Exists(Path.Combine(workflow.Workspace, errataBulletinPath)))
                 {
+                    // Errata bulletin file does not exist in our checkout, build a new one
                     ErrataBulletinBuilder errataBulletinBuilder = ErrataBulletinFactory.CreateBuilder(video, config.ErrataBulletin);
+                    // Add the file to the repository
                     if (GitHubAPIClient.CreateContentFile(actionEnvironment,
                             errataBulletinBuilder.SnippetTitle,
                             errataBulletinBuilder.Build(),
@@ -92,12 +102,15 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                         client.Keepalive();
                         if (!config.ActionCutOuts.DisableYouTubeVideoUpdate)
                         {
+                            // Create a link for YouTube visitors to access the errata page
                             string erattaLink = YouTubeDescriptionErattaPublisher.GetErrataLink(actionEnvironment, errataBulletinPath);
+                            // Append the link to the description
                             string newDescription =
                                 YouTubeDescriptionErattaPublisher.GetAmendedDescription(video.Snippet.Description, erattaLink,
                                     config.YouTube);
                             if (newDescription.Length <= YouTubeConstants.MaxDescriptionLength)
                             {
+                                // Enough characters are left to update the description
                                 YouTubeVideoHelper.UpdateVideoDescription(video, newDescription, milestoneInt, ytService, client);
                             }
 
@@ -110,6 +123,7 @@ using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClien
                 }
             }
 
+            // Save status to the milestone intelligence
             milestoneInt.HasOutstandingVideos = (oustandingVideoList.Count > 0 || milestoneInt.LastQueryTime == 0);
             milestoneInt.LastQueryTime = DateTimeOffset.Now.ToUnixTimeSeconds();
             client.SetMilestoneActionIntelligence(milestoneInt);

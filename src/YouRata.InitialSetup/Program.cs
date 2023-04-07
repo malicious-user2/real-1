@@ -116,13 +116,13 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                 string redirectTokenCode = workflow.RedirectCode.Trim().Replace("=", "").Replace("&", "");
                 AuthorizationCodeTokenRequest authorizationCodeTokenRequest =
                     YouTubeAuthHelper.GetTokenRequest(redirectTokenCode, workflow.ProjectClientId, workflow.ProjectClientSecret);
-                // Get a TokenResponse from the authorization code
+                // Get a token response from the authorization code
                 TokenResponse? authorizationCodeTokenResponse =
                     YouTubeAuthHelper.ExchangeAuthorizationCode(authorizationCodeTokenRequest, flow);
                 client.Keepalive();
                 if (authorizationCodeTokenResponse != null)
                 {
-                    // TokenResponse is valid, save it to an action secret
+                    // Token response is valid, save it to an action secret
                     YouTubeAuthHelper.SaveTokenResponse(authorizationCodeTokenResponse, actionEnvironment, client.LogMessage);
                     client.Keepalive();
                     Announce($"Google API stored token response has been saved to {YouRataConstants.StoredTokenResponseVariable}");
@@ -135,7 +135,7 @@ using (InitialSetupCommunicationClient client = new InitialSetupCommunicationCli
                     canContinue = false;
                 }
             }
-            // Create an empty action secret for the TokenResponse
+            // Create an empty action secret for the token response
             else if (GitHubAPIClient.CreateOrUpdateSecret(actionEnvironment, YouRataConstants.StoredTokenResponseVariable, "empty",
                          client.LogMessage))
             {

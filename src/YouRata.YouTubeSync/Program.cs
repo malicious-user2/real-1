@@ -27,13 +27,13 @@ using static YouRata.Common.Proto.MilestoneActionIntelligence.Types;
 /// The YouTubeSync milestone makes a video errata bulletin for each video in a YouTube channel.
 /// Each YouTube video description is updated to add a link to the errata bulletin on GitHub.
 /// Control is started from the Run YouRata action in the event the TOKEN_RESPONSE environment
-/// variable contains a valid TokenResponse. Channels with extensive video history will require
+/// variable contains a valid token response. Channels with extensive video history will require
 /// multiple days/runs to create all errata bulletins.
 /// ---------------------------------------------------------------------------------------------
 
 using (YouTubeSyncCommunicationClient client = new YouTubeSyncCommunicationClient())
 {
-    // Notify YouTubeSync that the InitialSetup milestone is starting
+    // Notify ConflictMonitor that the YouTubeSync milestone is starting
     if (!client.Activate(out YouTubeSyncActionIntelligence milestoneInt)) return;
     // Stop if YouTubeSync is disabled
     if (client.GetYouRataConfiguration().ActionCutOuts.DisableYouTubeSyncMilestone) return;

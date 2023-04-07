@@ -11,14 +11,11 @@ using YouRata.ConflictMonitor.MilestoneData;
 using YouRata.ConflictMonitor.MilestoneInterface;
 using YouRata.ConflictMonitor.Workflow;
 
-/// <summary>
-/// Create runtime objects and start the WebApp
-/// </summary>
-/// <remarks>
-/// This WebApp is started in the background before any milestones
-/// The WebApp provides information to the milestones on request and collects action intelligence
-/// If it becomes necessary to kill an inert process ConflictMonitor retains its last intelligence
-/// </remarks>
+/// ---------------------------------------------------------------------------------------------
+/// This WebApp is started in the background before any milestones. The WebApp provides
+/// information to the milestones on request, collects and disseminates action intelligence, and
+/// keeps an in-memory log. This WebApp also kills any inert milestone process.
+/// ---------------------------------------------------------------------------------------------
 
 CallHandler callHandler = new CallHandler();
 InServiceLoggerProvider logProvider = new InServiceLoggerProvider(callHandler);

@@ -1,9 +1,9 @@
 {
   "ActionReport": {
-    "ActionReportIntelligence": "{ \"Condition\": \"MILESTONE_RUNNING\", \"ProcessId\": 2054 }",
-    "InitialSetupIntelligence": "{ \"Condition\": \"MILESTONE_COMPLETED\", \"ProcessId\": 1966 }",
-    "Logs": "[ \"[2023-04-07 0212Z] [Warning] (Microsoft.AspNetCore.Server.Kestrel) Overriding address(es) 'https://localhost:7040'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.\\n\", \"[2023-04-07 0212Z] [Information] (Microsoft.Hosting.Lifetime) Now listening on: http://unix:/tmp/yourata.sock\\n\", \"[2023-04-07 0212Z] [Information] (Microsoft.Hosting.Lifetime) Application started. Press Ctrl+C to shut down.\\n\", \"[2023-04-07 0212Z] [Information] (Microsoft.Hosting.Lifetime) Hosting environment: Development\\n\", \"[2023-04-07 0212Z] [Information] (Microsoft.Hosting.Lifetime) Content root path: /home/runner/work/real/real/src/YouRata.ConflictMonitor\\n\" ]",
-    "Status": "Unknown",
-    "YouTubeSyncIntelligence": "{ \"Condition\": \"MILESTONE_RUNNING\", \"ProcessId\": 2020, \"VideosProcessed\": 0, \"VideosSkipped\": 0, \"CalculatedQueriesPerDayRemaining\": 0, \"LastQueryTime\": \"0\", \"FirstVideoPublishTime\": \"0\", \"OutstandingVideoPublishTime\": \"0\", \"HasOutstandingVideos\": false }"
+    "ActionReportIntelligence": "{ \"Condition\": \"MILESTONE_RUNNING\", \"ProcessId\": 2024 }",
+    "InitialSetupIntelligence": "{ \"Condition\": \"MILESTONE_PENDING\", \"ProcessId\": 0 }",
+    "Logs": "[ \"[2023-04-07 0218Z] [Warning] (Microsoft.AspNetCore.Server.Kestrel) Overriding address(es) 'https://localhost:7040'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.\\n\", \"[2023-04-07 0218Z] [Information] (Microsoft.Hosting.Lifetime) Now listening on: http://unix:/tmp/yourata.sock\\n\", \"[2023-04-07 0218Z] [Information] (Microsoft.Hosting.Lifetime) Application started. Press Ctrl+C to shut down.\\n\", \"[2023-04-07 0218Z] [Information] (Microsoft.Hosting.Lifetime) Hosting environment: Development\\n\", \"[2023-04-07 0218Z] [Information] (Microsoft.Hosting.Lifetime) Content root path: /home/runner/work/real/real/src/YouRata.ConflictMonitor\\n\" ]",
+    "Status": "Last Run 2023-04-07 0218Z",
+    "YouTubeSyncIntelligence": "{ \"Condition\": \"MILESTONE_COMPLETED\", \"ProcessId\": 1982, \"VideosProcessed\": 2, \"VideosSkipped\": 3, \"CalculatedQueriesPerDayRemaining\": 9845, \"LastQueryTime\": \"1680833902\", \"FirstVideoPublishTime\": \"1677520086\", \"OutstandingVideoPublishTime\": \"1677516718\", \"HasOutstandingVideos\": true }"
   }
 }

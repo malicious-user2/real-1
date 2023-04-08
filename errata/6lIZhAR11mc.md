@@ -27,7 +27,7 @@ Provide any evidence you may have.
 
 
 3:00 ------------------------------------------------
-
+At 3:10 it is stated that the gun captain can open a 16-inch gun breach after closing, however a salvo latch prevents the breach from opening until after the gun has recoiled, see OP-769
 
 
 3:30 ------------------------------------------------

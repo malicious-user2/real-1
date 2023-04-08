@@ -9,7 +9,7 @@
   },
   "ErrataBulletin": {
     "EmptyLinesPerMark": 3,
-    "Instructions": "Enter your errata here",
+    "Instructions": "To submit errata locate the timeslot for the errata and create a new line for the correction.\nProvide any evidence you may have.",
     "SecondsPerMark": 30,
     "TitleLocation": "top"
   },
@@ -18,7 +18,7 @@
     "MaxUpdateDwellTime": 1500
   },
   "YouTube": {
-    "ChannelId": "UCEvt5rd7Mvh2slOs1vHYezg",
+    "ChannelId": "UC_Ftxa2jwg8R4IWDw48uyBw",
     "ErattaLinkLocation": "bottom",
     "ErrataLinkTemplate": "To see errata for this video: {0}",
     "ExcludePlaylists": null,

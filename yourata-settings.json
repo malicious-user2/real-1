@@ -5,7 +5,7 @@
     "DisableInitialSetupMilestone": false,
     "DisableUnsupportedGitHubAPI": false,
     "DisableYouTubeSyncMilestone": false,
-    "DisableYouTubeVideoUpdate": false
+    "DisableYouTubeVideoUpdate": true
   },
   "ErrataBulletin": {
     "EmptyLinesPerMark": 3,
